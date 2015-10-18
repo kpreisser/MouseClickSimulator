@@ -47,6 +47,12 @@ namespace TTMouseclickSimulator.Core.Environment
             return hWnd;
         }
 
+        public void BringWindowToForeground(IntPtr hWnd)
+        {
+            if (!NativeMethods.SetForegroundWindow(hWnd))
+                throw new Exception("Could not bring specified window to foreground");
+        }
+
         public abstract Process FindProcess();
 
         /// <summary>
@@ -281,15 +287,6 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public enum VirtualKeyShort : short
         {
-            ///<summary>
-            ///Left mouse button
-            ///</summary>
-            LBUTTON = 0x01,
-            ///<summary>
-            ///Right mouse button
-            ///</summary>
-            RBUTTON = 0x02,
-
             ///<summary>
             ///ENTER key
             ///</summary>

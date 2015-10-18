@@ -13,7 +13,8 @@ namespace TTMouseclickSimulator.Core.Actions
     {
 
         /// <summary>
-        /// Specifies if this InteractionProvider has been canceled. This flag can be set by another thread.
+        /// Specifies if this InteractionProvider has been canceled. This flag can be set by
+        /// another thread.
         /// </summary>
         private volatile bool isCanceled = false;
 
@@ -23,7 +24,8 @@ namespace TTMouseclickSimulator.Core.Actions
 
         private Process process;
         private bool isMouseButtonPressed = false;
-        private List<AbstractEnvironmentInterface.VirtualKeyShort> keysCurrentlyPressed;
+        private List<AbstractEnvironmentInterface.VirtualKeyShort> keysCurrentlyPressed 
+            = new List<AbstractEnvironmentInterface.VirtualKeyShort>();
 
         public StandardInteractionProvider(AbstractEnvironmentInterface environmentInterface)
         {
@@ -33,10 +35,15 @@ namespace TTMouseclickSimulator.Core.Actions
         public void Initialize()
         {
             process = environmentInterface.FindProcess();
+
+            // Bring the destination window to foreground.
+            IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
+            environmentInterface.BringWindowToForeground(hWnd);
         }
 
         /// <summary>
-        /// Checks that the InteractionProvider has not been canceled and that the main window is still active.
+        /// Checks that the InteractionProvider has not been canceled and that the main
+        /// window is still active.
         /// </summary>
         private void EnsureNotCanceled()
         {
@@ -147,8 +154,9 @@ namespace TTMouseclickSimulator.Core.Actions
 
         /// <summary>
         /// Cancels this StandardInteractionProvider. When the thread which calls the methods
-        /// is a WPF GUI thread (which means async tasks are continued in the GUI thread when awaiting them),
-        /// this method may be called while a task is currently waiting in the WaitAsync() method.
+        /// is a WPF GUI thread (which means async tasks are continued in the GUI thread when
+        /// awaiting them), this method may be called while a task is currently waiting in the
+        /// WaitAsync() method.
         /// </summary>
         /// <param name="disposing"></param>
         protected void Dispose(bool disposing)
@@ -162,13 +170,15 @@ namespace TTMouseclickSimulator.Core.Actions
                 waitSemaphore.Release();
                 waitSemaphore.Dispose();
 
-                process.Dispose();
-                
+                // Process can be null if the InteractionProvider was not initialized.
+                if (process != null)
+                    process.Dispose();
+
 
                 // Release mouse buttons and keys that are currently pressed.
                 // Note that if another task is currently waiting in the WaitAsync() method, it can
-                // happen that it is continued after this method returns, but the WaitAsync() will throw
-                // an ActionCanceledException which the action shouldn't catch.
+                // happen that it is continued after this method returns, but the WaitAsync() will
+                // throw an ActionCanceledException which the action shouldn't catch.
                 if (isMouseButtonPressed)
                 {
                     environmentInterface.ReleaseMouseButton();

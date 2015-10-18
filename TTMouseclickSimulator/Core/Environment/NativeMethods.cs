@@ -131,5 +131,8 @@ namespace TTMouseclickSimulator.Core.Environment
         [DllImport("user32.dll")]
         internal static extern IntPtr GetForegroundWindow();
 
+
+        [DllImport("user32.dll")]
+        internal static extern bool SetForegroundWindow(IntPtr hWnd);
     }
 }

@@ -35,7 +35,9 @@ namespace TTMouseclickSimulator.Core.Actions
 
         AbstractEnvironmentInterface.ScreenshotContent CreateCurrentWindowScreenshot();
 
-        void PressMouseButton(Coordinates coords);
+        void MoveMouse(int x, int y);
+
+        void PressMouseButton();
 
         void ReleaseMouseButton();
 
@@ -50,6 +52,10 @@ namespace TTMouseclickSimulator.Core.Actions
     /// </summary>
     public class ActionCanceledException : Exception
     {
+        public ActionCanceledException() : 
+            base("The Simulator has been canceled.")
+        {
 
+        }
     }
 }

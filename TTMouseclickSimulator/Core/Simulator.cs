@@ -10,6 +10,10 @@ namespace TTMouseclickSimulator.Core
 {
     public class Simulator
     {
+        public const int WaitIntervalMinimum = 100;
+        public const int WaitIntervalMaximum = 60000;
+
+
         private readonly SimulatorConfiguration config;
         private readonly AbstractEnvironmentInterface environmentInterface;
 
@@ -26,7 +30,16 @@ namespace TTMouseclickSimulator.Core
                 throw new ArgumentNullException(nameof(environmentInterface));
             if (config.Actions == null || config.Actions.Count == 0)
                 throw new ArgumentException("There must be at least one IAction to start the simulator.");
-                
+            if (config.MinimumWaitInterval < WaitIntervalMinimum
+                    || config.MinimumWaitInterval > WaitIntervalMaximum
+                    || config.MaximumWaitInterval < WaitIntervalMinimum
+                    || config.MaximumWaitInterval > WaitIntervalMaximum)
+                throw new ArgumentOutOfRangeException("The wait interval values must be between " +
+                    $"{WaitIntervalMinimum} and {WaitIntervalMaximum} milliseconds.");
+            if (config.MinimumWaitInterval > config.MaximumWaitInterval)
+                throw new ArgumentException("The minimum wait interval must not be greater " 
+                    + "than the maximum wait interval."); 
+            
 
             this.config = config;
             this.environmentInterface = environmentInterface;
@@ -40,36 +53,33 @@ namespace TTMouseclickSimulator.Core
             if (canceled)
                 throw new InvalidOperationException("The simulator has already been canceled.");
 
+            provider.Initialize();
+
+            // Wait a bit so that the window can go into foreground.
+            await provider.WaitAsync(1000);
+
             // Run the actions.
             int nextActionIdx = 0;
 
             using (provider)
             {
-                try
+                while (true)
                 {
-                    while (true)
+                    if (config.RunInOrder)
                     {
-                        if (config.RunInOrder)
-                        {
-                            nextActionIdx = (nextActionIdx + 1) % config.Actions.Count;
-                        }
-                        else
-                        {
-                            nextActionIdx = rng.Next(config.Actions.Count);
-                        }
-
-                        IAction action = config.Actions[nextActionIdx];
-                        await action.RunAsync(provider);
-
-                        // After running an action, wait.
-                        int waitInterval = rng.Next(config.MinimumWaitInterval, config.MaximumWaitInterval);
-                        await provider.WaitAsync(waitInterval);
-
+                        nextActionIdx = (nextActionIdx + 1) % config.Actions.Count;
                     }
-                }
-                catch (ActionCanceledException)
-                {
-                    // TODO: Call some event so the GUI knows that we have stopped
+                    else
+                    {
+                        nextActionIdx = rng.Next(config.Actions.Count);
+                    }
+
+                    IAction action = config.Actions[nextActionIdx];
+                    await action.RunAsync(provider);
+
+                    // After running an action, wait.
+                    int waitInterval = rng.Next(config.MinimumWaitInterval, config.MaximumWaitInterval);
+                    await provider.WaitAsync(waitInterval);
                 }
             }
         }
