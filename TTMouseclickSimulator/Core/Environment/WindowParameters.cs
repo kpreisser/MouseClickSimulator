@@ -41,22 +41,35 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             return new Coordinates()
             {
-                x = (int)Math.Round((double)coords.x / oldSize.width * size.width),
-                y = (int)Math.Round((double)coords.y / oldSize.height * size.height)
+                X = (int)Math.Round((double)coords.X / oldSize.Width * size.Width),
+                Y = (int)Math.Round((double)coords.Y / oldSize.Height * size.Height)
             };
         }
     }
 
     public struct Coordinates
     {
-        public int x { get; set; }
-        public int y { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        public Coordinates(int x, int y)
+        {
+            this.X = x;
+            this.Y = y;
+        }
     }
 
     public struct Size
     {
-        public int width { get; set; }
-        public int height { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+
+        public Size(int width, int height)
+        {
+            this.Width = width;
+            this.Height = height;
+        }
+
     }
 
 }

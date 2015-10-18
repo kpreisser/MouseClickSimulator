@@ -14,7 +14,7 @@ namespace TTMouseclickSimulator.Core
         private readonly AbstractEnvironmentInterface environmentInterface;
 
         private readonly StandardInteractionProvider provider;
-        private readonly Random rng;
+        private readonly Random rng = new Random();
 
         private bool canceled = false;
 

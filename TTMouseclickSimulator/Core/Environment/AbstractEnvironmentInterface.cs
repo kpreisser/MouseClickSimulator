@@ -49,9 +49,41 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public abstract Process FindProcess();
 
+        /// <summary>
+        /// Determines the position and location of the client rectangle of the specified
+        /// window. This method also checks if the specified window is in foreground.
+        /// </summary>
+        /// <param name="hWnd"></param>
+        /// <returns></returns>
         public WindowPosition GetWindowPosition(IntPtr hWnd)
         {
-            throw new NotImplementedException();
+            // Check if the specified window is in foreground.
+            if (NativeMethods.GetForegroundWindow() != hWnd)
+                throw new Exception("The specified window is not in foreground");
+
+            // TODO: Need to check if the calculaction done here is correct, especially with
+            // different screen DPI settings and multiple monitors.
+            // Get the client size.
+            NativeMethods.RECT clientRect;
+            if (!NativeMethods.GetClientRect(hWnd, out clientRect))
+                throw new System.ComponentModel.Win32Exception();
+
+            // Get the screen coordinates of the point (0, 0) in the client rect.
+            NativeMethods.POINT relPos = new NativeMethods.POINT();
+            if (!NativeMethods.ClientToScreen(hWnd, ref relPos))
+                throw new Exception("Could not retrieve window client coordinates");
+
+            // Check if the window is minimized.
+            if (clientRect.Bottom - clientRect.Top == 0 && clientRect.Right - clientRect.Left == 0
+                && relPos.X == -32000 && relPos.Y == -32000)
+                throw new Exception("Window is minimized");
+
+
+            return new WindowPosition()
+            {
+                coordinates = new Coordinates(relPos.X, relPos.Y),
+                size = new Size(clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top)
+            };
         }
 
         public ScreenshotContent GetWindowScreenshot(IntPtr hWnd)
@@ -99,14 +131,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
             public Size Size
             {
-                get
-                {
-                    return new Size()
-                    {
-                        width = bmp.Width,
-                        height = bmp.Height
-                    };
-                }
+                get { return new Size(bmp.Width, bmp.Height); }
             }
 
             public ScreenshotContent(System.Drawing.Rectangle rect)
