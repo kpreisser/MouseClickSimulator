@@ -37,6 +37,8 @@ namespace TTMouseclickSimulator.Core.Actions
 
         void MoveMouse(int x, int y);
 
+        void MoveMouse(Coordinates c);
+
         void PressMouseButton();
 
         void ReleaseMouseButton();

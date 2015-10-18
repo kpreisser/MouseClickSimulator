@@ -105,6 +105,11 @@ namespace TTMouseclickSimulator.Core.Actions
             }
         }
 
+        public void MoveMouse(Coordinates c)
+        {
+            MoveMouse(c.X, c.Y);
+        }
+
         public void MoveMouse(int x, int y)
         {
             EnsureNotCanceled();

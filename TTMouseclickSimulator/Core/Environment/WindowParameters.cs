@@ -31,19 +31,24 @@ namespace TTMouseclickSimulator.Core.Environment
         public Size Size { get; set; }
 
         /// <summary>
-        /// Converts coordinates in the window to new ones based on the
-        /// specified size.
+        /// Converts relative coordinates in the window to new absolute coordinates
+        /// based on the specified reference size.
         /// </summary>
         /// <param name=""></param>
         /// <param name="previousSize"></param>
         /// <returns></returns>
-        public Coordinates ConvertCoordinates(Coordinates coords, Size oldSize)
+        public Coordinates ConvertCoordinates(Coordinates coords, Size referenceSize)
         {
             return new Coordinates()
             {
-                X = (int)Math.Round((double)coords.X / oldSize.Width * Size.Width),
-                Y = (int)Math.Round((double)coords.Y / oldSize.Height * Size.Height)
+                X = (int)Math.Round((double)coords.X / referenceSize.Width * Size.Width),
+                Y = (int)Math.Round((double)coords.Y / referenceSize.Height * Size.Height)
             };
+        }
+
+        public Coordinates RelativeToAbsoluteCoordinates(Coordinates c)
+        {
+            return Coordinates.Add(c);
         }
     }
 
@@ -56,6 +61,11 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             this.X = x;
             this.Y = y;
+        }
+
+        public Coordinates Add(Coordinates c)
+        {
+            return new Coordinates(X + c.X, Y + c.Y);
         }
     }
 
