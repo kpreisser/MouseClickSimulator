@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,9 +15,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment
     /// </summary>
     public class TTREnvironmentInterface : AbstractEnvironmentInterface
     {
-        public override IntPtr FindMainWindowHandle()
+        private const string ProcessName = "TTREngine";
+
+        public override Process FindProcess()
         {
-            return FindMainWindowHandleOfProcess("TTREngine.exe");
+            return FindProcessByName(ProcessName);
         }
     }
 }

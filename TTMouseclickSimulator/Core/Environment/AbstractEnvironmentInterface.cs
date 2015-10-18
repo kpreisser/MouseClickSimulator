@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,25 +12,49 @@ namespace TTMouseclickSimulator.Core.Environment
     /// </summary>
     public abstract class AbstractEnvironmentInterface
     {
+
         /// <summary>
-        /// Finds the main window of the process with the specified name and returns its parameters.
+        /// Finds the process with the specified name (without ".exe").
+        /// </summary>
+        /// <param name="processname"></param>
+        /// <returns></returns>
+        protected Process FindProcessByName(string processname)
+        {
+            Process[] processes = Process.GetProcessesByName(processname);
+            if (processes.Length == 0)
+                throw new ArgumentException($"Process '{processname}' not found");
+
+            return processes[0];
+
+        }
+        /// <summary>
+        /// Finds the main window of the process with the specified name (without ".exe") 
+        /// and returns its main window handle.
         /// </summary>
         /// <param name="processname"></param>
         /// <exception cref="System.Exception"></exception>
         /// <returns></returns>
-        protected IntPtr FindMainWindowHandleOfProcess(string processname)
+        public IntPtr FindMainWindowHandleOfProcess(Process p)
         {
-            throw new NotImplementedException(); // TODO
+            p.Refresh();
+            if (p.HasExited)
+                throw new ArgumentException("Process has exited");
+
+            IntPtr hWnd = p.MainWindowHandle;
+            if (hWnd == IntPtr.Zero)
+                throw new ArgumentException("Main Window not found");
+
+            return hWnd;
         }
 
-        public abstract IntPtr FindMainWindowHandle();
+        public abstract Process FindProcess();
 
-        public WindowPosition GetMainWindowPosition(IntPtr hWnd)
+        public WindowPosition GetWindowPosition(IntPtr hWnd)
         {
             throw new NotImplementedException();
         }
 
-        public ScreenshotContent GetMainWindowScreenshot(IntPtr hWnd)
+        public ScreenshotContent GetWindowScreenshot(IntPtr hWnd)
         {
             throw new NotImplementedException();
         }

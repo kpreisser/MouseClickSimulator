@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -20,7 +21,7 @@ namespace TTMouseclickSimulator.Core.Actions
 
         private readonly AbstractEnvironmentInterface environmentInterface;
 
-        private IntPtr hWnd = IntPtr.Zero;
+        private Process process;
         private bool isMouseButtonPressed = false;
         private List<AbstractEnvironmentInterface.VirtualKeyShort> keysCurrentlyPressed;
 
@@ -31,9 +32,7 @@ namespace TTMouseclickSimulator.Core.Actions
 
         public void Initialize()
         {
-
-            // Try to get the window handle.
-            hWnd = environmentInterface.FindMainWindowHandle();
+            process = environmentInterface.FindProcess();
         }
 
 
@@ -52,7 +51,8 @@ namespace TTMouseclickSimulator.Core.Actions
             if (isCanceled)
                 throw new ActionCanceledException();
 
-            return environmentInterface.GetMainWindowPosition(hWnd);
+            IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
+            return environmentInterface.GetWindowPosition(hWnd);
         }
 
         public AbstractEnvironmentInterface.ScreenshotContent GetCurrentWindowScreenshot()
@@ -60,7 +60,8 @@ namespace TTMouseclickSimulator.Core.Actions
             if (isCanceled)
                 throw new ActionCanceledException();
 
-            return environmentInterface.GetMainWindowScreenshot(hWnd);
+            IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
+            return environmentInterface.GetWindowScreenshot(hWnd);
         }
 
         public void PressKey(AbstractEnvironmentInterface.VirtualKeyShort key)
@@ -132,6 +133,9 @@ namespace TTMouseclickSimulator.Core.Actions
                 // dispose it.
                 waitSemaphore.Release();
                 waitSemaphore.Dispose();
+
+                process.Dispose();
+                
 
                 // Release mouse buttons and keys that are currently pressed.
                 // Note that if another task is currently waiting in the WaitAsync() method, it can
