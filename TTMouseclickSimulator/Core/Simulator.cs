@@ -24,6 +24,9 @@ namespace TTMouseclickSimulator.Core
                 throw new ArgumentNullException(nameof(config));
             if (environmentInterface == null)
                 throw new ArgumentNullException(nameof(environmentInterface));
+            if (config.Actions == null || config.Actions.Count == 0)
+                throw new ArgumentException("There must be at least one IAction to start the simulator.");
+                
 
             this.config = config;
             this.environmentInterface = environmentInterface;
