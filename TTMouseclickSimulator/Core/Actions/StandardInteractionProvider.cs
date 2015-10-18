@@ -94,16 +94,24 @@ namespace TTMouseclickSimulator.Core.Actions
             if (isCanceled)
                 throw new ActionCanceledException();
 
-            throw new NotImplementedException();
+            if (!isMouseButtonPressed)
+            {
+                environmentInterface.PressMouseButton();
+                isMouseButtonPressed = true;
+            }
         }
 
 
         public void ReleaseMouseButton()
         {
             if (isCanceled)
-
                 throw new ActionCanceledException();
-            throw new NotImplementedException();
+
+            if (isMouseButtonPressed)
+            {
+                environmentInterface.ReleaseMouseButton();
+                isMouseButtonPressed = false;
+            }
         }
 
         ~StandardInteractionProvider()

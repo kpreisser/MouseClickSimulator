@@ -97,29 +97,87 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void MoveMouse(int x, int y)
         {
-            throw new NotImplementedException();
+            DoMouseInput(x, y, true, null);
         }
 
         public void PressMouseButton()
         {
-            throw new NotImplementedException();
+            DoMouseInput(0, 0, false, true);
         }
 
         public void ReleaseMouseButton()
         {
-            throw new NotImplementedException();
+            DoMouseInput(0, 0, false, false);
         }
+
+        private void DoMouseInput(int x, int y, bool absoluteCoordinates, bool? mouseDown)
+        {
+            // Convert the screen coordinates into mouse coordinates.
+            Coordinates cs = new Coordinates(x, y);
+            cs = GetMouseCoordinatesFromScreenCoordinates(cs);
+
+            var mi = new NativeMethods.MOUSEINPUT();
+            mi.dx = cs.X;
+            mi.dy = cs.Y;
+            if (absoluteCoordinates)
+                mi.dwFlags |= NativeMethods.MOUSEEVENTF.ABSOLUTE;
+            if (!(!absoluteCoordinates && x == 0 && y == 0))
+            {
+                // A movement occured.
+                mi.dwFlags |= NativeMethods.MOUSEEVENTF.MOVE;
+            }
+
+            if (mouseDown.HasValue)
+            {
+                mi.dwFlags |= mouseDown.Value ? NativeMethods.MOUSEEVENTF.LEFTDOWN : NativeMethods.MOUSEEVENTF.LEFTUP;
+            }
+            
+            var input = new NativeMethods.INPUT();
+            input.type = NativeMethods.INPUT_MOUSE;
+            input.U.mi = mi;
+
+            NativeMethods.INPUT[] inputs = { input };
+
+            if (NativeMethods.SendInput(1, inputs, NativeMethods.INPUT.Size) == 0)
+                throw new System.ComponentModel.Win32Exception();
+        }
+
+        private Coordinates GetMouseCoordinatesFromScreenCoordinates(Coordinates screenCoords)
+        {
+            var virtualScreen = System.Windows.Forms.SystemInformation.VirtualScreen;
+            int x = (int)Math.Ceiling((((double)screenCoords.X - virtualScreen.Left) * 65536) / virtualScreen.Width);
+            int y = (int)Math.Ceiling((((double)screenCoords.Y - virtualScreen.Top) * 65536) / virtualScreen.Height);
+
+            return new Coordinates(x, y);
+        }
+
 
         public void PressKey(VirtualKeyShort keyCode)
         {
-            throw new NotImplementedException();
+            PressOrReleaseKey(keyCode, true);
         }
 
         public void ReleaseKey(VirtualKeyShort keyCode)
         {
-            throw new NotImplementedException();
+            PressOrReleaseKey(keyCode, false);
         }
 
+        private void PressOrReleaseKey(VirtualKeyShort keyCode, bool down)
+        {
+            var ki = new NativeMethods.KEYBDINPUT();
+            ki.wVk = keyCode;
+            if (!down)
+                ki.dwFlags = NativeMethods.KEYEVENTF.KEYUP;
+
+            var input = new NativeMethods.INPUT();
+            input.type = NativeMethods.INPUT_KEYBOARD;
+            input.U.ki = ki;
+
+            NativeMethods.INPUT[] inputs = { input };
+
+            if (NativeMethods.SendInput(1, inputs, NativeMethods.INPUT.Size) == 0)
+                throw new System.ComponentModel.Win32Exception();
+        }
 
 
 
@@ -238,6 +296,11 @@ namespace TTMouseclickSimulator.Core.Environment
             RETURN = 0x0D,
 
             ///<summary>
+            ///CTRL key
+            ///</summary>
+            CONTROL = 0x11,
+
+            ///<summary>
             ///LEFT ARROW key
             ///</summary>
             LEFT = 0x25,
@@ -253,6 +316,8 @@ namespace TTMouseclickSimulator.Core.Environment
             ///DOWN ARROW key
             ///</summary>
             DOWN = 0x28,
+
+
 
         }
     }

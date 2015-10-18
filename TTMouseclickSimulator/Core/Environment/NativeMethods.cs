@@ -12,13 +12,13 @@ namespace TTMouseclickSimulator.Core.Environment
         /// <summary>
         /// Synthesizes keystrokes, mouse motions, and button clicks.
         /// </summary>
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         internal static extern uint SendInput(uint nInputs,
            [MarshalAs(UnmanagedType.LPArray), In] INPUT[] pInputs,
            int cbSize);
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct INPUT
+        internal struct INPUT
         {
             internal uint type;
             internal InputUnion U;
@@ -27,6 +27,11 @@ namespace TTMouseclickSimulator.Core.Environment
                 get { return Marshal.SizeOf(typeof(INPUT)); }
             }
         }
+
+        internal const uint INPUT_MOUSE = 0;
+        internal const uint INPUT_KEYBOARD = 1;
+        internal const uint INPUT_HARDWARE = 2;
+
 
         [StructLayout(LayoutKind.Explicit)]
         internal struct InputUnion
