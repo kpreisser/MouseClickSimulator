@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
-namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment.Actions
+namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions
 {
     /// <summary>
     /// An action for pressing a key for a specific amount of time.
