@@ -55,7 +55,7 @@ namespace TTMouseclickSimulator.Core.Actions
             return environmentInterface.GetMainWindowPosition(hWnd);
         }
 
-        public AbstractEnvironmentInterface.ScreenshotContents GetCurrentWindowScreenshot()
+        public AbstractEnvironmentInterface.ScreenshotContent GetCurrentWindowScreenshot()
         {
             if (isCanceled)
                 throw new ActionCanceledException();

@@ -29,7 +29,7 @@ namespace TTMouseclickSimulator.Core.Environment
             throw new NotImplementedException();
         }
 
-        public ScreenshotContents GetMainWindowScreenshot(IntPtr hWnd)
+        public ScreenshotContent GetMainWindowScreenshot(IntPtr hWnd)
         {
             throw new NotImplementedException();
         }
@@ -63,20 +63,103 @@ namespace TTMouseclickSimulator.Core.Environment
 
 
 
-        public class ScreenshotContents
+        public class ScreenshotContent : IDisposable
         {
-            ScreenshotColor[,] pixels;
+
+            private bool disposed;
+
+            private readonly System.Drawing.Bitmap bmp;
+            private readonly System.Drawing.Imaging.BitmapData bmpData;
+
+
+            public Size Size
+            {
+                get
+                {
+                    return new Size()
+                    {
+                        width = bmp.Width,
+                        height = bmp.Height
+                    };
+                }
+            }
+
+            public ScreenshotContent(System.Drawing.Rectangle rect)
+            {
+                bmp = new System.Drawing.Bitmap(rect.Width, rect.Height,
+                    System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                using (var g = System.Drawing.Graphics.FromImage(bmp))
+                {
+                    g.CopyFromScreen(rect.Location, new System.Drawing.Point(0, 0),
+                        rect.Size, System.Drawing.CopyPixelOperation.SourceCopy);
+                }
+                bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+                    System.Drawing.Imaging.ImageLockMode.ReadOnly, bmp.PixelFormat);
+            }
+
+            public unsafe ScreenshotColor GetPixel(int x, int y)
+            {
+                if (disposed)
+                    throw new ObjectDisposedException("ScreenshotContent");
+                if (x < 0 || x >= bmp.Width)
+                    throw new ArgumentOutOfRangeException(nameof(x));
+                if (y < 0 || y >= bmp.Height)
+                    throw new ArgumentOutOfRangeException(nameof(y));
+
+                // This method assumes a 32-bit pixel format.
+                if (bmpData.PixelFormat != System.Drawing.Imaging.PixelFormat.Format32bppRgb)
+                    throw new InvalidOperationException("This method only works with a pixel format of Format32bppRgb.");
+
+                // Use unsafe mode for fast access to the bitmapdata.
+                byte* ptr = (byte*)bmpData.Scan0.ToPointer();
+                // Go to the line
+                ptr += y * bmpData.Stride;
+                // Go to the column. 
+                ptr += 4 * x;
+
+                byte b = *(ptr + 0);
+                byte g = *(ptr + 1);
+                byte r = *(ptr + 2);
+
+                return new ScreenshotColor()
+                {
+                    r = r,
+                    g = g,
+                    b = b
+                };
+            }
+
+
+            ~ScreenshotContent()
+            {
+                Dispose(false);
+            }
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+            protected void Dispose(bool disposing)
+            {
+                if (!disposed && disposing)
+                {
+                    bmp.UnlockBits(bmpData);
+                    bmp.Dispose();
+                }
+                disposed = true;
+            }
+
         }
 
         public struct ScreenshotColor
         {
-            public int rgb;
+            public byte r;
+            public byte g;
+            public byte b;
 
             public System.Windows.Media.Color ToColor()
             {
-                byte r = (byte)(rgb & 0xFF);
-                byte g = (byte)((rgb >> 0x100) & 0xFF);
-                byte b = (byte)((rgb >> 0x10000) & 0xFF);
                 return System.Windows.Media.Color.FromArgb(255, r, g, b);
             }
         }
