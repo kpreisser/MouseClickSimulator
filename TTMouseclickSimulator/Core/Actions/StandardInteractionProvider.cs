@@ -35,30 +35,38 @@ namespace TTMouseclickSimulator.Core.Actions
             process = environmentInterface.FindProcess();
         }
 
-
-        public async Task WaitAsync(int interval)
+        /// <summary>
+        /// Checks that the InteractionProvider has not been canceled and that the main window is still active.
+        /// </summary>
+        private void EnsureNotCanceled()
         {
-            if (isCanceled)
-                throw new ActionCanceledException();
-
-            await waitSemaphore.WaitAsync(interval);
             if (isCanceled)
                 throw new ActionCanceledException();
         }
 
-        public WindowPosition GetCurrentWindowPosition()
+        public async Task WaitAsync(int interval)
         {
-            if (isCanceled)
-                throw new ActionCanceledException();
+            EnsureNotCanceled();
+            await waitSemaphore.WaitAsync(interval);
+            EnsureNotCanceled();
+        }
 
+        private WindowPosition GetMainWindowPosition()
+        {
             IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
             return environmentInterface.GetWindowPosition(hWnd);
         }
 
+        public WindowPosition GetCurrentWindowPosition()
+        {
+            EnsureNotCanceled();
+
+            return GetMainWindowPosition();
+        }
+
         public AbstractEnvironmentInterface.ScreenshotContent CreateCurrentWindowScreenshot()
         {
-            if (isCanceled)
-                throw new ActionCanceledException();
+            EnsureNotCanceled();
 
             IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
             return environmentInterface.CreateWindowScreenshot(hWnd);
@@ -66,8 +74,10 @@ namespace TTMouseclickSimulator.Core.Actions
 
         public void PressKey(AbstractEnvironmentInterface.VirtualKeyShort key)
         {
-            if (isCanceled)
-                throw new ActionCanceledException();
+            EnsureNotCanceled();
+
+            // Check if the window is still active and in foreground.
+            GetMainWindowPosition();
 
             if (!keysCurrentlyPressed.Contains(key))
             {
@@ -78,8 +88,7 @@ namespace TTMouseclickSimulator.Core.Actions
 
         public void ReleaseKey(AbstractEnvironmentInterface.VirtualKeyShort key)
         {
-            if (isCanceled)
-                throw new ActionCanceledException();
+            EnsureNotCanceled();
 
             int kcpIdx = keysCurrentlyPressed.IndexOf(key);
             if (kcpIdx >= 0)
@@ -89,10 +98,22 @@ namespace TTMouseclickSimulator.Core.Actions
             }
         }
 
-        public void PressMouseButton(Coordinates coords)
+        public void MoveMouse(int x, int y)
         {
-            if (isCanceled)
-                throw new ActionCanceledException();
+            EnsureNotCanceled();
+
+            // Check if the window is still active and in foreground.
+            GetMainWindowPosition();
+
+            environmentInterface.MoveMouse(x, y);
+        }
+
+        public void PressMouseButton()
+        {
+            EnsureNotCanceled();
+
+            // Check if the window is still active and in foreground.
+            GetMainWindowPosition();
 
             if (!isMouseButtonPressed)
             {
@@ -104,8 +125,7 @@ namespace TTMouseclickSimulator.Core.Actions
 
         public void ReleaseMouseButton()
         {
-            if (isCanceled)
-                throw new ActionCanceledException();
+            EnsureNotCanceled();
 
             if (isMouseButtonPressed)
             {
