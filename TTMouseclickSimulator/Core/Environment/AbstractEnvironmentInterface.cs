@@ -81,14 +81,17 @@ namespace TTMouseclickSimulator.Core.Environment
 
             return new WindowPosition()
             {
-                coordinates = new Coordinates(relPos.X, relPos.Y),
-                size = new Size(clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top)
+                Coordinates = new Coordinates(relPos.X, relPos.Y),
+                Size = new Size(clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top)
             };
         }
 
-        public ScreenshotContent GetWindowScreenshot(IntPtr hWnd)
+        public ScreenshotContent CreateWindowScreenshot(IntPtr hWnd)
         {
-            throw new NotImplementedException();
+            WindowPosition pos = GetWindowPosition(hWnd);
+            ScreenshotContent scrn = new ScreenshotContent(new System.Drawing.Rectangle(
+                pos.Coordinates.X, pos.Coordinates.Y, pos.Size.Width, pos.Size.Height));
+            return scrn;
         }
 
 

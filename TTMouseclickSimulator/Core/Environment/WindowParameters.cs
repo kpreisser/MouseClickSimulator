@@ -24,11 +24,11 @@ namespace TTMouseclickSimulator.Core.Environment
         /// <summary>
         /// The coordinates to the upper left point of the window contents.
         /// </summary>
-        public Coordinates coordinates { get; set; }
+        public Coordinates Coordinates { get; set; }
         /// <summary>
         /// The size of the window contents.
         /// </summary>
-        public Size size { get; set; }
+        public Size Size { get; set; }
 
         /// <summary>
         /// Converts coordinates in the window to new ones based on the
@@ -41,8 +41,8 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             return new Coordinates()
             {
-                X = (int)Math.Round((double)coords.X / oldSize.Width * size.Width),
-                Y = (int)Math.Round((double)coords.Y / oldSize.Height * size.Height)
+                X = (int)Math.Round((double)coords.X / oldSize.Width * Size.Width),
+                Y = (int)Math.Round((double)coords.Y / oldSize.Height * Size.Height)
             };
         }
     }

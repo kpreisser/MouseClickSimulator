@@ -55,13 +55,13 @@ namespace TTMouseclickSimulator.Core.Actions
             return environmentInterface.GetWindowPosition(hWnd);
         }
 
-        public AbstractEnvironmentInterface.ScreenshotContent GetCurrentWindowScreenshot()
+        public AbstractEnvironmentInterface.ScreenshotContent CreateCurrentWindowScreenshot()
         {
             if (isCanceled)
                 throw new ActionCanceledException();
 
             IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
-            return environmentInterface.GetWindowScreenshot(hWnd);
+            return environmentInterface.CreateWindowScreenshot(hWnd);
         }
 
         public void PressKey(AbstractEnvironmentInterface.VirtualKeyShort key)

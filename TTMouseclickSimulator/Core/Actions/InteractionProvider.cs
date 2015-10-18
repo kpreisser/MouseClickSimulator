@@ -33,7 +33,7 @@ namespace TTMouseclickSimulator.Core.Actions
         /// IActions don't need to catch this exception.</exception>
         WindowPosition GetCurrentWindowPosition();
 
-        AbstractEnvironmentInterface.ScreenshotContent GetCurrentWindowScreenshot();
+        AbstractEnvironmentInterface.ScreenshotContent CreateCurrentWindowScreenshot();
 
         void PressMouseButton(Coordinates coords);
 
