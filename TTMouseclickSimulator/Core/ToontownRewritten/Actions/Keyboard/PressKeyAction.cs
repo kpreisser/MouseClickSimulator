@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
-namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions
+namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
 {
     /// <summary>
     /// An action for pressing a key for a specific amount of time.
@@ -15,19 +15,19 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions
     {
 
         private readonly AbstractEnvironmentInterface.VirtualKeyShort keyCode;
-        private readonly int interval;
+        private readonly int timeot;
 
-        public PressKeyAction(AbstractEnvironmentInterface.VirtualKeyShort keyCode, int interval)
+        public PressKeyAction(AbstractEnvironmentInterface.VirtualKeyShort keyCode, int timeout)
         {
             this.keyCode = keyCode;
-            this.interval = interval;
+            this.timeot = timeout;
         }
 
 
         public async Task RunAsync(IInteractionProvider provider)
         {
             provider.PressKey(keyCode);
-            await provider.WaitAsync(interval);
+            await provider.WaitAsync(timeot);
             provider.ReleaseKey(keyCode);
         }
     }

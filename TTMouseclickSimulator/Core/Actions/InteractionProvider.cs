@@ -22,7 +22,7 @@ namespace TTMouseclickSimulator.Core.Actions
         /// <returns></returns>
         /// <exception cref="ActionCanceledException">If the wait has been cancelled.
         /// IActions don't need to catch this exception.</exception>
-        Task WaitAsync(int interval);
+        Task WaitAsync(int millisecondsTimeout);
 
         /// <summary>
         /// Gets the current position of the destination window.

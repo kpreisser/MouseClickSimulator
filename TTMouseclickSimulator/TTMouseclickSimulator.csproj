@@ -79,8 +79,10 @@
     <Compile Include="Core\Actions\InteractionProvider.cs" />
     <Compile Include="Core\Simulator.cs" />
     <Compile Include="Core\SimulatorConfiguration.cs" />
+    <Compile Include="Core\ToontownRewritten\Actions\Constants.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\SellFishAction.cs" />
-    <Compile Include="Core\ToontownRewritten\Actions\PressKeyAction.cs" />
+    <Compile Include="Core\ToontownRewritten\Actions\Keyboard\PressKeyAction.cs" />
+    <Compile Include="Core\ToontownRewritten\Actions\PauseAction.cs" />
     <Compile Include="Core\ToontownRewritten\Environment\TTREnvironmentInterface.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

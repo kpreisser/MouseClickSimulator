@@ -51,10 +51,10 @@ namespace TTMouseclickSimulator.Core.Actions
                 throw new ActionCanceledException();
         }
 
-        public async Task WaitAsync(int interval)
+        public async Task WaitAsync(int millisecondsTimeout)
         {
             EnsureNotCanceled();
-            await waitSemaphore.WaitAsync(interval);
+            await waitSemaphore.WaitAsync(millisecondsTimeout);
             EnsureNotCanceled();
         }
 
