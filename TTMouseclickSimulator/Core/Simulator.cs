@@ -40,30 +40,34 @@ namespace TTMouseclickSimulator.Core
             // Run the actions.
             int nextActionIdx = 0;
 
-            try {
-                while (true)
-                {
-                    if (config.RunInOrder)
-                    {
-                        nextActionIdx = (nextActionIdx + 1) % config.Actions.Count;
-                    }
-                    else
-                    {
-                        nextActionIdx = rng.Next(config.Actions.Count);
-                    }
-
-                    IAction action = config.Actions[nextActionIdx];
-                    await action.RunAsync(provider);
-
-                    // After running an action, wait.
-                    int waitInterval = rng.Next(config.MinimumWaitInterval, config.MaximumWaitInterval);
-                    await provider.WaitAsync(waitInterval);
-
-                }
-            }
-            catch (ActionCanceledException)
+            using (provider)
             {
-                // TODO: Call some event so the GUI knows that we have stopped
+                try
+                {
+                    while (true)
+                    {
+                        if (config.RunInOrder)
+                        {
+                            nextActionIdx = (nextActionIdx + 1) % config.Actions.Count;
+                        }
+                        else
+                        {
+                            nextActionIdx = rng.Next(config.Actions.Count);
+                        }
+
+                        IAction action = config.Actions[nextActionIdx];
+                        await action.RunAsync(provider);
+
+                        // After running an action, wait.
+                        int waitInterval = rng.Next(config.MinimumWaitInterval, config.MaximumWaitInterval);
+                        await provider.WaitAsync(waitInterval);
+
+                    }
+                }
+                catch (ActionCanceledException)
+                {
+                    // TODO: Call some event so the GUI knows that we have stopped
+                }
             }
         }
 
