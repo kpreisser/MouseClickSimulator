@@ -76,7 +76,7 @@
     <Compile Include="Core\Environment\AbstractEnvironmentInterface.cs" />
     <Compile Include="Core\Environment\NativeMethods.cs" />
     <Compile Include="Core\Environment\WindowParameters.cs" />
-    <Compile Include="Core\Actions\InteractionProvider.cs" />
+    <Compile Include="Core\Actions\IInteractionProvider.cs" />
     <Compile Include="Core\Simulator.cs" />
     <Compile Include="Core\SimulatorConfiguration.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\MouseHelpers.cs" />
