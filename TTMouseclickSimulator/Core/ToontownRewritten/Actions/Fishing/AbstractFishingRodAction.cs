@@ -39,7 +39,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             sw.Start();
 
             bool found = false;
-            while (!found && sw.ElapsedMilliseconds <= 35000)
+            while (!found && sw.ElapsedMilliseconds <= WaitingForFishResultDialogTime)
             {
                 await provider.WaitAsync(1000);
 
@@ -90,6 +90,12 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         /// <param name="provider"></param>
         /// <returns></returns>
         protected abstract Task FinishThrowFishingRodAsync(IInteractionProvider provider);
+
+        /// <summary>
+        /// Gets the timeout value that should be used when waiting for the fish
+        /// result dialog after finishing throwing the rod.
+        /// </summary>
+        protected abstract int WaitingForFishResultDialogTime { get; }
 
 
         protected bool CompareColor(AbstractEnvironmentInterface.ScreenshotColor refColor, 

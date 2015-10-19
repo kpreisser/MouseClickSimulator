@@ -10,6 +10,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
     public class StraightFishingAction : AbstractFishingRodAction
     {
+        protected override int WaitingForFishResultDialogTime
+        {
+            get { return 20000; }
+        }
+
         protected override async Task FinishThrowFishingRodAsync(IInteractionProvider provider)
         {
             // Simply throw the fishing rod straight, without checking for bubbles.
