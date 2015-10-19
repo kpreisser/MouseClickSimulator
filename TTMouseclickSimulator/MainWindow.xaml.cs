@@ -60,7 +60,7 @@ namespace TTMouseclickSimulator
 
             sim = new Simulator(c, new TTREnvironmentInterface());
             // Add some events to the simulator.
-            sim.ActionStarted += (act, idx) => lblCurrentAction.Content = act.ToString() + $" (Idx {idx})"; 
+            sim.ActionStarted += (act, idx) => lblCurrentAction.Content = act.GetType().Name + $" (Idx {idx})"; 
             try
             {
                 await sim.RunAsync();
