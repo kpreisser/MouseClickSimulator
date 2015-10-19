@@ -214,6 +214,11 @@ namespace TTMouseclickSimulator.Core.Environment
                     System.Drawing.Imaging.ImageLockMode.ReadOnly, bmp.PixelFormat);
             }
 
+            public ScreenshotColor GetPixel(Coordinates coords)
+            {
+                return GetPixel(coords.X, coords.Y);
+            }
+
             public unsafe ScreenshotColor GetPixel(int x, int y)
             {
                 if (disposed)
@@ -274,6 +279,25 @@ namespace TTMouseclickSimulator.Core.Environment
             public byte r;
             public byte g;
             public byte b;
+
+            public ScreenshotColor(byte r, byte g, byte b)
+            {
+                this.r = r;
+                this.g = g;
+                this.b = b;
+            }
+
+            public byte GetValueFromIndex(int index)
+            {
+                if (index == 0)
+                    return r;
+                else if (index == 1)
+                    return g;
+                else if (index == 2)
+                    return b;
+
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
 
             public System.Windows.Media.Color ToColor()
             {
