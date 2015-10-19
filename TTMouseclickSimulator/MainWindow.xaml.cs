@@ -18,6 +18,8 @@ using TTMouseclickSimulator.Core;
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions;
+using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing;
+using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard;
 using TTMouseclickSimulator.Core.ToontownRewritten.Environment;
 
 namespace TTMouseclickSimulator
@@ -46,8 +48,8 @@ namespace TTMouseclickSimulator
             btnStop.IsEnabled = true;
 
             SimulatorConfiguration c = new SimulatorConfiguration();
+            c.MinimumWaitInterval = 2000;
             c.MaximumWaitInterval = 3000;
-            c.MinimumWaitInterval = 1000;
             c.RunInOrder = false;
             c.Actions = new List<IAction>()
             {
@@ -57,6 +59,8 @@ namespace TTMouseclickSimulator
             };
 
             sim = new Simulator(c, new TTREnvironmentInterface());
+            // Add some events to the simulator.
+            sim.ActionStarted += (act, idx) => lblCurrentAction.Content = act.ToString() + $" (Idx {idx})"; 
             try
             {
                 await sim.RunAsync();
@@ -73,6 +77,8 @@ namespace TTMouseclickSimulator
         {
             btnStart.IsEnabled = true;
             btnStop.IsEnabled = false;
+
+            lblCurrentAction.Content = "...";
         }
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
