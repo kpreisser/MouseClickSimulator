@@ -15,19 +15,19 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
     {
 
         private readonly AbstractEnvironmentInterface.VirtualKeyShort keyCode;
-        private readonly int timeot;
+        private readonly int timeout;
 
         public PressKeyAction(AbstractEnvironmentInterface.VirtualKeyShort keyCode, int timeout)
         {
             this.keyCode = keyCode;
-            this.timeot = timeout;
+            this.timeout = timeout;
         }
 
 
         public async Task RunAsync(IInteractionProvider provider)
         {
             provider.PressKey(keyCode);
-            await provider.WaitAsync(timeot);
+            await provider.WaitAsync(timeout);
             provider.ReleaseKey(keyCode);
         }
     }
