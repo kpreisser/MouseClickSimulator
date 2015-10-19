@@ -22,7 +22,7 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             Process[] processes = Process.GetProcessesByName(processname);
             if (processes.Length == 0)
-                throw new ArgumentException($"Process '{processname}' not found");
+                throw new ArgumentException($"Could not find Process '{processname}'.");
 
             return processes[0];
 
@@ -38,11 +38,11 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             p.Refresh();
             if (p.HasExited)
-                throw new ArgumentException("Process has exited");
+                throw new ArgumentException("The process has exited.");
 
             IntPtr hWnd = p.MainWindowHandle;
             if (hWnd == IntPtr.Zero)
-                throw new ArgumentException("Main Window not found");
+                throw new ArgumentException("Could not find Main Window.");
 
             return hWnd;
         }
@@ -50,7 +50,7 @@ namespace TTMouseclickSimulator.Core.Environment
         public void BringWindowToForeground(IntPtr hWnd)
         {
             if (!NativeMethods.SetForegroundWindow(hWnd))
-                throw new Exception("Could not bring specified window to foreground");
+                throw new Exception("Could not bring specified window to foreground.");
         }
 
         public abstract Process FindProcess();
@@ -65,7 +65,7 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             // Check if the specified window is in foreground.
             if (NativeMethods.GetForegroundWindow() != hWnd)
-                throw new Exception("The specified window is not in foreground");
+                throw new Exception("The window is not in foreground any more.");
 
             // TODO: Need to check if the calculaction done here is correct, especially with
             // different screen DPI settings and multiple monitors.
@@ -82,7 +82,7 @@ namespace TTMouseclickSimulator.Core.Environment
             // Check if the window is minimized.
             if (clientRect.Bottom - clientRect.Top == 0 && clientRect.Right - clientRect.Left == 0
                 && relPos.X == -32000 && relPos.Y == -32000)
-                throw new Exception("Window is minimized");
+                throw new Exception("The window has been minimized.");
 
 
             return new WindowPosition()
