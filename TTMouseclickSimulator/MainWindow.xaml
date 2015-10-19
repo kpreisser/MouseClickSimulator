@@ -5,10 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TTMouseclickSimulator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525" TextOptions.TextFormattingMode="Display">
     <Grid>
-        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="140,129,0,0" VerticalAlignment="Top" Width="75" Click="btnStart_Click"/>
-        <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="270,129,0,0" VerticalAlignment="Top" Width="75" Click="btnStop_Click"/>
+        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="67,60,0,0" VerticalAlignment="Top" Width="75" Click="btnStart_Click"/>
+        <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="167,60,0,0" VerticalAlignment="Top" Width="75" Click="btnStop_Click"/>
+        <Label Content="Current Action:" HorizontalAlignment="Left" Margin="67,107,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblCurrentAction" Content="..." HorizontalAlignment="Left" Margin="163,107,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>
