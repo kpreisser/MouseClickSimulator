@@ -79,7 +79,7 @@
     <Compile Include="Core\Actions\InteractionProvider.cs" />
     <Compile Include="Core\Simulator.cs" />
     <Compile Include="Core\SimulatorConfiguration.cs" />
-    <Compile Include="Core\ToontownRewritten\Actions\Constants.cs" />
+    <Compile Include="Core\ToontownRewritten\Actions\MouseHelpers.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\QuitFishingAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\SellFishAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Keyboard\PressKeyAction.cs" />

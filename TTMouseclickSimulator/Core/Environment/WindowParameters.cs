@@ -37,7 +37,7 @@ namespace TTMouseclickSimulator.Core.Environment
         /// <param name=""></param>
         /// <param name="previousSize"></param>
         /// <returns></returns>
-        public Coordinates ConvertCoordinates(Coordinates coords, Size referenceSize)
+        public Coordinates ScaleCoordinates(Coordinates coords, Size referenceSize)
         {
             return new Coordinates()
             {
