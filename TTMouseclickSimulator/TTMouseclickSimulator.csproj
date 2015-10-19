@@ -80,6 +80,7 @@
     <Compile Include="Core\Simulator.cs" />
     <Compile Include="Core\SimulatorConfiguration.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\AbstractFishingRodAction.cs" />
+    <Compile Include="Core\ToontownRewritten\Actions\Fishing\AutomaticFishingAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\FishingSpotFlavor.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\StraightFishingAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\MouseHelpers.cs" />

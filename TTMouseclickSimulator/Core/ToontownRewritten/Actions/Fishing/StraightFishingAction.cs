@@ -10,10 +10,13 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
     public class StraightFishingAction : AbstractFishingRodAction
     {
-        protected override int WaitingForFishResultDialogTime
+
+        public StraightFishingAction()
+            : base(20000)
         {
-            get { return 20000; }
+
         }
+
 
         protected override async Task FinishThrowFishingRodAsync(IInteractionProvider provider)
         {

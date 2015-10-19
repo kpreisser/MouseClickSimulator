@@ -13,6 +13,19 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
     {
 
         /// <summary>
+        /// The timeout value that should be used when waiting for the fish
+        /// result dialog after finishing throwing the rod.
+        /// </summary>
+        private int waitingForFishResultDialogTime;
+
+
+        public AbstractFishingRodAction(int waitingForFishResultDialogTime)
+        {
+            this.waitingForFishResultDialogTime = waitingForFishResultDialogTime;
+        }
+
+
+        /// <summary>
         /// Coordinates to use when we check for a dialog that indicates that a fish
         /// has been catched.
         /// Those coordinates are adapted from the old tt mouse click simulator.
@@ -39,7 +52,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             sw.Start();
 
             bool found = false;
-            while (!found && sw.ElapsedMilliseconds <= WaitingForFishResultDialogTime)
+            while (!found && sw.ElapsedMilliseconds <= waitingForFishResultDialogTime)
             {
                 await provider.WaitAsync(1000);
 
@@ -91,12 +104,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         /// <returns></returns>
         protected abstract Task FinishThrowFishingRodAsync(IInteractionProvider provider);
 
-        /// <summary>
-        /// Gets the timeout value that should be used when waiting for the fish
-        /// result dialog after finishing throwing the rod.
-        /// </summary>
-        protected abstract int WaitingForFishResultDialogTime { get; }
-
+        
 
         protected bool CompareColor(AbstractEnvironmentInterface.ScreenshotColor refColor, 
             AbstractEnvironmentInterface.ScreenshotColor actualColor,
