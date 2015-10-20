@@ -12,25 +12,31 @@ namespace TTMouseclickSimulator.Core.Actions
     internal class StandardInteractionProvider : IInteractionProvider, IDisposable
     {
 
+        private bool disposed = false;
         /// <summary>
         /// Specifies if this InteractionProvider has been canceled. This flag can be set by
-        /// another thread.
+        /// another thread while the simulator is running.
         /// </summary>
-        private volatile bool isCanceled = false;
+        private volatile bool canceled = false;
 
         private readonly SemaphoreSlim waitSemaphore = new SemaphoreSlim(0);
 
         private readonly AbstractWindowsEnvironment environmentInterface;
+        private readonly Action cancelCallback;
 
         private Process process;
         private bool isMouseButtonPressed = false;
         private List<AbstractWindowsEnvironment.VirtualKeyShort> keysCurrentlyPressed 
             = new List<AbstractWindowsEnvironment.VirtualKeyShort>();
 
-        public StandardInteractionProvider(AbstractWindowsEnvironment environmentInterface)
+
+        public StandardInteractionProvider(AbstractWindowsEnvironment environmentInterface,
+            out Action cancelCallback)
         {
             this.environmentInterface = environmentInterface;
+            cancelCallback = HandleCancelRequest;
         }
+
 
         public void Initialize()
         {
@@ -41,14 +47,32 @@ namespace TTMouseclickSimulator.Core.Actions
             environmentInterface.BringWindowToForeground(hWnd);
         }
 
+        private void HandleCancelRequest()
+        {
+            canceled = true;
+            // Release the semaphore (so that a task that is waiting can continue), then
+            // dispose it.
+            try
+            {
+                waitSemaphore.Release();
+            }
+            catch (ObjectDisposedException)
+            {
+                // Can happen when another thread tries to cancel the simulator while the task
+                // that runs the Simulator.RunAsync() method has already disposed the
+                // StandardInteractionProvider.
+                // In that case we do nothing.
+            }
+        }
+
         /// <summary>
         /// Checks that the InteractionProvider has not been canceled and that the main
         /// window is still active.
         /// </summary>
         private void EnsureNotCanceled()
         {
-            if (isCanceled)
-                throw new ActionCanceledException();
+            if (canceled)
+                throw new SimulatorCanceledException();
         }
 
         public async Task WaitAsync(int millisecondsTimeout)
@@ -158,40 +182,40 @@ namespace TTMouseclickSimulator.Core.Actions
         }
 
         /// <summary>
-        /// Cancels this StandardInteractionProvider. When the thread which calls the methods
-        /// is a WPF GUI thread (which means async tasks are continued in the GUI thread when
-        /// awaiting them), this method may be called while a task is currently waiting in the
-        /// WaitAsync() method.
+        /// Disposes of this StandardInteractionProvider.
         /// </summary>
         /// <param name="disposing"></param>
         protected void Dispose(bool disposing)
         {
-            if (disposing && !isCanceled)
+            if (disposing)
             {
-                isCanceled = true;
+                if (!canceled)
+                    HandleCancelRequest();
 
-                // Release the semaphore (so that a task that is waiting can continue), then
-                // dispose it.
-                waitSemaphore.Release();
-                waitSemaphore.Dispose();
-
-                // Process can be null if the InteractionProvider was not initialized.
-                if (process != null)
-                    process.Dispose();
-
-
-                // Release mouse buttons and keys that are currently pressed.
-                // Note that if another task is currently waiting in the WaitAsync() method, it can
-                // happen that it is continued after this method returns, but the WaitAsync() will
-                // throw an ActionCanceledException which the action shouldn't catch.
-                if (isMouseButtonPressed)
+                if (!disposed)
                 {
-                    environmentInterface.ReleaseMouseButton();
-                }
+                    disposed = true;
 
-                foreach (AbstractWindowsEnvironment.VirtualKeyShort key in keysCurrentlyPressed)
-                {
-                    environmentInterface.ReleaseKey(key);
+                    waitSemaphore.Dispose();
+
+                    // Process can be null if the InteractionProvider was not initialized.
+                    if (process != null)
+                        process.Dispose();
+
+
+                    // Release mouse buttons and keys that are currently pressed.
+                    // Note that if another task is currently waiting in the WaitAsync() method, it can
+                    // happen that it is continued after this method returns, but the WaitAsync() will
+                    // throw an ActionCanceledException which the action shouldn't catch.
+                    if (isMouseButtonPressed)
+                    {
+                        environmentInterface.ReleaseMouseButton();
+                    }
+
+                    foreach (AbstractWindowsEnvironment.VirtualKeyShort key in keysCurrentlyPressed)
+                    {
+                        environmentInterface.ReleaseKey(key);
+                    }
                 }
             }
         }

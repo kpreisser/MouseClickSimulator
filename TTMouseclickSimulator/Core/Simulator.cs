@@ -18,6 +18,7 @@ namespace TTMouseclickSimulator.Core
         private readonly AbstractWindowsEnvironment environmentInterface;
 
         private readonly StandardInteractionProvider provider;
+        private readonly Action cancelCallback;
         private readonly Random rng = new Random();
 
         private volatile bool canceled = false;
@@ -51,7 +52,8 @@ namespace TTMouseclickSimulator.Core
             this.config = config;
             this.environmentInterface = environmentInterface;
 
-            provider = new StandardInteractionProvider(environmentInterface);
+            provider = new StandardInteractionProvider(environmentInterface, out cancelCallback);
+            
 
         }
 
@@ -82,7 +84,7 @@ namespace TTMouseclickSimulator.Core
                     {
                         // Check if the simulator has already been canceled.
                         if (canceled)
-                            throw new ActionCanceledException();
+                            throw new SimulatorCanceledException();
 
                         if (config.RunInOrder)
                         {
@@ -116,12 +118,12 @@ namespace TTMouseclickSimulator.Core
         /// <summary>
         /// Cancels the simulator. This method can be called from the GUI thread while
         /// the task that runs RunAsync is still active. It can also be called from
-        /// another thread (TODO).
+        /// another thread.
         /// </summary>
         public void Cancel()
         {
-            provider.Dispose();
             canceled = true;
+            cancelCallback();
         }
 
 

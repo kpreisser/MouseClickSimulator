@@ -19,7 +19,7 @@ namespace TTMouseclickSimulator.Core.Actions
         /// </summary>
         /// <param name="interval">The interval to wait.</param>
         /// <returns></returns>
-        /// <exception cref="ActionCanceledException">If the wait has been cancelled.
+        /// <exception cref="SimulatorCanceledException">If the wait has been cancelled.
         /// IActions don't need to catch this exception.</exception>
         Task WaitAsync(int millisecondsTimeout);
 
@@ -28,7 +28,7 @@ namespace TTMouseclickSimulator.Core.Actions
         /// 
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="ActionCanceledException">If the simulator has been cancelled.
+        /// <exception cref="SimulatorCanceledException">If the simulator has been cancelled.
         /// IActions don't need to catch this exception.</exception>
         WindowPosition GetCurrentWindowPosition();
 
@@ -51,9 +51,9 @@ namespace TTMouseclickSimulator.Core.Actions
     /// <summary>
     /// Thrown when an action has been canceled because the simulator has been stopped.
     /// </summary>
-    public class ActionCanceledException : Exception
+    public class SimulatorCanceledException : Exception
     {
-        public ActionCanceledException() : 
+        public SimulatorCanceledException() : 
             base("The Simulator has been canceled.")
         {
 
