@@ -58,19 +58,33 @@ namespace TTMouseclickSimulator
                 new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.CONTROL, 1500)
             };
 
-            sim = new Simulator(c, TTRWindowsEnvironment.Instance);
-            // Add some events to the simulator.
-            sim.ActionStarted += (act, idx) => lblCurrentAction.Content = act.GetType().Name + $" (Idx {idx})"; 
-            try
-            {
-                await sim.RunAsync();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Simulator stopped!", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
 
-            HandleSimulatorCanceled();
+            // TODO: Save the task somewhere
+            Task t = Task.Run(async () =>
+            {
+                sim = new Simulator(c, TTRWindowsEnvironment.Instance);
+                // Add some events to the simulator.
+                sim.ActionStarted += (act, idx) => Dispatcher.Invoke(() => lblCurrentAction.Content = act.GetType().Name + $" (Idx {idx})");
+
+                Exception runException = null;
+                try
+                {
+                    await sim.RunAsync();
+                }
+                catch (Exception ex)
+                {
+                    runException = ex;
+                    
+                }
+
+                Dispatcher.Invoke(() =>
+                {
+                    if (runException != null)
+                        MessageBox.Show(runException.Message, "Simulator stopped!", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    HandleSimulatorCanceled();
+                });
+            });
         }
 
         private void HandleSimulatorCanceled()
