@@ -9,8 +9,7 @@ namespace TTMouseclickSimulator.Core.Actions
 {
     /// <summary>
     /// Allows actions to interact with the destination window, e.g. press keys and
-    /// simulate mouse clicks. It also allows to asynchronously wait, using the specified
-    /// IWaitable.
+    /// simulate mouse clicks and to wait asynchronously.
     /// </summary>
     public interface IInteractionProvider
     {

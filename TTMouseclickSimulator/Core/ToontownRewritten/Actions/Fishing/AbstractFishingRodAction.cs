@@ -47,7 +47,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
 
             // Then, wait until we find a window displaying the catched fish
-            // or 33 seconds are over.
+            // or the specified number of seconds has passed.
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
