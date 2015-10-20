@@ -14,10 +14,10 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
     public class PressKeyAction : IAction
     {
 
-        private readonly AbstractEnvironmentInterface.VirtualKeyShort keyCode;
+        private readonly AbstractWindowsEnvironment.VirtualKeyShort keyCode;
         private readonly int timeout;
 
-        public PressKeyAction(AbstractEnvironmentInterface.VirtualKeyShort keyCode, int timeout)
+        public PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort keyCode, int timeout)
         {
             this.keyCode = keyCode;
             this.timeout = timeout;

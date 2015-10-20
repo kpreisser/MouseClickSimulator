@@ -33,7 +33,7 @@ namespace TTMouseclickSimulator.Core.Actions
         /// IActions don't need to catch this exception.</exception>
         WindowPosition GetCurrentWindowPosition();
 
-        AbstractEnvironmentInterface.ScreenshotContent CreateCurrentWindowScreenshot();
+        AbstractWindowsEnvironment.ScreenshotContent CreateCurrentWindowScreenshot();
 
         void MoveMouse(int x, int y);
 
@@ -43,8 +43,8 @@ namespace TTMouseclickSimulator.Core.Actions
 
         void ReleaseMouseButton();
 
-        void PressKey(AbstractEnvironmentInterface.VirtualKeyShort key);
-        void ReleaseKey(AbstractEnvironmentInterface.VirtualKeyShort key);
+        void PressKey(AbstractWindowsEnvironment.VirtualKeyShort key);
+        void ReleaseKey(AbstractWindowsEnvironment.VirtualKeyShort key);
 
     }
 

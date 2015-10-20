@@ -59,7 +59,7 @@ namespace TTMouseclickSimulator.Core.Environment
         [StructLayout(LayoutKind.Sequential)]
         internal struct KEYBDINPUT
         {
-            internal AbstractEnvironmentInterface.VirtualKeyShort wVk;
+            internal AbstractWindowsEnvironment.VirtualKeyShort wVk;
             internal short wScan;
             internal KEYEVENTF dwFlags;
             internal int time;

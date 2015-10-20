@@ -10,7 +10,7 @@ namespace TTMouseclickSimulator.Core.Environment
     /// <summary>
     /// Provides methods to interact with other processes windows.
     /// </summary>
-    public abstract class AbstractEnvironmentInterface
+    public abstract class AbstractWindowsEnvironment
     {
 
         /// <summary>

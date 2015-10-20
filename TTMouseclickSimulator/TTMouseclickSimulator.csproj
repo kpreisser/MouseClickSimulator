@@ -73,7 +73,7 @@
     <Compile Include="Core\Actions\IAction.cs" />
     <Compile Include="Core\Actions\IActionFactory.cs" />
     <Compile Include="Core\Actions\StandardInteractionProvider.cs" />
-    <Compile Include="Core\Environment\AbstractEnvironmentInterface.cs" />
+    <Compile Include="Core\Environment\AbstractWindowsEnvironment.cs" />
     <Compile Include="Core\Environment\NativeMethods.cs" />
     <Compile Include="Core\Environment\WindowParameters.cs" />
     <Compile Include="Core\Actions\IInteractionProvider.cs" />
@@ -88,7 +88,7 @@
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\SellFishAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Keyboard\PressKeyAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\PauseAction.cs" />
-    <Compile Include="Core\ToontownRewritten\Environment\TTREnvironmentInterface.cs" />
+    <Compile Include="Core\ToontownRewritten\Environment\TTRWindowsEnvironment.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

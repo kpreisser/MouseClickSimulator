@@ -13,7 +13,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment
     /// <summary>
     /// Environment interface for Toontown Rewritten.
     /// </summary>
-    public class TTREnvironmentInterface : AbstractEnvironmentInterface
+    public class TTRWindowsEnvironment : AbstractWindowsEnvironment
     {
         private const string ProcessName = "TTREngine";
 

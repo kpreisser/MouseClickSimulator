@@ -15,7 +15,7 @@ namespace TTMouseclickSimulator.Core
 
 
         private readonly SimulatorConfiguration config;
-        private readonly AbstractEnvironmentInterface environmentInterface;
+        private readonly AbstractWindowsEnvironment environmentInterface;
 
         private readonly StandardInteractionProvider provider;
         private readonly Random rng = new Random();
@@ -29,7 +29,7 @@ namespace TTMouseclickSimulator.Core
 
 
 
-        public Simulator(SimulatorConfiguration config, AbstractEnvironmentInterface environmentInterface)
+        public Simulator(SimulatorConfiguration config, AbstractWindowsEnvironment environmentInterface)
         {
             if (config == null)
                 throw new ArgumentNullException(nameof(config));

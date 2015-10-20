@@ -36,8 +36,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             new Coordinates(634, 504),
             new Coordinates(564, 100)
         };
-        private static readonly AbstractEnvironmentInterface.ScreenshotColor fishResultDialogColor =
-            new AbstractEnvironmentInterface.ScreenshotColor(255, 255, 191);
+        private static readonly AbstractWindowsEnvironment.ScreenshotColor fishResultDialogColor =
+            new AbstractWindowsEnvironment.ScreenshotColor(255, 255, 191);
 
         public async Task RunAsync(IInteractionProvider provider)
         {
@@ -106,8 +106,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
         
 
-        protected bool CompareColor(AbstractEnvironmentInterface.ScreenshotColor refColor, 
-            AbstractEnvironmentInterface.ScreenshotColor actualColor,
+        protected bool CompareColor(AbstractWindowsEnvironment.ScreenshotColor refColor, 
+            AbstractWindowsEnvironment.ScreenshotColor actualColor,
             int tolerance)
         {
             // Simply compare the discrepancy of the R, G and B values

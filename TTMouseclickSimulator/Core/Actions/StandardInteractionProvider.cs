@@ -20,14 +20,14 @@ namespace TTMouseclickSimulator.Core.Actions
 
         private readonly SemaphoreSlim waitSemaphore = new SemaphoreSlim(0);
 
-        private readonly AbstractEnvironmentInterface environmentInterface;
+        private readonly AbstractWindowsEnvironment environmentInterface;
 
         private Process process;
         private bool isMouseButtonPressed = false;
-        private List<AbstractEnvironmentInterface.VirtualKeyShort> keysCurrentlyPressed 
-            = new List<AbstractEnvironmentInterface.VirtualKeyShort>();
+        private List<AbstractWindowsEnvironment.VirtualKeyShort> keysCurrentlyPressed 
+            = new List<AbstractWindowsEnvironment.VirtualKeyShort>();
 
-        public StandardInteractionProvider(AbstractEnvironmentInterface environmentInterface)
+        public StandardInteractionProvider(AbstractWindowsEnvironment environmentInterface)
         {
             this.environmentInterface = environmentInterface;
         }
@@ -71,7 +71,7 @@ namespace TTMouseclickSimulator.Core.Actions
             return GetMainWindowPosition();
         }
 
-        public AbstractEnvironmentInterface.ScreenshotContent CreateCurrentWindowScreenshot()
+        public AbstractWindowsEnvironment.ScreenshotContent CreateCurrentWindowScreenshot()
         {
             EnsureNotCanceled();
 
@@ -79,7 +79,7 @@ namespace TTMouseclickSimulator.Core.Actions
             return environmentInterface.CreateWindowScreenshot(hWnd);
         }
 
-        public void PressKey(AbstractEnvironmentInterface.VirtualKeyShort key)
+        public void PressKey(AbstractWindowsEnvironment.VirtualKeyShort key)
         {
             EnsureNotCanceled();
 
@@ -93,7 +93,7 @@ namespace TTMouseclickSimulator.Core.Actions
             }
         }
 
-        public void ReleaseKey(AbstractEnvironmentInterface.VirtualKeyShort key)
+        public void ReleaseKey(AbstractWindowsEnvironment.VirtualKeyShort key)
         {
             EnsureNotCanceled();
 
@@ -189,7 +189,7 @@ namespace TTMouseclickSimulator.Core.Actions
                     environmentInterface.ReleaseMouseButton();
                 }
 
-                foreach (AbstractEnvironmentInterface.VirtualKeyShort key in keysCurrentlyPressed)
+                foreach (AbstractWindowsEnvironment.VirtualKeyShort key in keysCurrentlyPressed)
                 {
                     environmentInterface.ReleaseKey(key);
                 }
