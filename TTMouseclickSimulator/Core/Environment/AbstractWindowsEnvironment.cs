@@ -201,19 +201,23 @@ namespace TTMouseclickSimulator.Core.Environment
                 get { return new Size(bmp.Width, bmp.Height); }
             }
 
+            public WindowPosition WindowPosition { get; }
+
             public ScreenshotContent(WindowPosition pos)
             {
-                Rectangle rect = new System.Drawing.Rectangle(
+                WindowPosition = pos;
+
+                Rectangle rect = new Rectangle(
                 pos.Coordinates.X, pos.Coordinates.Y, pos.Size.Width, pos.Size.Height);
 
-                bmp = new System.Drawing.Bitmap(rect.Width, rect.Height,
+                bmp = new Bitmap(rect.Width, rect.Height,
                     System.Drawing.Imaging.PixelFormat.Format32bppRgb);
-                using (var g = System.Drawing.Graphics.FromImage(bmp))
+                using (var g = Graphics.FromImage(bmp))
                 {
                     g.CopyFromScreen(rect.Location, new System.Drawing.Point(0, 0),
-                        rect.Size, System.Drawing.CopyPixelOperation.SourceCopy);
+                        rect.Size, CopyPixelOperation.SourceCopy);
                 }
-                bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+                bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
                     System.Drawing.Imaging.ImageLockMode.ReadOnly, bmp.PixelFormat);
             }
 

@@ -57,12 +57,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 await provider.WaitAsync(1000);
 
                 // Get a current screenshot.
-                var windowPos = provider.GetCurrentWindowPosition();
                 var screenshot = provider.CreateCurrentWindowScreenshot();
 
                 foreach (Coordinates c in fishResultDialogCoordinates)
                 {
-                    var cc = windowPos.ScaleCoordinates(
+                    var cc = screenshot.WindowPosition.ScaleCoordinates(
                         c, MouseHelpers.ReferenceWindowSize);
                     var col = screenshot.GetPixel(cc);
 

@@ -9,7 +9,7 @@ namespace TTMouseclickSimulator.Core.Environment
     public interface IScreenshotContent : IDisposable
     {
 
-        Size Size { get; }
+        WindowPosition WindowPosition { get; }
 
         ScreenshotColor GetPixel(Coordinates coords);
 
