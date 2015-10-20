@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TTMouseclickSimulator.Core.Environment;
 
-namespace TTMouseclickSimulator.Core.Actions
+namespace TTMouseclickSimulator.Core.Environment
 {
     /// <summary>
     /// Allows actions to interact with the destination window, e.g. press keys and

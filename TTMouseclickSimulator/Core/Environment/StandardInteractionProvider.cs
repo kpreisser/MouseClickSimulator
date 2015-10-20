@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TTMouseclickSimulator.Core.Environment;
 
-namespace TTMouseclickSimulator.Core.Actions
+namespace TTMouseclickSimulator.Core.Environment
 {
     internal class StandardInteractionProvider : IInteractionProvider, IDisposable
     {

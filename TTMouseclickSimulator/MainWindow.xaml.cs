@@ -59,32 +59,31 @@ namespace TTMouseclickSimulator
             };
 
 
-            // TODO: Save the task somewhere
-            Task t = Task.Run(async () =>
+            Exception runException = null;
+
+            
+            // Run the simulator in another task so it is not executed in the GUI thread.
+            // However, we then await that new task so we are notified when it is finished.
+            await Task.Run(async () =>
             {
                 sim = new Simulator(c, TTRWindowsEnvironment.Instance);
                 // Add some events to the simulator.
                 sim.ActionStarted += (act, idx) => Dispatcher.Invoke(() => lblCurrentAction.Content = act.GetType().Name + $" (Idx {idx})");
 
-                Exception runException = null;
                 try
                 {
                     await sim.RunAsync();
                 }
                 catch (Exception ex)
                 {
-                    runException = ex;
-                    
+                    runException = ex;   
                 }
-
-                Dispatcher.Invoke(() =>
-                {
-                    if (runException != null)
-                        MessageBox.Show(runException.Message, "Simulator stopped!", MessageBoxButton.OK, MessageBoxImage.Warning);
-
-                    HandleSimulatorCanceled();
-                });
             });
+
+            if (runException != null)
+                MessageBox.Show(runException.Message, "Simulator stopped!", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+            HandleSimulatorCanceled();
         }
 
         private void HandleSimulatorCanceled()

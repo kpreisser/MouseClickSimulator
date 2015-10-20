@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TTMouseclickSimulator.Core.Actions;
+using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
