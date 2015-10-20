@@ -53,12 +53,12 @@ namespace TTMouseclickSimulator
             c.RunInOrder = false;
             c.Actions = new List<IAction>()
             {
-                new PressKeyAction(AbstractEnvironmentInterface.VirtualKeyShort.LEFT, 500),
-                new PressKeyAction(AbstractEnvironmentInterface.VirtualKeyShort.RIGHT, 500),
-                new PressKeyAction(AbstractEnvironmentInterface.VirtualKeyShort.CONTROL, 1500)
+                new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.LEFT, 500),
+                new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.RIGHT, 500),
+                new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.CONTROL, 1500)
             };
 
-            sim = new Simulator(c, new TTRWindowsEnvironment());
+            sim = new Simulator(c, TTRWindowsEnvironment.Instance);
             // Add some events to the simulator.
             sim.ActionStarted += (act, idx) => lblCurrentAction.Content = act.GetType().Name + $" (Idx {idx})"; 
             try

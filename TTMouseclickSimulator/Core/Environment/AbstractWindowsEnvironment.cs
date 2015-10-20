@@ -308,7 +308,6 @@ namespace TTMouseclickSimulator.Core.Environment
 
 
 
-
         public enum VirtualKeyShort : short
         {
             ///<summary>
