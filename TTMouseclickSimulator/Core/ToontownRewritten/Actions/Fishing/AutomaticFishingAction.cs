@@ -61,7 +61,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                     && Math.Abs(oldCoords.Value.Y - newCoords.Value.Y) <= scanStep)
                 {
                     // The new coordinates are (nearly) the same as the previous ones.
-                    //oldCoords = newCoords;
                     coordsMatchCounter++;
                 }
                 else
@@ -99,7 +98,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             if (!newCoords.HasValue)
             {
                 // If we couldn't find the bubble we use default destination x,y values.
-                // TODO
                 newCoords = new Coordinates(800, 1009);
             }
             else
