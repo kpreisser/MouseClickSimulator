@@ -11,12 +11,12 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
     {
         public Coordinates Scan1 { get; }
         public Coordinates Scan2 { get; }
-        public AbstractWindowsEnvironment.ScreenshotColor BubbleColor { get; }
+        public ScreenshotColor BubbleColor { get; }
         public int Tolerance { get; }
 
 
         public FishingSpotFlavor(Coordinates scan1, Coordinates scan2,
-            AbstractWindowsEnvironment.ScreenshotColor bubbleColor, int tolerance)
+            ScreenshotColor bubbleColor, int tolerance)
         {
             this.Scan1 = scan1;
             this.Scan2 = scan2;
@@ -27,7 +27,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
         public static readonly FishingSpotFlavor PunchlinePlace = 
             new FishingSpotFlavor(new Coordinates(260, 196), new Coordinates(1349, 626), 
-                new AbstractWindowsEnvironment.ScreenshotColor(20, 140, 144), 16);
+                new ScreenshotColor(20, 140, 144), 16);
 
     }
 }

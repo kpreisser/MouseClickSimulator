@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -92,11 +93,10 @@ namespace TTMouseclickSimulator.Core.Environment
             };
         }
 
-        public ScreenshotContent CreateWindowScreenshot(IntPtr hWnd)
+        public IScreenshotContent CreateWindowScreenshot(IntPtr hWnd)
         {
             WindowPosition pos = GetWindowPosition(hWnd);
-            ScreenshotContent scrn = new ScreenshotContent(new System.Drawing.Rectangle(
-                pos.Coordinates.X, pos.Coordinates.Y, pos.Size.Width, pos.Size.Height));
+            ScreenshotContent scrn = new ScreenshotContent(pos);
             return scrn;
         }
 
@@ -187,7 +187,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
 
 
-        public class ScreenshotContent : IDisposable
+        private class ScreenshotContent : IScreenshotContent
         {
 
             private bool disposed;
@@ -201,8 +201,11 @@ namespace TTMouseclickSimulator.Core.Environment
                 get { return new Size(bmp.Width, bmp.Height); }
             }
 
-            public ScreenshotContent(System.Drawing.Rectangle rect)
+            public ScreenshotContent(WindowPosition pos)
             {
+                Rectangle rect = new System.Drawing.Rectangle(
+                pos.Coordinates.X, pos.Coordinates.Y, pos.Size.Width, pos.Size.Height);
+
                 bmp = new System.Drawing.Bitmap(rect.Width, rect.Height,
                     System.Drawing.Imaging.PixelFormat.Format32bppRgb);
                 using (var g = System.Drawing.Graphics.FromImage(bmp))
@@ -274,39 +277,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         }
 
-        public struct ScreenshotColor
-        {
-            public byte r;
-            public byte g;
-            public byte b;
-
-            public ScreenshotColor(byte r, byte g, byte b)
-            {
-                this.r = r;
-                this.g = g;
-                this.b = b;
-            }
-
-            public byte GetValueFromIndex(int index)
-            {
-                if (index == 0)
-                    return r;
-                else if (index == 1)
-                    return g;
-                else if (index == 2)
-                    return b;
-
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
-            public System.Windows.Media.Color ToColor()
-            {
-                return System.Windows.Media.Color.FromArgb(255, r, g, b);
-            }
-        }
-
-
-
+        
 
         public enum VirtualKeyShort : short
         {

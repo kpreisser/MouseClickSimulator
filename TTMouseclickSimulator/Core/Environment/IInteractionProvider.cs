@@ -32,7 +32,7 @@ namespace TTMouseclickSimulator.Core.Environment
         /// IActions don't need to catch this exception.</exception>
         WindowPosition GetCurrentWindowPosition();
 
-        AbstractWindowsEnvironment.ScreenshotContent CreateCurrentWindowScreenshot();
+        IScreenshotContent CreateCurrentWindowScreenshot();
 
         void MoveMouse(int x, int y);
 

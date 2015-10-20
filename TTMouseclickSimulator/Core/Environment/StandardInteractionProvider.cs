@@ -95,7 +95,7 @@ namespace TTMouseclickSimulator.Core.Environment
             return GetMainWindowPosition();
         }
 
-        public AbstractWindowsEnvironment.ScreenshotContent CreateCurrentWindowScreenshot()
+        public IScreenshotContent CreateCurrentWindowScreenshot()
         {
             EnsureNotCanceled();
 

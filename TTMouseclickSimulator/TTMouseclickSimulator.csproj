@@ -72,6 +72,7 @@
     <Compile Include="Core\Actions\DefaultGenericActionFactory.cs" />
     <Compile Include="Core\Actions\IAction.cs" />
     <Compile Include="Core\Actions\IActionFactory.cs" />
+    <Compile Include="Core\Environment\IScreenshotContent.cs" />
     <Compile Include="Core\Environment\StandardInteractionProvider.cs" />
     <Compile Include="Core\Environment\AbstractWindowsEnvironment.cs" />
     <Compile Include="Core\Environment\NativeMethods.cs" />
