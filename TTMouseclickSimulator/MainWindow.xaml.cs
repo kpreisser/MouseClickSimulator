@@ -48,8 +48,8 @@ namespace TTMouseclickSimulator
             btnStop.IsEnabled = true;
 
             SimulatorConfiguration c = new SimulatorConfiguration();
-            c.MinimumWaitInterval = 2000;
-            c.MaximumWaitInterval = 3000;
+            c.MinimumWaitInterval = 1000;
+            c.MaximumWaitInterval = 1000;
             c.RunInOrder = false;
             c.Actions = new List<IAction>()
             {
@@ -58,7 +58,7 @@ namespace TTMouseclickSimulator
                 new PressKeyAction(AbstractEnvironmentInterface.VirtualKeyShort.CONTROL, 1500)
             };
 
-            sim = new Simulator(c, new TTREnvironmentInterface());
+            sim = new Simulator(c, new TTRWindowsEnvironment());
             // Add some events to the simulator.
             sim.ActionStarted += (act, idx) => lblCurrentAction.Content = act.GetType().Name + $" (Idx {idx})"; 
             try
