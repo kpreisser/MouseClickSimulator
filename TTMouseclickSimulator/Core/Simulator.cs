@@ -87,14 +87,10 @@ namespace TTMouseclickSimulator.Core
                             throw new SimulatorCanceledException();
 
                         if (config.RunInOrder)
-                        {
                             nextActionIdx = (nextActionIdx + 1) % config.Actions.Count;
-                        }
                         else
-                        {
                             nextActionIdx = rng.Next(config.Actions.Count);
-                        }
-
+                        
                         IAction action = config.Actions[nextActionIdx];
 
                         OnActionStarted(action, nextActionIdx);

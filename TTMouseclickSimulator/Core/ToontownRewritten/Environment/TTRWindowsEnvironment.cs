@@ -24,7 +24,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment
 
         }
 
-        public override Process FindProcess()
+        public override sealed Process FindProcess()
         {
             return FindProcessByName(ProcessName);
         }

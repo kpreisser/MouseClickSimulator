@@ -18,7 +18,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         }
 
 
-        protected override async Task FinishThrowFishingRodAsync(IInteractionProvider provider)
+        protected override sealed async Task FinishThrowFishingRodAsync(IInteractionProvider provider)
         {
             // Simply throw the fishing rod straight, without checking for bubbles.
             Coordinates coords = new Coordinates(800, 1009);
