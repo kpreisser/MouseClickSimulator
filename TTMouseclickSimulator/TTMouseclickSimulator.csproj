@@ -91,6 +91,7 @@
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\SellFishAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Keyboard\PressKeyAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\PauseAction.cs" />
+    <Compile Include="Core\ToontownRewritten\Actions\Speedchat\SpeedchatAction.cs" />
     <Compile Include="Core\ToontownRewritten\Environment\TTRWindowsEnvironment.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
