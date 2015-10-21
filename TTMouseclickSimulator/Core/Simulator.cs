@@ -10,22 +10,19 @@ namespace TTMouseclickSimulator.Core
 {
     public class Simulator
     {
-        public const int WaitIntervalMinimum = 100;
-        public const int WaitIntervalMaximum = 60000;
-
-
+        
         private readonly SimulatorConfiguration config;
         private readonly AbstractWindowsEnvironment environmentInterface;
 
         private readonly StandardInteractionProvider provider;
         private readonly Action cancelCallback;
-        private readonly Random rng = new Random();
 
         private volatile bool canceled = false;
 
 
         public event Action SimulatorStarted;
-        public event Action<IAction, int> ActionStarted;
+        // TODO: This needs a refactoring so that an action can update its state.
+        //public event Action<IAction, int> ActionStarted;
         public event Action SimulatorStopped;
 
 
@@ -36,17 +33,8 @@ namespace TTMouseclickSimulator.Core
                 throw new ArgumentNullException(nameof(config));
             if (environmentInterface == null)
                 throw new ArgumentNullException(nameof(environmentInterface));
-            if (config.Actions == null || config.Actions.Count == 0)
-                throw new ArgumentException("There must be at least one IAction to start the simulator.");
-            if (config.MinimumWaitInterval < WaitIntervalMinimum
-                    || config.MinimumWaitInterval > WaitIntervalMaximum
-                    || config.MaximumWaitInterval < WaitIntervalMinimum
-                    || config.MaximumWaitInterval > WaitIntervalMaximum)
-                throw new ArgumentOutOfRangeException("The wait interval values must be between " +
-                    $"{WaitIntervalMinimum} and {WaitIntervalMaximum} milliseconds.");
-            if (config.MinimumWaitInterval > config.MaximumWaitInterval)
-                throw new ArgumentException("The minimum wait interval must not be greater " 
-                    + "than the maximum wait interval."); 
+            if (config.Action == null)
+                throw new ArgumentException("There must be an action specified in the SimulatorConfiguration.");
             
 
             this.config = config;
@@ -77,30 +65,12 @@ namespace TTMouseclickSimulator.Core
                     // Wait a bit so that the window can go into foreground.
                     await provider.WaitAsync(1000);
 
-                    // Run the actions.
-                    int nextActionIdx = 0;
+                    // Run the action.
+                    await config.Action.RunAsync(provider);
 
-                    while (true)
-                    {
-                        // Check if the simulator has already been canceled.
-                        if (canceled)
-                            throw new SimulatorCanceledException();
-
-                        if (config.RunInOrder)
-                            nextActionIdx = (nextActionIdx + 1) % config.Actions.Count;
-                        else
-                            nextActionIdx = rng.Next(config.Actions.Count);
-                        
-                        IAction action = config.Actions[nextActionIdx];
-
-                        OnActionStarted(action, nextActionIdx);
-
-                        await action.RunAsync(provider);
-
-                        // After running an action, wait.
-                        int waitInterval = rng.Next(config.MinimumWaitInterval, config.MaximumWaitInterval);
-                        await provider.WaitAsync(waitInterval);
-                    }
+                    // Normally the main action should not return without throwing
+                    // an exception.
+                    throw new SimulatorCanceledException();
                 }
 
             }
@@ -129,11 +99,11 @@ namespace TTMouseclickSimulator.Core
                 SimulatorStarted();
         }
 
-        protected void OnActionStarted(IAction simAction, int idx)
-        {
-            if (ActionStarted != null)
-                ActionStarted(simAction, idx);
-        }
+        //protected void OnActionStarted(IAction simAction, int idx)
+        //{
+        //    if (ActionStarted != null)
+        //        ActionStarted(simAction, idx);
+        //}
 
         protected void OnSimulatorStopped()
         {

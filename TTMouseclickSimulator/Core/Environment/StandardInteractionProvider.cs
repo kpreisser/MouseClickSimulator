@@ -69,7 +69,7 @@ namespace TTMouseclickSimulator.Core.Environment
         /// Checks that the InteractionProvider has not been canceled and that the main
         /// window is still active.
         /// </summary>
-        private void EnsureNotCanceled()
+        public void EnsureNotCanceled()
         {
             if (canceled)
                 throw new SimulatorCanceledException();

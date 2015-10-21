@@ -15,6 +15,12 @@ namespace TTMouseclickSimulator.Core.Environment
     {
 
         /// <summary>
+        /// Checks that the InteractionProvider has not been canceled and that the main
+        /// window is still active.
+        /// </summary>
+        void EnsureNotCanceled();
+
+        /// <summary>
         /// Asynchronously waits until the specified interval is elapsed or an exception is thrown.
         /// </summary>
         /// <param name="interval">The interval to wait.</param>

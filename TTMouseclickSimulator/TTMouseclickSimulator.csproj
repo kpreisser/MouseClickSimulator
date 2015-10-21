@@ -69,9 +69,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Core\Actions\CompoundAction.cs" />
     <Compile Include="Core\Actions\DefaultGenericActionFactory.cs" />
     <Compile Include="Core\Actions\IAction.cs" />
     <Compile Include="Core\Actions\IActionFactory.cs" />
+    <Compile Include="Core\Actions\LoopAction.cs" />
     <Compile Include="Core\Environment\IScreenshotContent.cs" />
     <Compile Include="Core\Environment\StandardInteractionProvider.cs" />
     <Compile Include="Core\Environment\AbstractWindowsEnvironment.cs" />
