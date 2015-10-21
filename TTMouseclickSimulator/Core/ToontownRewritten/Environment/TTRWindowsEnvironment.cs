@@ -17,7 +17,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment
     {
         private const string ProcessName = "TTREngine";
 
-        public static TTRWindowsEnvironment Instance = new TTRWindowsEnvironment();
+        public static TTRWindowsEnvironment Instance { get; } = new TTRWindowsEnvironment();
 
         private TTRWindowsEnvironment()
         {
