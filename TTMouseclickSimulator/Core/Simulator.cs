@@ -68,9 +68,8 @@ namespace TTMouseclickSimulator.Core
                     // Run the action.
                     await config.Action.RunAsync(provider);
 
-                    // Normally the main action should not return without throwing
-                    // an exception.
-                    throw new SimulatorCanceledException();
+                    // Normally the main action would be a CompoundAction that never returns, but
+                    // it is possible that the action will return normally.
                 }
 
             }
