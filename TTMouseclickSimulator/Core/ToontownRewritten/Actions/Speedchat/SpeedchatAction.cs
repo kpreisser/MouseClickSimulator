@@ -10,13 +10,14 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat
 {
     public class SpeedchatAction : IAction
     {
-
-        private readonly int[] menuItems;
         private static readonly int[] xWidths = {
             215,
             215 + 250,
             215 + 250 + 180
         };
+
+        private readonly int[] menuItems;
+        
 
         public SpeedchatAction(params int[] menuItems)
         {
@@ -26,6 +27,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat
             if (menuItems.Length == 0)
                 throw new ArgumentException("The menuItems array must not be empty.");
         }
+
 
         public async Task RunAsync(IInteractionProvider provider)
         {

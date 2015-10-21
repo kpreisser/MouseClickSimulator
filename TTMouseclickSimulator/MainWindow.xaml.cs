@@ -20,6 +20,7 @@ using TTMouseclickSimulator.Core.Environment;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard;
+using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat;
 using TTMouseclickSimulator.Core.ToontownRewritten.Environment;
 
 namespace TTMouseclickSimulator
@@ -48,27 +49,27 @@ namespace TTMouseclickSimulator
             btnStop.IsEnabled = true;
 
             SimulatorConfiguration c = new SimulatorConfiguration();
-            c.MinimumWaitInterval = 1000;
-            c.MaximumWaitInterval = 1000;
-            c.RunInOrder = false;
-            c.Actions = new List<IAction>()
+            // Create the action list for the main compound action.
+            List<IAction> mainActions = new List<IAction>()
             {
                 new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.LEFT, 500),
                 new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.RIGHT, 500),
-                new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.CONTROL, 1500)
+                new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.CONTROL, 1500),
+                new SpeedchatAction(3, 0, 2)
             };
+            // Create the main compound action.
+            c.Action = new CompoundAction(mainActions, true, 1000, 2000);
 
 
-            Exception runException = null;
 
-            
             // Run the simulator in another task so it is not executed in the GUI thread.
             // However, we then await that new task so we are notified when it is finished.
+            Exception runException = null;
             await Task.Run(async () =>
             {
                 sim = new Simulator(c, TTRWindowsEnvironment.Instance);
                 // Add some events to the simulator.
-                sim.ActionStarted += (act, idx) => Dispatcher.Invoke(() => lblCurrentAction.Content = act.GetType().Name + $" (Idx {idx})");
+                //sim.ActionStarted += (act, idx) => Dispatcher.Invoke(() => lblCurrentAction.Content = act.GetType().Name + $" (Idx {idx})");
 
                 try
                 {
