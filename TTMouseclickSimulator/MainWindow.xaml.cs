@@ -53,13 +53,15 @@ namespace TTMouseclickSimulator
             List<IAction> mainActions = new List<IAction>()
             {
                 new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.LEFT, 500),
-                new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.RIGHT, 500),
-                new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.CONTROL, 1500),
+                new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.RIGHT, 700),
+                new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.CONTROL, 500),
                 new SpeedchatAction(3, 0, 2)
             };
             // Create the main compound action.
-            c.Action = new CompoundAction(mainActions, true, 1000, 2000);
+            c.Action = new CompoundAction(mainActions, 
+                CompoundAction.CompoundActionType.RandomOrder, 800, 1500);
 
+            // TODO: If the window is closed, stop the simulator and wait for the task it!
 
 
             // Run the simulator in another task so it is not executed in the GUI thread.

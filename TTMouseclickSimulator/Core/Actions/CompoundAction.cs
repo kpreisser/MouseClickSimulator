@@ -18,10 +18,11 @@ namespace TTMouseclickSimulator.Core.Actions
 
 
         private readonly IList<IAction> actionList;
-        private readonly bool runInOrder;
+        private readonly CompoundActionType type;
 
         private readonly int minimumWaitInterval;
         private readonly int maximumWaitInterval;
+        private readonly bool loop;
 
         private readonly Random rng = new Random();
 
@@ -29,14 +30,17 @@ namespace TTMouseclickSimulator.Core.Actions
         /// 
         /// </summary>
         /// <param name="actionList"></param>
-        /// <param name="runInOrder">Specifies if the actions should be run in the order 
-        /// as they are specified (true) or in random order (false). The default is true.</param>
+        /// <param name="type">Specifies in what order the actions should be run.</param>
         /// <param name="minimumWaitInterval">Specifies the minimum wait time that
         /// should be used after an action has completed</param>
         /// <param name="maximumWaitInterval">Specifies the maximum wait time that
         /// should be used after an action has completed</param>
-        public CompoundAction(IList<IAction> actionList, bool runInOrder, 
-            int minimumWaitInterval, int maximumWaitInterval)
+        /// <param name="loop">If false, the action will return after a complete run. Otherwise
+        /// it will loop endlessly. Note that using false is not possible when specifying
+        /// CompoundActionType.RandomIndex as type.</param>
+        public CompoundAction(IList<IAction> actionList,
+            CompoundActionType type = CompoundActionType.Sequential, 
+            int minimumWaitInterval = 0, int maximumWaitInterval = 0, bool loop = true)
         {
 
             if (actionList == null || actionList.Count == 0)
@@ -50,37 +54,92 @@ namespace TTMouseclickSimulator.Core.Actions
             if (minimumWaitInterval > maximumWaitInterval)
                 throw new ArgumentException("The minimum wait interval must not be greater "
                     + "than the maximum wait interval.");
+            if (type == CompoundActionType.RandomIndex && !loop)
+                throw new ArgumentException("When using CompoundActionType.RandomIndex, it is not possible "
+                    + " to disable the loop.");
 
             this.actionList = actionList;
-            this.runInOrder = runInOrder;
+            this.type = type;
             this.minimumWaitInterval = minimumWaitInterval;
             this.maximumWaitInterval = maximumWaitInterval;
+            this.loop = loop;
         }
 
 
         public async Task RunAsync(IInteractionProvider provider)
         {
             // Run the actions.
-            int nextActionIdx = 0;
+            int currentIdx = -1;
+            int[] randomOrder = null;
+
+            Func<int> getNextActionIndex;
+            if (type == CompoundActionType.Sequential)
+                getNextActionIndex = () => currentIdx = (currentIdx + 1) % actionList.Count;
+            else if (type == CompoundActionType.RandomIndex)
+                getNextActionIndex = () => rng.Next(actionList.Count);
+            else
+            {
+                randomOrder = new int[actionList.Count];
+                getNextActionIndex = () =>
+                {
+                    currentIdx = (currentIdx + 1) % actionList.Count;
+                    if (currentIdx == 0)
+                    {
+                        // Generate a new order array.
+                        for (int i = 0; i < randomOrder.Length; i++)
+                            randomOrder[i] = i;
+                        for (int i = 0; i < randomOrder.Length; i++)
+                        {
+                            int rIdx = rng.Next(randomOrder.Length - i);
+                            int tmp = randomOrder[i];
+                            randomOrder[i] = randomOrder[i + rIdx];
+                            randomOrder[i + rIdx] = tmp;
+                        }
+                    }
+
+                    return randomOrder[currentIdx];
+                };
+            }
 
             while (true)
             {
                 // Check if the simulator has already been canceled.
                 provider.EnsureNotCanceled();
-
-                if (runInOrder)
-                    nextActionIdx = (nextActionIdx + 1) % actionList.Count;
-                else
-                    nextActionIdx = rng.Next(actionList.Count);
-
-                IAction action = actionList[nextActionIdx];
-
+                
+                IAction action = actionList[getNextActionIndex()];
                 await action.RunAsync(provider);
 
                 // After running an action, wait.
                 int waitInterval = rng.Next(minimumWaitInterval, maximumWaitInterval);
                 await provider.WaitAsync(waitInterval);
             }
+        }
+
+
+        public enum CompoundActionType : int
+        {
+            /// <summary>
+            /// Specifies that the inner actions should be executed sequentially.
+            /// After a run of all actions is complete, either a new run will be started
+            /// (if loop is true) or the compound action returns.
+            /// </summary>
+            Sequential = 0,
+            /// <summary>
+            /// Specifies that the inner actions should be executed in random order.
+            /// This means if n actions are specified and the n-th action has been executed,
+            /// every other action bevore also has been executed once.
+            /// After a run of all actions is complete, either a new run will be started
+            /// (if loop is true) or the compound action returns.
+            /// </summary>
+            RandomOrder = 1,
+            /// <summary>
+            /// Specifies that the inner actions should be executed randomly. That means
+            /// that some actions might be executed more often than others and some actions
+            /// might never be executed.
+            /// When using this type, it is not possible to use loop = false because there is
+            /// no terminated run of the actions.
+            /// </summary>
+            RandomIndex = 2
         }
     }
 }
