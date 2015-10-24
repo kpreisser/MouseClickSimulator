@@ -22,7 +22,6 @@ namespace TTMouseclickSimulator.Core.Environment
         private readonly SemaphoreSlim waitSemaphore = new SemaphoreSlim(0);
 
         private readonly AbstractWindowsEnvironment environmentInterface;
-        private readonly Action cancelCallback;
 
         private Process process;
         private bool isMouseButtonPressed = false;
@@ -66,8 +65,7 @@ namespace TTMouseclickSimulator.Core.Environment
         }
 
         /// <summary>
-        /// Checks that the InteractionProvider has not been canceled and that the main
-        /// window is still active.
+        /// Checks that the InteractionProvider has not been canceled.
         /// </summary>
         public void EnsureNotCanceled()
         {
