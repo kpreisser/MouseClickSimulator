@@ -8,6 +8,7 @@ using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat
 {
+    [Serializable]
     public class SpeedchatAction : IAction
     {
         private static readonly int[] xWidths = {

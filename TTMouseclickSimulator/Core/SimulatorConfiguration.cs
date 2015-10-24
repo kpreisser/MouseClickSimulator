@@ -7,6 +7,7 @@ using TTMouseclickSimulator.Core.Actions;
 
 namespace TTMouseclickSimulator.Core
 {
+    [Serializable]
     public class SimulatorConfiguration
     {
 

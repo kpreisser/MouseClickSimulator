@@ -5,12 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TTMouseclickSimulator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525" TextOptions.TextFormattingMode="Display">
+        Title="TTR Mouse Click Simulator" Height="362" Width="541" TextOptions.TextFormattingMode="Display">
     <Grid>
-        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="67,60,0,0" VerticalAlignment="Top" Width="75" Click="btnStart_Click"/>
-        <Button x:Name="btnStop" Content="Stop" HorizontalAlignment="Left" Margin="167,60,0,0" VerticalAlignment="Top" Width="75" Click="btnStop_Click"/>
-        <Label Content="Current Action:" HorizontalAlignment="Left" Margin="67,107,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblCurrentAction" Content="..." HorizontalAlignment="Left" Margin="163,107,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,0,0,10" Width="75" Click="btnStart_Click" Height="19" VerticalAlignment="Bottom"/>
+        <Button x:Name="btnStop" IsEnabled="False" Content="Stop" HorizontalAlignment="Left" Margin="110,0,0,10" Width="75" Click="btnStop_Click" Height="19" VerticalAlignment="Bottom"/>
+        <Label Content="TTR Mouse Click Simulator" Margin="10,10,10,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
+        <Label Content="Current Project:" HorizontalAlignment="Left" Margin="10,73,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblCurrentProject" Content="xxxxx" HorizontalAlignment="Left" Margin="108,73,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnLoadPredefined" Content="Predefined project..." HorizontalAlignment="Left" Margin="16,49,0,0" VerticalAlignment="Top" Width="135" Click="btnLoadPredefined_Click"/>
+        <Button x:Name="btnSave" IsEnabled="False" Content="Save..." HorizontalAlignment="Left" Margin="255,49,0,0" VerticalAlignment="Top" Width="75" Click="btnSave_Click"/>
+        <TextBlock x:Name="txtDescription" HorizontalAlignment="Left" Margin="16,110,16,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+        <Button x:Name="btnLoad" Content="Load file..." HorizontalAlignment="Left" Margin="165,49,0,0" VerticalAlignment="Top" Width="85" Click="btnLoad_Click"/>
 
     </Grid>
 </Window>

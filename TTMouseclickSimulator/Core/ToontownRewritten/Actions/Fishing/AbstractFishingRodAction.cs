@@ -9,19 +9,22 @@ using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
+    [Serializable]
     public abstract class AbstractFishingRodAction : IAction
     {
 
+        // This is determined by the class type, not by the instance so implement it
+        // as abstract property instead of a field. This avoids it being serialized.
         /// <summary>
         /// The timeout value that should be used when waiting for the fish
         /// result dialog after finishing throwing the rod.
         /// </summary>
-        private int waitingForFishResultDialogTime;
+        protected abstract int WaitingForFishResultDialogTime { get; }
 
 
-        public AbstractFishingRodAction(int waitingForFishResultDialogTime)
+        public AbstractFishingRodAction()
         {
-            this.waitingForFishResultDialogTime = waitingForFishResultDialogTime;
+            
         }
 
 
@@ -52,7 +55,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             sw.Start();
 
             bool found = false;
-            while (!found && sw.ElapsedMilliseconds <= waitingForFishResultDialogTime)
+            while (!found && sw.ElapsedMilliseconds <= WaitingForFishResultDialogTime)
             {
                 await provider.WaitAsync(1000);
 

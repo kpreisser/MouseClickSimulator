@@ -10,6 +10,7 @@ namespace TTMouseclickSimulator.Core.Actions
     /// <summary>
     /// An action that loops through a list of other actions either in order or by chance.
     /// </summary>
+    [Serializable]
     public class CompoundAction : IAction
     {
 

@@ -11,6 +11,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
     /// <summary>
     /// An action that writes the given string and a line break into the window.
     /// </summary>
+    [Serializable]
     public class WriteTextAction : IAction
     {
 

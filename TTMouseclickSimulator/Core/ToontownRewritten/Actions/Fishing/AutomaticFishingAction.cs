@@ -9,21 +9,27 @@ using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
+    [Serializable]
     public class AutomaticFishingAction : AbstractFishingRodAction
     {
         private FishingSpotFlavor flavor;
 
+        protected override int WaitingForFishResultDialogTime
+        {
+            get { return 7000; }
+        }
+
         public AutomaticFishingAction(FishingSpotFlavor flavor)
-            : base(7000)
         {
             this.flavor = flavor;
         }
-
         
+
         protected override sealed async Task FinishThrowFishingRodAsync(IInteractionProvider provider)
         {
             // Try to find a bubble.
             const int scanStep = 15;
+            FishingSpotFlavorData spotData = FishingSpotFlavorData.GetDataFromItem(flavor);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -40,15 +46,15 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 // TODO: The fish bubble detection should be changed so that it does not scan
                 // for a specific color, but instead checks that for a point if the color is
                 // darker than the neighbor pixels (in some distance).
-                for (int y = flavor.Scan1.Y; y <= flavor.Scan2.Y && !newCoords.HasValue; y += scanStep)
+                for (int y = spotData.Scan1.Y; y <= spotData.Scan2.Y && !newCoords.HasValue; y += scanStep)
                 {
-                    for (int x = flavor.Scan1.X; x <= flavor.Scan2.X; x += scanStep)
+                    for (int x = spotData.Scan1.X; x <= spotData.Scan2.X; x += scanStep)
                     {
                         var c = new Coordinates(x, y);
                         c = screenshot.WindowPosition.ScaleCoordinates(c,
                             MouseHelpers.ReferenceWindowSize);
-                        if (CompareColor(flavor.BubbleColor, screenshot.GetPixel(c),
-                            flavor.Tolerance))
+                        if (CompareColor(spotData.BubbleColor, screenshot.GetPixel(c),
+                            spotData.Tolerance))
                         {
                             newCoords = new Coordinates(x + 15, y + 30);
                             break;

@@ -11,6 +11,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction
     /// <summary>
     /// An action that clicks on the doodle interaction panel (Feed, Scratch, Call)
     /// </summary>
+    [Serializable]
     public class DoodlePanelAction : IAction
     {
 

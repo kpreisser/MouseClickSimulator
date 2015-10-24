@@ -8,15 +8,14 @@ using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
+    [Serializable]
     public class StraightFishingAction : AbstractFishingRodAction
     {
 
-        public StraightFishingAction()
-            : base(20000)
+        protected override int WaitingForFishResultDialogTime
         {
-
+            get { return 20000; }
         }
-
 
         protected override sealed async Task FinishThrowFishingRodAsync(IInteractionProvider provider)
         {

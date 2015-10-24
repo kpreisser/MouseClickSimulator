@@ -10,6 +10,7 @@ namespace TTMouseclickSimulator.Core.Actions
     /// <summary>
     /// Represents an action that runs another action in a loop.
     /// </summary>
+    [Serializable]
     public class LoopAction : IAction
     {
 

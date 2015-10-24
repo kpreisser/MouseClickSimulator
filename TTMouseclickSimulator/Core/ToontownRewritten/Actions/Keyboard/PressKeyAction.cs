@@ -11,6 +11,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
     /// <summary>
     /// An action for pressing a key for a specific amount of time.
     /// </summary>
+    [Serializable]
     public class PressKeyAction : IAction
     {
 

@@ -8,6 +8,7 @@ using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
+    [Serializable]
     public class SellFishAction : IAction
     {
         
