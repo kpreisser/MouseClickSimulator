@@ -71,13 +71,10 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 }
                 else
                 {
-                    // Only update the coords and reset the counter if the
-                    // new ones have a value.
-                    if (newCoords.HasValue)
-                    {
-                        oldCoords = newCoords;
-                        coordsMatchCounter = 0;
-                    }
+                    // Reset the counter and update the coordinates even if we currently didn't
+                    // find them.
+                    oldCoords = newCoords;
+                    coordsMatchCounter = 0;
                 }
 
                 if (coordsMatchCounter == 2)
