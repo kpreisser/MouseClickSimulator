@@ -25,7 +25,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction
         public async Task RunAsync(IInteractionProvider provider)
         {
             Coordinates c = new Coordinates(1397, 206 + (int)entry * 49);
-            await MouseHelpers.DoSimpleMouseClickAsync(provider, c, 200);
+            await MouseHelpers.DoSimpleMouseClickAsync(provider, c, 200, VerticalScaleAlignment.Right);
         }
 
 

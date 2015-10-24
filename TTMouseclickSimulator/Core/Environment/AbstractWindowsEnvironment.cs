@@ -86,11 +86,25 @@ namespace TTMouseclickSimulator.Core.Environment
                 throw new Exception("The window has been minimized.");
 
 
-            return new WindowPosition()
+            var pos = new WindowPosition()
             {
                 Coordinates = new Coordinates(relPos.X, relPos.Y),
                 Size = new Size(clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top)
             };
+            // Validate the position.
+            ValidateWindowPosition(pos);
+            return pos;
+        }
+
+
+        /// <summary>
+        /// When overridden in subclasses, throws an exception if the window position is
+        /// not valid. This implementation does nothing.
+        /// </summary>
+        /// <param name="pos">The WindowPosition to validate.</param>
+        protected virtual void ValidateWindowPosition(WindowPosition pos)
+        {
+            // Do nothing.
         }
 
         public IScreenshotContent CreateWindowScreenshot(IntPtr hWnd)

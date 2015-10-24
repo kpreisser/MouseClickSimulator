@@ -30,22 +30,7 @@ namespace TTMouseclickSimulator.Core.Environment
         /// </summary>
         public Size Size { get; set; }
 
-        /// <summary>
-        /// Converts relative coordinates in the window to new absolute coordinates
-        /// based on the specified reference size.
-        /// </summary>
-        /// <param name=""></param>
-        /// <param name="previousSize"></param>
-        /// <returns></returns>
-        public Coordinates ScaleCoordinates(Coordinates coords, Size referenceSize)
-        {
-            return new Coordinates()
-            {
-                X = (int)Math.Round((double)coords.X / referenceSize.Width * Size.Width),
-                Y = (int)Math.Round((double)coords.Y / referenceSize.Height * Size.Height)
-            };
-        }
-
+        
         public Coordinates RelativeToAbsoluteCoordinates(Coordinates c)
         {
             return Coordinates.Add(c);

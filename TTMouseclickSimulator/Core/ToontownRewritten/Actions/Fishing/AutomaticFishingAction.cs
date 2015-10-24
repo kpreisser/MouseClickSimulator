@@ -109,10 +109,16 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 );
             }
 
-
+            // Note: Instead of using a center position for scaling the X coordinate,
+            // TTR seems to interpret it as being scaled from an 4/3 ratio. Therefore
+            // we need to specify "NoAspectRatio" here.
+            // However it could be that they will change this in the future, then 
+            // we would need to use "Center".
+            // Note: We assume the point to click on is exactly centered. Otherwise
+            // we would need to adjust the X coordinate accordingly.
             var coords = screenshot.WindowPosition.RelativeToAbsoluteCoordinates(
                 screenshot.WindowPosition.ScaleCoordinates(newCoords.Value,
-                MouseHelpers.ReferenceWindowSize));
+                MouseHelpers.ReferenceWindowSize, VerticalScaleAlignment.NoAspectRatio));
 
             provider.MoveMouse(coords);
             await provider.WaitAsync(300);
