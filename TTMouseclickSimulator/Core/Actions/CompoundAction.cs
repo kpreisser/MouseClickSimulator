@@ -127,7 +127,7 @@ namespace TTMouseclickSimulator.Core.Actions
             /// <summary>
             /// Specifies that the inner actions should be executed in random order.
             /// This means if n actions are specified and the n-th action has been executed,
-            /// every other action bevore also has been executed once.
+            /// every other action before also has been executed once.
             /// After a run of all actions is complete, either a new run will be started
             /// (if loop is true) or the compound action returns.
             /// </summary>
