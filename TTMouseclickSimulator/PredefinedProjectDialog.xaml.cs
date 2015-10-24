@@ -134,7 +134,7 @@ namespace TTMouseclickSimulator
                 new PauseAction(2500),
 
                 new CompoundAction(new List<IAction>() {
-                    new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.LEFT, 220),
+                    new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.LEFT, 210),
                     new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.DOWN, 3500),
                     new PauseAction(1300),
                     new SellFishAction(),
