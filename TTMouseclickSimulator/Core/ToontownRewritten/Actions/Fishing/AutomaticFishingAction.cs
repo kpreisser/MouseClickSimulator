@@ -16,7 +16,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
         protected override int WaitingForFishResultDialogTime
         {
-            get { return 7000; }
+            get { return 6000; }
         }
 
         public AutomaticFishingAction(FishingSpotFlavor flavor)

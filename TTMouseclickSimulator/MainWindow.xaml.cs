@@ -57,6 +57,8 @@ namespace TTMouseclickSimulator
             openFileDialog.DefaultExt = ProjectFileExtension;
             openFileDialog.Filter = "Mouse Click Simulator Project|*" + ProjectFileExtension;
 
+            // Hide the save button as it is not yet implemented.
+            btnSave.Visibility = Visibility.Hidden;
 
             RefreshProjectControls();
         }
@@ -145,7 +147,7 @@ namespace TTMouseclickSimulator
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-
+            // TODO
         }
 
         private void RefreshProjectControls()
