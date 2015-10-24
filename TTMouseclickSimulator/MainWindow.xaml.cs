@@ -173,6 +173,7 @@ namespace TTMouseclickSimulator
         {
             PredefinedProjectDialog dialog = new PredefinedProjectDialog();
             dialog.Owner = this;
+            dialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             if (dialog.ShowDialog() == true && dialog.SelectedProject != null)
             {
                 // Load the project.

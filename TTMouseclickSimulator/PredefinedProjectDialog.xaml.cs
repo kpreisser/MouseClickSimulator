@@ -77,6 +77,13 @@ namespace TTMouseclickSimulator
             selectedProject = (SimulatorProject)selectedListboxItem.Tag;
             Close();
         }
+        
+        private void listBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (listBox.SelectedItem != null)
+                btnOk_Click(sender, e);
+        }
+
 
 
         private static SimulatorProject CreateSampleProject()
@@ -152,5 +159,6 @@ namespace TTMouseclickSimulator
             };
             return proj;
         }
+
     }
 }

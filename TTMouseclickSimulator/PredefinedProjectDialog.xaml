@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Predefined Project" Height="300" Width="300" TextOptions.TextFormattingMode="Display" ShowInTaskbar="False">
     <Grid>
-        <ListBox x:Name="listBox" Margin="10,10,10,35"/>
+        <ListBox x:Name="listBox" Margin="10,10,10,35" MouseDoubleClick="listBox_MouseDoubleClick"/>
         <Button x:Name="btnOk" IsDefault="True" Content="OK" Margin="0,0,101,8" HorizontalAlignment="Right" Width="75" Height="19" VerticalAlignment="Bottom" Click="btnOk_Click"/>
         <Button IsCancel="True" Content="Cancel" Margin="0,0,10,8" HorizontalAlignment="Right" Width="75" Height="19" VerticalAlignment="Bottom"/>
 
