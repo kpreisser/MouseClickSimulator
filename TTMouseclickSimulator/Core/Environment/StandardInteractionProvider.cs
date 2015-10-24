@@ -33,7 +33,7 @@ namespace TTMouseclickSimulator.Core.Environment
             out Action cancelCallback)
         {
             this.environmentInterface = environmentInterface;
-            cancelCallback = HandleCancelRequest;
+            cancelCallback = HandleCancelCallback;
         }
 
 
@@ -46,7 +46,7 @@ namespace TTMouseclickSimulator.Core.Environment
             environmentInterface.BringWindowToForeground(hWnd);
         }
 
-        private void HandleCancelRequest()
+        private void HandleCancelCallback()
         {
             canceled = true;
             // Release the semaphore (so that a task that is waiting can continue), then
@@ -188,7 +188,7 @@ namespace TTMouseclickSimulator.Core.Environment
             if (disposing)
             {
                 if (!canceled)
-                    HandleCancelRequest();
+                    HandleCancelCallback();
 
                 if (!disposed)
                 {
