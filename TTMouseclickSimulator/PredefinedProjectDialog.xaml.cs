@@ -55,7 +55,7 @@ namespace TTMouseclickSimulator
                 var proj = projects[i];
                 ListBoxItem item = new ListBoxItem()
                 {
-                    Content = proj.Name,
+                    Content = proj.Title,
                     Tag = proj
                 };
 
@@ -111,7 +111,7 @@ namespace TTMouseclickSimulator
 
             SimulatorProject proj = new SimulatorProject()
             {
-                Name = "Sample Actions",
+                Title = "Sample Actions",
                 Description = "This project contains some keyboard actions, a SpeedChat and a WriteText action.",
                 Configuration = c
             };
@@ -148,7 +148,7 @@ namespace TTMouseclickSimulator
 
             SimulatorProject proj = new SimulatorProject()
             {
-                Name = "Automatic Fishing in Punchline Place",
+                Title = "Automatic Fishing in Punchline Place",
                 Description = "The Toon will automatically fish in Punchline Place, Toontown Central.\r\n\r\n"
                 + "Before you click on start, make sure that\r\n"
                 + "• you are in a quiet district,\r\n"

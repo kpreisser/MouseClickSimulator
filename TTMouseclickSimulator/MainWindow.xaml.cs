@@ -72,7 +72,7 @@ namespace TTMouseclickSimulator
         {
             btnStart.IsEnabled = false;
             btnStop.IsEnabled = true;
-            btnLoad.IsEnabled = btnSave.IsEnabled = false;
+            btnLoad.IsEnabled = btnLoadPredefined.IsEnabled = btnSave.IsEnabled = false;
 
 
             // Run the simulator in another task so it is not executed in the GUI thread.
@@ -107,7 +107,7 @@ namespace TTMouseclickSimulator
             simulator = null;
             btnStart.IsEnabled = true;
             btnStop.IsEnabled = false;
-            btnLoad.IsEnabled = btnSave.IsEnabled = true;
+            btnLoad.IsEnabled = btnLoadPredefined.IsEnabled = btnSave.IsEnabled = true;
 
             if (closeWindowAfterStop)
                 Close();
@@ -161,7 +161,7 @@ namespace TTMouseclickSimulator
             else 
             {
                 btnSave.IsEnabled = true;
-                lblCurrentProject.Content = project.Name;
+                lblCurrentProject.Content = project.Title;
                 txtDescription.Text = project.Description;
                 btnStart.IsEnabled = true;
             }

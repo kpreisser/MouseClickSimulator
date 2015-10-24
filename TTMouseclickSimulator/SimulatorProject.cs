@@ -14,14 +14,14 @@ namespace TTMouseclickSimulator
     public class SimulatorProject
     {
 
-        public string Name { get; set; }
+        public string Title { get; set; }
         public string Description { get; set; }
 
         public SimulatorConfiguration Configuration { get; set; }
 
         public override string ToString()
         {
-            return Name;
+            return Title;
         }
 
     }
