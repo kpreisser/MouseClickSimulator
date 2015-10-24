@@ -10,7 +10,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten
     public static class TTRScaleExtensions
     {
         /// <summary>
-        /// /// Converts relative coordinates in the window to new absolute coordinates
+        /// Converts relative coordinates in the window to new absolute coordinates
         /// based on the specified reference size.
         /// Note: TT Rewritten scales its window contents accounting for the aspect ratio
         /// (at least if the width is greater than from the 4:3 resolution). Therefore
