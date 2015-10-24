@@ -14,7 +14,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         private FishingSpotFlavor flavor;
 
         public AutomaticFishingAction(FishingSpotFlavor flavor)
-            : base(5000)
+            : base(7000)
         {
             this.flavor = flavor;
         }
@@ -50,7 +50,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                         if (CompareColor(flavor.BubbleColor, screenshot.GetPixel(c),
                             flavor.Tolerance))
                         {
-                            newCoords = new Coordinates(x, y + 15);
+                            newCoords = new Coordinates(x + 15, y + 30);
                             break;
                         }
                     }
@@ -104,8 +104,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             {
                 // Calculate the destination coordinates.
                 newCoords = new Coordinates(
-                    (int)Math.Round(800d + 120d * (800d - newCoords.Value.X) / 429d),
-                    (int)Math.Round(846d + 169d * (820d - newCoords.Value.Y) / 428d)
+                    (int)Math.Round(800d + 120d / 429d * (800d - newCoords.Value.X)),
+                    (int)Math.Round(846d + 169d / 428d * (820d - newCoords.Value.Y))
                 );
             }
 
