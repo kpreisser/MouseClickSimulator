@@ -8,7 +8,7 @@ To build it, you should use [Visual Studio 2015](https://www.visualstudio.com/).
 
 ### WARNING
 Use this program at your own risk!
-Toontown Rewritten states in their Terms of Use that you should not use automation software, so you might risk a ban if you use this software.
+Toontown Rewritten states in their Terms of Use that you should not use automation software, so you might risk a ban if you use this program.
 
 ## Status
 
