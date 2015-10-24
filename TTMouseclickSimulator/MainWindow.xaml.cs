@@ -40,6 +40,10 @@ namespace TTMouseclickSimulator
 
         private SimulatorProject project;
         private Simulator simulator;
+        /// <summary>
+        /// If true, the window should be closed after the simulator stopped.s
+        /// </summary>
+        private bool closeWindowAfterStop;
 
         private const string ProjectFileExtension = ".mcsimproject";
 
@@ -68,21 +72,20 @@ namespace TTMouseclickSimulator
             btnStop.IsEnabled = true;
             btnLoad.IsEnabled = btnSave.IsEnabled = false;
 
-            
-            // TODO: If the window is closed, stop the simulator and wait for the task it!
 
             // Run the simulator in another task so it is not executed in the GUI thread.
             // However, we then await that new task so we are notified when it is finished.
+            Simulator sim = simulator = new Simulator(project.Configuration, TTRWindowsEnvironment.Instance);
+
             Exception runException = null;
             await Task.Run(async () =>
             {
-                simulator = new Simulator(project.Configuration, TTRWindowsEnvironment.Instance);
                 // Add some events to the simulator.
                 //sim.ActionStarted += (act, idx) => Dispatcher.Invoke(() => lblCurrentAction.Content = act.GetType().Name + $" (Idx {idx})");
 
                 try
                 {
-                    await simulator.RunAsync();
+                    await sim.RunAsync();
                 }
                 catch (Exception ex)
                 {
@@ -90,8 +93,8 @@ namespace TTMouseclickSimulator
                 }
             });
 
-            
-            if (runException != null && !(runException is SimulatorCanceledException))
+            // Don't show a messagebox if we need to close the window.
+            if (!closeWindowAfterStop && runException != null && !(runException is SimulatorCanceledException))
                 MessageBox.Show(this, runException.Message, "Simulator stopped!", MessageBoxButton.OK, MessageBoxImage.Warning);
 
             HandleSimulatorCanceled();
@@ -99,9 +102,13 @@ namespace TTMouseclickSimulator
 
         private void HandleSimulatorCanceled()
         {
+            simulator = null;
             btnStart.IsEnabled = true;
             btnStop.IsEnabled = false;
             btnLoad.IsEnabled = btnSave.IsEnabled = true;
+
+            if (closeWindowAfterStop)
+                Close();
         }
 
 
@@ -171,6 +178,20 @@ namespace TTMouseclickSimulator
                 // Load the project.
                 project = dialog.SelectedProject;
                 RefreshProjectControls();
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // If the simulator is currently running, don't close the window but stop the
+            // simulator and wait until it is finished.
+            if (simulator != null)
+            {
+                e.Cancel = true;
+                Hide();
+
+                closeWindowAfterStop = true;
+                simulator.Cancel();
             }
         }
     }
