@@ -82,6 +82,7 @@
     <Compile Include="Core\Environment\IInteractionProvider.cs" />
     <Compile Include="Core\Simulator.cs" />
     <Compile Include="Core\SimulatorConfiguration.cs" />
+    <Compile Include="Core\ToontownRewritten\Actions\DoodleInteraction\DoodlePanelAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\AbstractFishingRodAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\AutomaticFishingAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\FishingSpotFlavor.cs" />
