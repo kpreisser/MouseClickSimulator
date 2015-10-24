@@ -25,7 +25,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         }
 
 
-        // TODO: The Color value needs some adjustment!
         public static readonly FishingSpotFlavor PunchlinePlace = 
             new FishingSpotFlavor(new Coordinates(260, 196), new Coordinates(1349, 626), 
                 new ScreenshotColor(22, 140, 116), 13);
