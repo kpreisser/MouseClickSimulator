@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -55,7 +56,14 @@ namespace TTMouseclickSimulator
                 new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.LEFT, 500),
                 new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.RIGHT, 700),
                 new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.CONTROL, 500),
-                new SpeedchatAction(3, 0, 2)
+                new LoopAction(new CompoundAction(new List<IAction>()
+                {
+                    new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.UP, 300),
+                    new PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort.DOWN, 300)
+                }, CompoundAction.CompoundActionType.Sequential, 50, 50, false), 3),
+                new SpeedchatAction(3, 0, 2),
+                new WriteTextAction("Chacun est l'artisan de sa fortune.", 60),
+                //new WriteTextAction("The current time is " + DateTime.Now.ToString("t", CultureInfo.InvariantCulture))
             };
             // Create the main compound action.
             c.Action = new CompoundAction(mainActions, 

@@ -181,8 +181,31 @@ namespace TTMouseclickSimulator.Core.Environment
 
             NativeMethods.INPUT[] inputs = { input };
 
-            if (NativeMethods.SendInput(1, inputs, NativeMethods.INPUT.Size) == 0)
+            if (NativeMethods.SendInput((uint)inputs.Length, inputs, NativeMethods.INPUT.Size) == 0)
                 throw new System.ComponentModel.Win32Exception();
+        }
+
+        public void WriteText(string characters)
+        {
+            NativeMethods.INPUT[] inputs = new NativeMethods.INPUT[2 * characters.Length];
+            for (int i = 0; i < inputs.Length; i++)
+            {
+                var ki = new NativeMethods.KEYBDINPUT();
+                ki.dwFlags = NativeMethods.KEYEVENTF.UNICODE;
+                if (i % 2 == 1)
+                    ki.dwFlags |= NativeMethods.KEYEVENTF.KEYUP;
+                ki.wScan = (short)characters[i / 2];
+
+                var input = new NativeMethods.INPUT();
+                input.type = NativeMethods.INPUT_KEYBOARD;
+                input.U.ki = ki;
+
+                inputs[i] = input;
+            }
+
+            if (NativeMethods.SendInput((uint)inputs.Length, inputs, NativeMethods.INPUT.Size) == 0)
+                throw new System.ComponentModel.Win32Exception();
+
         }
 
 

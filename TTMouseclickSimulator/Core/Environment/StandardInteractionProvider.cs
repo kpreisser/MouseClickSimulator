@@ -127,6 +127,12 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
+        public void WriteText(string text)
+        {
+            EnsureNotCanceled();
+            environmentInterface.WriteText(text);
+        }
+
         public void MoveMouse(Coordinates c)
         {
             MoveMouse(c.X, c.Y);

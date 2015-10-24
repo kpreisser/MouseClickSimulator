@@ -74,7 +74,9 @@ namespace TTMouseclickSimulator.Core.Actions
 
             Func<int> getNextActionIndex;
             if (type == CompoundActionType.Sequential)
-                getNextActionIndex = () => currentIdx = (currentIdx + 1) % actionList.Count;
+                getNextActionIndex = () => 
+                    (!loop && currentIdx + 1 == actionList.Count) ? -1 
+                    : currentIdx = (currentIdx + 1) % actionList.Count;
             else if (type == CompoundActionType.RandomIndex)
                 getNextActionIndex = () => rng.Next(actionList.Count);
             else
@@ -82,6 +84,9 @@ namespace TTMouseclickSimulator.Core.Actions
                 randomOrder = new int[actionList.Count];
                 getNextActionIndex = () =>
                 {
+                    if (!loop && currentIdx + 1 == actionList.Count)
+                        return -1;
+
                     currentIdx = (currentIdx + 1) % actionList.Count;
                     if (currentIdx == 0)
                     {
@@ -105,8 +110,12 @@ namespace TTMouseclickSimulator.Core.Actions
             {
                 // Check if the simulator has already been canceled.
                 provider.EnsureNotCanceled();
-                
-                IAction action = actionList[getNextActionIndex()];
+
+                int nextIdx = getNextActionIndex();
+                if (nextIdx == -1)
+                    break;
+
+                IAction action = actionList[nextIdx];
                 await action.RunAsync(provider);
 
                 // After running an action, wait.

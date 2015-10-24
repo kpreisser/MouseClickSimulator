@@ -50,6 +50,12 @@ namespace TTMouseclickSimulator.Core.Environment
         void PressKey(AbstractWindowsEnvironment.VirtualKeyShort key);
         void ReleaseKey(AbstractWindowsEnvironment.VirtualKeyShort key);
 
+        /// <summary>
+        /// Writes the given string into the window.
+        /// </summary>
+        /// <param name="text"></param>
+        void WriteText(string text);
+
     }
 
 
