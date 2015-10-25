@@ -14,7 +14,7 @@ Toontown Rewritten states in their Terms of Use that you should not use automati
 
 Currently, the implementation contains actions for pressing keys, writing text, SpeedChat, Doodle Interaction Panel and the Automatic Fishing Function.
 
-The GUI allows to load projects from an XML file. There are some predefined projects included in the "SampleProjects" folder but you can also create your own XML Simulator Project files. You can use the "Sample Actions.xml" as a template for creating your own project.
+The GUI allows to load projects from an XML file. There are some predefined projects included in the "SampleProjects" folder but you can also create your own XML Simulator Project files. You can use the ["Sample Actions.xml"](https://github.com/TTExtensions/MouseClickSimulator/blob/master/TTMouseclickSimulator/SampleProjects/Sample%20Actions.xml) as a template for creating your own project.
 
 The GUI does not yet show what actions a project contains.
 
