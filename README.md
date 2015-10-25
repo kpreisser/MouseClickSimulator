@@ -16,7 +16,7 @@ Currently, the implementation contains actions for pressing keys, writing text, 
 
 The GUI allows to load projects from an XML file. There are some predefined projects included in the **SampleProjects** folder but you can also create your own XML Simulator Project files. You can use the [**Sample Actions.xml**](https://github.com/TTExtensions/MouseClickSimulator/blob/master/TTMouseclickSimulator/SampleProjects/Sample%20Actions.xml) as a template for creating your own project.
 
-The GUI does not yet show what actions a project contains.
+When opening a project, the GUI shows the actions which the project contains in a tree-like structure. When the Simulator is running, actions that are currently active are marked blue.
 
 ### TODOs:
 - Document how to build the Mouse Click Simulator using Visual Studio or the .Net 4.6 SDK.
