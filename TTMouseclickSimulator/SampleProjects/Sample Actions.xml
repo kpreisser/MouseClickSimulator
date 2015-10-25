@@ -41,7 +41,7 @@
         WriteText writes the specified text. If pauseDuration is not specified, the text
         is written in one go.
         -->
-        <WriteText text="Chacun est l'artisan de sa fortune." pauseDuration="60"></WriteText>
+        <WriteText text="Chacun est l'artisan de sa fortune." pauseDuration="60" />
 
       </Compound>
   
