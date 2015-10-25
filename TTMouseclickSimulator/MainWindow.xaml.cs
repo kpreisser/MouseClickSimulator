@@ -138,8 +138,8 @@ namespace TTMouseclickSimulator
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(this, "Could not load the given project.\r\n\r\n"+  ex.GetType().ToString() 
-                        + ": " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(this, "Could not load the given project.\r\n\r\n"
+                       + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
 
                 RefreshProjectControls();

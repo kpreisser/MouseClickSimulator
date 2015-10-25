@@ -59,13 +59,16 @@ namespace TTMouseclickSimulator.Project
 
         public SimulatorProject Deserialize(Stream s)
         {
-            return Deserialize(XDocument.Load(s));
+            return ParseDocument(XDocument.Load(s));
         }
 
-        private SimulatorProject Deserialize(XDocument doc)
+        private SimulatorProject ParseDocument(XDocument doc)
         {
             string title, description;
             var root = doc.Root;
+            if (root.Name != ns + "SimulatorProject")
+                throw new InvalidDataException("Root element <SimulatorProject> " 
+                    + $"in namespace \"{XmlNamespace}\" not found.");
 
             // Find the <Title>
             title = root.Element(ns + "Title")?.Value.Trim() ?? string.Empty;
@@ -156,7 +159,7 @@ namespace TTMouseclickSimulator.Project
                             else
                             {
                                 throw new InvalidDataException($"Parameter \"{param.Name}\" is " 
-                                    + $"missing for element {child.Name}.");
+                                    + $"missing for element <{child.Name.LocalName}>.");
                             }
                         }
                         else
@@ -215,7 +218,8 @@ namespace TTMouseclickSimulator.Project
                                 if (!found)
                                 {
                                     throw new InvalidDataException($"Could not find enum entry " 
-                                        + $"\"{attrval}\" for attribute {attr.Name} on element {child.Name}.");
+                                        + $"\"{attrval}\" for attribute {attr.Name.LocalName} " 
+                                        + $"on element <{child.Name.LocalName}>.");
                                 }
 
                             }
@@ -238,7 +242,7 @@ namespace TTMouseclickSimulator.Project
                     {
                         if (childActions.Count != 1)
                         {
-                            throw new InvalidDataException($"Element {child.Name} needs exactly "
+                            throw new InvalidDataException($"Element <{child.Name.LocalName}> needs exactly "
                                 + $"one child Action element, but found {childActions.Count} elements.");
                         }
                         else
