@@ -21,5 +21,23 @@ namespace TTMouseclickSimulator.Core.Actions
         /// <param name="waitable"></param>
         /// <returns></returns>
         Task RunAsync(IInteractionProvider provider);
+
+        /// <summary>
+        /// An event that is rised when the action wants to let subscribers know
+        /// that its state has changed. This is useful for the GUI.
+        /// </summary>
+        event Action<string> ActionInformationUpdated;
+    }
+
+    public interface IActionContainer : IAction
+    {
+        IList<IAction> SubActions { get; }
+
+        /// <summary>
+        /// An event that is raised when a subaction has been started
+        /// or stopped.
+        /// </summary>
+        event Action<int?> SubActionStartedOrStopped;
+
     }
 }

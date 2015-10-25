@@ -9,7 +9,7 @@ using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
-    public abstract class AbstractFishingRodAction : IAction
+    public abstract class AbstractFishingRodAction : AbstractAction
     {
 
         // This is determined by the class type, not by the instance so implement it
@@ -41,13 +41,14 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         private static readonly ScreenshotColor fishResultDialogColor =
             new ScreenshotColor(255, 255, 191);
 
-        public async Task RunAsync(IInteractionProvider provider)
+        public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             // Throw the fishing rod
+            OnActionInformationUpdated("Casting…");
             await StartThrowFishingRodAsync(provider);
             await FinishThrowFishingRodAsync(provider);
 
-
+            OnActionInformationUpdated("Waiting for the fish result dialog…");
             // Then, wait until we find a window displaying the catched fish
             // or the specified number of seconds has passed.
             Stopwatch sw = new Stopwatch();

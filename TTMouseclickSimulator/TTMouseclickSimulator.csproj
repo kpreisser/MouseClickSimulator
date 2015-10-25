@@ -61,6 +61,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\Actions\AbstractAction.cs" />
+    <Compile Include="Core\Actions\AbstractActionContainer.cs" />
     <Compile Include="Project\SimulatorProject.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

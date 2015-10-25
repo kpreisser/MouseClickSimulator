@@ -10,7 +10,7 @@ namespace TTMouseclickSimulator.Core.Actions
     /// <summary>
     /// Represents an action that runs another action in a loop.
     /// </summary>
-    public class LoopAction : IAction
+    public class LoopAction : AbstractActionContainer
     {
 
         private readonly IAction action;
@@ -30,13 +30,20 @@ namespace TTMouseclickSimulator.Core.Actions
             this.count = count;
         }
 
-        public async Task RunAsync(IInteractionProvider provider)
+        public override IList<IAction> SubActions
         {
+            get { return new List<IAction>() { action }; }
+        }
+
+        public override sealed async Task RunAsync(IInteractionProvider provider)
+        {
+            OnSubActionStartedOrStopped(0);
             for (int i = 0; !count.HasValue || i < count.Value; i++)
             {
                 provider.EnsureNotCanceled();
                 await action.RunAsync(provider);
             }
+            OnSubActionStartedOrStopped(null);
         }
     }
 }

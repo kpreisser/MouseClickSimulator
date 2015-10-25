@@ -10,7 +10,7 @@ namespace TTMouseclickSimulator.Core.Actions
     /// <summary>
     /// An action that loops through a list of other actions either in order or by chance.
     /// </summary>
-    public class CompoundAction : IAction
+    public class CompoundAction : AbstractActionContainer
     {
 
         public const int PauseIntervalMinimum = 0;
@@ -25,6 +25,12 @@ namespace TTMouseclickSimulator.Core.Actions
         private readonly bool loop;
 
         private readonly Random rng = new Random();
+
+        public override sealed IList<IAction> SubActions
+        {
+            get { return actionList; }
+        }
+
 
         /// <summary>
         /// 
@@ -66,7 +72,7 @@ namespace TTMouseclickSimulator.Core.Actions
         }
 
 
-        public async Task RunAsync(IInteractionProvider provider)
+        public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             // Run the actions.
             int currentIdx = -1;
@@ -115,11 +121,17 @@ namespace TTMouseclickSimulator.Core.Actions
                 if (nextIdx == -1)
                     break;
 
+                OnActionInformationUpdated($"{nextIdx}/{actionList.Count}");
+
+                OnSubActionStartedOrStopped(nextIdx);
                 IAction action = actionList[nextIdx];
                 await action.RunAsync(provider);
+                OnSubActionStartedOrStopped(null);
 
                 // After running an action, wait.
                 int waitInterval = rng.Next(minimumPauseDuration, maximumPauseDuration);
+                OnActionInformationUpdated($"Pausing {waitInterval} ms");
+
                 await provider.WaitAsync(waitInterval);
             }
         }

@@ -33,7 +33,7 @@ namespace TTMouseclickSimulator.Core
                 throw new ArgumentNullException(nameof(config));
             if (environmentInterface == null)
                 throw new ArgumentNullException(nameof(environmentInterface));
-            if (config.Action == null)
+            if (config.MainAction == null)
                 throw new ArgumentException("There must be an action specified in the SimulatorConfiguration.");
             
 
@@ -66,7 +66,7 @@ namespace TTMouseclickSimulator.Core
                     await provider.WaitAsync(1000);
 
                     // Run the action.
-                    await config.Action.RunAsync(provider);
+                    await config.MainAction.RunAsync(provider);
 
                     // Normally the main action would be a CompoundAction that never returns, but
                     // it is possible that the action will return normally.

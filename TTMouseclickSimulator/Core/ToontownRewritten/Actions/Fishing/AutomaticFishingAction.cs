@@ -27,6 +27,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         protected override sealed async Task FinishThrowFishingRodAsync(IInteractionProvider provider)
         {
             // Try to find a bubble.
+            OnActionInformationUpdated("Scanning fish bubbles…");
+
             const int scanStep = 15;
             FishingSpotFlavorData spotData = FishingSpotFlavorData.GetDataFromItem(flavor);
 
@@ -55,7 +57,10 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                         if (CompareColor(spotData.BubbleColor, screenshot.GetPixel(c),
                             spotData.Tolerance))
                         {
-                            newCoords = new Coordinates(x + 15, y + 30);
+                            int xc = x + 15;
+                            int yc = y + 30;
+                            newCoords = new Coordinates(xc, yc);
+                            OnActionInformationUpdated($"Found bubble at {xc}, {yc}…");
                             break;
                         }
                     }
@@ -100,6 +105,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             if (!newCoords.HasValue)
             {
                 // If we couldn't find the bubble we use default destination x,y values.
+                OnActionInformationUpdated("No fish bubble found.");
                 newCoords = new Coordinates(800, 1009);
             }
             else

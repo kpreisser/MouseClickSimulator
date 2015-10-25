@@ -11,7 +11,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
     /// <summary>
     /// An action that writes the given string and a line break into the window.
     /// </summary>
-    public class WriteTextAction : IAction
+    public class WriteTextAction : AbstractAction
     {
 
         private string text;
@@ -30,7 +30,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
             this.pauseDuration = pauseDuration;
         }
 
-        public async Task RunAsync(IInteractionProvider provider)
+        public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             // write the text and presses enter.
             if (!pauseDuration.HasValue)

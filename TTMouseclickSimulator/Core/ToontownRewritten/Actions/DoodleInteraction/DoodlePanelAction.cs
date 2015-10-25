@@ -11,7 +11,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction
     /// <summary>
     /// An action that clicks on the doodle interaction panel (Feed, Scratch, Call)
     /// </summary>
-    public class DoodlePanelAction : IAction
+    public class DoodlePanelAction : AbstractAction
     {
 
         private readonly DoodlePanelButton entry;
@@ -22,7 +22,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction
             this.entry = button;
         }
 
-        public async Task RunAsync(IInteractionProvider provider)
+        public override async Task RunAsync(IInteractionProvider provider)
         {
             Coordinates c = new Coordinates(1397, 206 + (int)entry * 49);
             await MouseHelpers.DoSimpleMouseClickAsync(provider, c, 200, VerticalScaleAlignment.Right);

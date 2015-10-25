@@ -13,7 +13,7 @@ namespace TTMouseclickSimulator.Core
         /// <summary>
         /// Specifies the action that is run by the simulator.
         /// </summary>
-        public IAction Action { get; set; }
+        public IAction MainAction { get; set; }
         
     }
 }

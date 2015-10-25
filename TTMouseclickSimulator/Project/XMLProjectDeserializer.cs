@@ -106,7 +106,7 @@ namespace TTMouseclickSimulator.Project
 
             return new SimulatorConfiguration()
             {
-                Action = actionList[0]
+                MainAction = actionList[0]
             };
         }
 

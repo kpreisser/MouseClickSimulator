@@ -9,7 +9,7 @@ using TTMouseclickSimulator.Core.Environment;
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat
 {
     [Serializable]
-    public class SpeedchatAction : IAction
+    public class SpeedchatAction : AbstractAction
     {
         private static readonly int[] xWidths = {
             215,
@@ -30,7 +30,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat
         }
 
 
-        public async Task RunAsync(IInteractionProvider provider)
+        public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             // Click on the Speedchat Icon.
             Coordinates c = new Coordinates(122, 40);

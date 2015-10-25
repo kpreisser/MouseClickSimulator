@@ -12,7 +12,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions
     /// An action that just waits using the specified amount of time.
     /// </summary>
     [Serializable]
-    public class PauseAction : IAction
+    public class PauseAction : AbstractAction
     {
         private readonly int duration;
 
@@ -21,7 +21,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions
             this.duration = duration;
         }
 
-        public async Task RunAsync(IInteractionProvider provider)
+        public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             await provider.WaitAsync(duration);
         }
