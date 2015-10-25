@@ -121,12 +121,18 @@ namespace TTMouseclickSimulator.Core.Actions
                 if (nextIdx == -1)
                     break;
 
-                OnActionInformationUpdated($"{nextIdx}/{actionList.Count}");
+                OnActionInformationUpdated($"Running action {nextIdx + 1}");
 
                 OnSubActionStartedOrStopped(nextIdx);
-                IAction action = actionList[nextIdx];
-                await action.RunAsync(provider);
-                OnSubActionStartedOrStopped(null);
+                try
+                {
+                    IAction action = actionList[nextIdx];
+                    await action.RunAsync(provider);
+                }
+                finally
+                {
+                    OnSubActionStartedOrStopped(null);
+                }
 
                 // After running an action, wait.
                 int waitInterval = rng.Next(minimumPauseDuration, maximumPauseDuration);

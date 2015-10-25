@@ -38,12 +38,19 @@ namespace TTMouseclickSimulator.Core.Actions
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             OnSubActionStartedOrStopped(0);
-            for (int i = 0; !count.HasValue || i < count.Value; i++)
+            try
             {
-                provider.EnsureNotCanceled();
-                await action.RunAsync(provider);
+                for (int i = 0; !count.HasValue || i < count.Value; i++)
+                {
+                    provider.EnsureNotCanceled();
+                    OnActionInformationUpdated($"Iteration {i + 1}/{count}");
+                    await action.RunAsync(provider);
+                }
             }
-            OnSubActionStartedOrStopped(null);
+            finally
+            {
+                OnSubActionStartedOrStopped(null);
+            }
         }
 
 

@@ -9,11 +9,25 @@
     <Grid>
         <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,0,0,10" Width="75" Click="btnStart_Click" Height="19" VerticalAlignment="Bottom"/>
         <Button x:Name="btnStop" IsEnabled="False" Content="Stop" HorizontalAlignment="Left" Margin="110,0,0,10" Width="75" Click="btnStop_Click" Height="19" VerticalAlignment="Bottom"/>
-        <Label Content="TTR Mouse Click Simulator" Margin="10,10,10,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
-        <Label Content="Current Project:" HorizontalAlignment="Left" Margin="10,73,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="lblCurrentProject" Content="xxxxx" HorizontalAlignment="Left" Margin="108,73,0,0" VerticalAlignment="Top"/>
-        <TextBlock x:Name="txtDescription" HorizontalAlignment="Left" Margin="16,110,16,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
-        <Button x:Name="btnLoad" Content="Load XML Project file..." HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top" Width="154" Click="btnLoad_Click"/>
+        <Label Content="TTR Mouse Click Simulator" Margin="10,10,10,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="18.667"/>
+        <Label Content="Current Project:" HorizontalAlignment="Left" Margin="10,74,0,0" VerticalAlignment="Top" FontSize="13.333"/>
+        <Label x:Name="lblCurrentProject" Content="xxxxx" HorizontalAlignment="Left" Margin="110,74,0,0" VerticalAlignment="Top" FontSize="13.333" FontWeight="Bold"/>
+        <Button x:Name="btnLoad" Content="Load XML Project file…" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Width="154" Click="btnLoad_Click"/>
+        <Grid Margin="10,101,10,34">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" x:Name="txtDescription" TextWrapping="Wrap" Text="TextBlock&#xa;NewLine" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6"/>
+
+                <Label Grid.Row="1" Content="Actions" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="13.333" FontWeight="Bold"/>
+
+                <ScrollViewer Grid.Row="1" Margin="0,27,0,0" VerticalScrollBarVisibility="Auto">
+                    <Grid x:Name="actionListGrid"></Grid>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
 
     </Grid>
 </Window>

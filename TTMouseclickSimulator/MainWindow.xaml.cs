@@ -41,6 +41,8 @@ namespace TTMouseclickSimulator
 
         private SimulatorProject project;
         private Simulator simulator;
+        // Callbacks that we need to call when we start or stop the simulator.
+        private Action simulatorStartAction, simulatorStopAction;
         /// <summary>
         /// If true, the window should be closed after the simulator stopped.s
         /// </summary>
@@ -81,11 +83,10 @@ namespace TTMouseclickSimulator
             Simulator sim = simulator = new Simulator(project.Configuration, TTRWindowsEnvironment.Instance);
 
             Exception runException = null;
+            if (simulatorStartAction != null)
+                simulatorStartAction();
             await Task.Run(async () =>
             {
-                // Add some events to the simulator.
-                //sim.ActionStarted += (act, idx) => Dispatcher.Invoke(() => lblCurrentAction.Content = act.GetType().Name + $" (Idx {idx})");
-
                 try
                 {
                     await sim.RunAsync();
@@ -95,6 +96,8 @@ namespace TTMouseclickSimulator
                     runException = ex;   
                 }
             });
+            if (simulatorStopAction != null)
+                simulatorStopAction();
 
             // Don't show a messagebox if we need to close the window.
             if (!closeWindowAfterStop && runException != null && !(runException is SimulatorCanceledException))
@@ -159,6 +162,67 @@ namespace TTMouseclickSimulator
                 lblCurrentProject.Content = project.Title;
                 txtDescription.Text = project.Description;
                 btnStart.IsEnabled = true;
+
+                // Create labels for each action.
+                actionListGrid.Children.Clear();
+                IAction mainAct = project.Configuration.MainAction;
+                int posCounter = 0;
+                CreateActionLabels(mainAct, actionListGrid, 0, ref posCounter, 
+                    out simulatorStartAction, out simulatorStopAction);
+                
+            }
+        }
+
+        private void CreateActionLabels(IAction action, Grid grid, int recursiveCount, 
+            ref int posCounter, out Action handleStart, out Action handleStop)
+        {
+            Label l = new Label();
+            l.Margin = new Thickness(recursiveCount * 10, 18 * posCounter, 0, 0);
+            grid.Children.Add(l);
+
+            string str = action.ToString();
+            l.Content = str;
+
+            handleStart = () => {
+                l.Foreground = new SolidColorBrush(Color.FromArgb(255, 29, 134, 184));
+            };
+
+            handleStop = () =>
+            {
+                l.Foreground = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+                l.Content = str;
+            };
+
+            action.ActionInformationUpdated += s => Dispatcher.Invoke(new Action(() => l.Content = str + " – " + s));
+
+            posCounter++;
+
+            if (action is IActionContainer)
+            {
+                
+                IActionContainer cont = (IActionContainer)action;
+                IList<IAction> subActions = cont.SubActions;
+                Action[] handleStartActions = new Action[subActions.Count];
+                Action[] handleStopActions = new Action[subActions.Count];
+                for (int i = 0; i < subActions.Count; i++)
+                {
+                    CreateActionLabels(subActions[i], grid, recursiveCount + 1, ref posCounter,
+                        out handleStartActions[i], out handleStopActions[i]);
+                }
+
+                int? currentActiveAction = null;
+                cont.SubActionStartedOrStopped += (idx) => Dispatcher.Invoke(new Action(() =>
+                {
+                    if (idx.HasValue)
+                    {
+                        currentActiveAction = idx;
+                        handleStartActions[idx.Value]();
+                    }
+                    else if (currentActiveAction.HasValue)
+                    {
+                        handleStopActions[currentActiveAction.Value]();
+                    }
+                }));
             }
         }
 
