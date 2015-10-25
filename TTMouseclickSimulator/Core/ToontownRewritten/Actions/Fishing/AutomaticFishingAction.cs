@@ -57,10 +57,12 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                         if (CompareColor(spotData.BubbleColor, screenshot.GetPixel(c),
                             spotData.Tolerance))
                         {
-                            int xc = x + 15;
-                            int yc = y + 30;
-                            newCoords = new Coordinates(xc, yc);
-                            OnActionInformationUpdated($"Found bubble at {xc}, {yc}…");
+                            newCoords = new Coordinates(x + 15, y + 30);
+                            Coordinates scaledCoords = screenshot.WindowPosition.RelativeToAbsoluteCoordinates(
+                                screenshot.WindowPosition.ScaleCoordinates(
+                                newCoords.Value, MouseHelpers.ReferenceWindowSize));
+
+                            OnActionInformationUpdated($"Found bubble at {scaledCoords.X}, {scaledCoords.Y}…");
                             break;
                         }
                     }
