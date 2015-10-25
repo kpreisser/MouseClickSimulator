@@ -4,7 +4,7 @@ This is a new implementation of the [**TT Mouse Click Simulator**](http://old.pr
 
 To build it, you should use [Visual Studio 2015](https://www.visualstudio.com/).
 
-![mousesim-screenshot](https://cloud.githubusercontent.com/assets/15179430/10711743/3f540cec-7a85-11e5-9909-23a7998c5687.png)
+![simulatorscreenshot](https://cloud.githubusercontent.com/assets/15179430/10716090/24ac7f16-7b2d-11e5-88cc-52511b380df2.png)
 
 ### WARNING
 Use this program at your own risk!
