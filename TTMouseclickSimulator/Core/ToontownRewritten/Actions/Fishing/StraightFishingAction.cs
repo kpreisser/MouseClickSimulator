@@ -28,5 +28,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             await provider.WaitAsync(300);
             provider.ReleaseMouseButton();
         }
+
+
+        public override string ToString()
+        {
+            return "Straight Fishing Cast";
+        }
     }
 }

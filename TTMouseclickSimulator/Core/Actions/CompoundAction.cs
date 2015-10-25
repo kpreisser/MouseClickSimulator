@@ -136,6 +136,11 @@ namespace TTMouseclickSimulator.Core.Actions
             }
         }
 
+        public override string ToString()
+        {
+            return $"Compound – Type: {type}, MinPause: {minimumPauseDuration}, MaxPause: {maximumPauseDuration}, Loop: {loop}";
+        }
+
 
         public enum CompoundActionType : int
         {

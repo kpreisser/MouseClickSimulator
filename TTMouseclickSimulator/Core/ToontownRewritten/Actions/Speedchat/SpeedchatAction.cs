@@ -46,5 +46,18 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat
                 await MouseHelpers.DoSimpleMouseClickAsync(provider, c, 100, VerticalScaleAlignment.Left);
             }
         }
+
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < menuItems.Length; i++)
+            {
+                if (i > 0)
+                    sb.Append(", ");
+                sb.Append(menuItems[i]);
+            }
+            return $"Speedchat – Items: [{sb.ToString()}]";
+        }
     }
 }

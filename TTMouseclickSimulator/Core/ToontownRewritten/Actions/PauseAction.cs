@@ -25,5 +25,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions
         {
             await provider.WaitAsync(duration);
         }
+
+
+        public override string ToString()
+        {
+            return $"Pause – Duration: {duration}";
+        }
     }
 }

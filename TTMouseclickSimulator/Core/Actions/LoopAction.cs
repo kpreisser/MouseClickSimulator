@@ -45,5 +45,11 @@ namespace TTMouseclickSimulator.Core.Actions
             }
             OnSubActionStartedOrStopped(null);
         }
+
+
+        public override string ToString()
+        {
+            return $"Loop – Count: {count}";
+        }
     }
 }

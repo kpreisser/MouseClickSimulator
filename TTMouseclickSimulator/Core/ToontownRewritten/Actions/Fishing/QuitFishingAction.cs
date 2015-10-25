@@ -17,5 +17,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             await MouseHelpers.DoSimpleMouseClickAsync(provider, c, 200);
         }
 
+        public override string ToString()
+        {
+            return "Quit Fishing";
+        }
     }
 }

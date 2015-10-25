@@ -30,5 +30,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
             await provider.WaitAsync(duration);
             provider.ReleaseKey(key);
         }
+
+
+        public override string ToString()
+        {
+            return $"Press Key – Key: {key}, Duration: {duration}";
+        }
     }
 }

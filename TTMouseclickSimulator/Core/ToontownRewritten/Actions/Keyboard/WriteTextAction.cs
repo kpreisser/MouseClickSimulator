@@ -50,5 +50,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
             await provider.WaitAsync(100);
             provider.ReleaseKey(AbstractWindowsEnvironment.VirtualKeyShort.Enter);
         }
+
+
+        public override string ToString()
+        {
+            return $"Write Text – Text: \"{text}\"" + (pauseDuration.HasValue ? "" : $", Pause Duration: {pauseDuration}");
+        }
     }
 }
