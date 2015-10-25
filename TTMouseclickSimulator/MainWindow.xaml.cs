@@ -29,6 +29,7 @@ using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat;
 using TTMouseclickSimulator.Core.ToontownRewritten.Environment;
+using TTMouseclickSimulator.Project;
 
 namespace TTMouseclickSimulator
 {
@@ -45,7 +46,10 @@ namespace TTMouseclickSimulator
         /// </summary>
         private bool closeWindowAfterStop;
 
-        private const string ProjectFileExtension = ".mcsimproject";
+        /// <summary>
+        /// The file extension for Simulator Project files. Currently we use ".xml".
+        /// </summary>
+        private const string ProjectFileExtension = ".xml";
 
         private readonly Microsoft.Win32.OpenFileDialog openFileDialog;
 
@@ -55,10 +59,7 @@ namespace TTMouseclickSimulator
 
             openFileDialog = new Microsoft.Win32.OpenFileDialog();
             openFileDialog.DefaultExt = ProjectFileExtension;
-            openFileDialog.Filter = "Mouse Click Simulator Project|*" + ProjectFileExtension;
-
-            // Hide the save button as it is not yet implemented.
-            btnSave.Visibility = Visibility.Hidden;
+            openFileDialog.Filter = "XML Simulator Project|*" + ProjectFileExtension;
 
             RefreshProjectControls();
         }
@@ -72,7 +73,7 @@ namespace TTMouseclickSimulator
         {
             btnStart.IsEnabled = false;
             btnStop.IsEnabled = true;
-            btnLoad.IsEnabled = btnLoadPredefined.IsEnabled = btnSave.IsEnabled = false;
+            btnLoad.IsEnabled = false;
 
 
             // Run the simulator in another task so it is not executed in the GUI thread.
@@ -107,7 +108,7 @@ namespace TTMouseclickSimulator
             simulator = null;
             btnStart.IsEnabled = true;
             btnStop.IsEnabled = false;
-            btnLoad.IsEnabled = btnLoadPredefined.IsEnabled = btnSave.IsEnabled = true;
+            btnLoad.IsEnabled = true;
 
             if (closeWindowAfterStop)
                 Close();
@@ -130,8 +131,8 @@ namespace TTMouseclickSimulator
                 {
                     using (FileStream fs = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read))
                     {
-                        BinaryFormatter bf = new BinaryFormatter();
-                        project = (SimulatorProject)bf.Deserialize(fs);
+                        XmlProjectDeserializer deser = new XmlProjectDeserializer();
+                        project = deser.Deserialize(fs);
                     }
                    
                 }
@@ -145,44 +146,23 @@ namespace TTMouseclickSimulator
             }
         }
 
-        private void btnSave_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO
-        }
-
         private void RefreshProjectControls()
         {
             if (project == null)
             {
                 lblCurrentProject.Content = "(none)";
-                btnSave.IsEnabled = false;
+                txtDescription.Text = string.Empty;
                 btnStart.IsEnabled = false;
             }
             else 
             {
-                btnSave.IsEnabled = true;
                 lblCurrentProject.Content = project.Title;
                 txtDescription.Text = project.Description;
                 btnStart.IsEnabled = true;
             }
         }
 
-
-
         
-
-        private void btnLoadPredefined_Click(object sender, RoutedEventArgs e)
-        {
-            PredefinedProjectDialog dialog = new PredefinedProjectDialog();
-            dialog.Owner = this;
-            dialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            if (dialog.ShowDialog() == true && dialog.SelectedProject != null)
-            {
-                // Load the project.
-                project = dialog.SelectedProject;
-                RefreshProjectControls();
-            }
-        }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

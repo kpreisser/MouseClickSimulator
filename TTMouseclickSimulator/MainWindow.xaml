@@ -12,10 +12,8 @@
         <Label Content="TTR Mouse Click Simulator" Margin="10,10,10,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="16"/>
         <Label Content="Current Project:" HorizontalAlignment="Left" Margin="10,73,0,0" VerticalAlignment="Top"/>
         <Label x:Name="lblCurrentProject" Content="xxxxx" HorizontalAlignment="Left" Margin="108,73,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnLoadPredefined" Content="Predefined project..." HorizontalAlignment="Left" Margin="16,49,0,0" VerticalAlignment="Top" Width="135" Click="btnLoadPredefined_Click"/>
-        <Button x:Name="btnSave" IsEnabled="False" Content="Save..." HorizontalAlignment="Left" Margin="255,49,0,0" VerticalAlignment="Top" Width="75" Click="btnSave_Click"/>
         <TextBlock x:Name="txtDescription" HorizontalAlignment="Left" Margin="16,110,16,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
-        <Button x:Name="btnLoad" Content="Load file..." HorizontalAlignment="Left" Margin="165,49,0,0" VerticalAlignment="Top" Width="85" Click="btnLoad_Click"/>
+        <Button x:Name="btnLoad" Content="Load XML Project file..." HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top" Width="154" Click="btnLoad_Click"/>
 
     </Grid>
 </Window>

@@ -11,25 +11,24 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
     /// <summary>
     /// An action for pressing a key for a specific amount of time.
     /// </summary>
-    [Serializable]
     public class PressKeyAction : IAction
     {
 
-        private readonly AbstractWindowsEnvironment.VirtualKeyShort keyCode;
-        private readonly int timeout;
+        private readonly AbstractWindowsEnvironment.VirtualKeyShort key;
+        private readonly int duration;
 
-        public PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort keyCode, int timeout)
+        public PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort key, int duration)
         {
-            this.keyCode = keyCode;
-            this.timeout = timeout;
+            this.key = key;
+            this.duration = duration;
         }
 
 
         public async Task RunAsync(IInteractionProvider provider)
         {
-            provider.PressKey(keyCode);
-            await provider.WaitAsync(timeout);
-            provider.ReleaseKey(keyCode);
+            provider.PressKey(key);
+            await provider.WaitAsync(duration);
+            provider.ReleaseKey(key);
         }
     }
 }

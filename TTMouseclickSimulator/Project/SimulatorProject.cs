@@ -5,12 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using TTMouseclickSimulator.Core;
 
-namespace TTMouseclickSimulator
+namespace TTMouseclickSimulator.Project
 {
     /// <summary>
     /// A simulator project that can be persisted.
     /// </summary>
-    [Serializable]
     public class SimulatorProject
     {
 

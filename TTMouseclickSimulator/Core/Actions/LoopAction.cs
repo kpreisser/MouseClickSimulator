@@ -10,7 +10,6 @@ namespace TTMouseclickSimulator.Core.Actions
     /// <summary>
     /// Represents an action that runs another action in a loop.
     /// </summary>
-    [Serializable]
     public class LoopAction : IAction
     {
 
@@ -18,22 +17,22 @@ namespace TTMouseclickSimulator.Core.Actions
         /// <summary>
         /// Specifies how often the action is run. null means infinite.
         /// </summary>
-        private readonly int? counter;
+        private readonly int? count;
 
-        public LoopAction(IAction action, int? counter)
+        public LoopAction(IAction action, int? count = null)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
-            if (counter.HasValue && counter.Value < 0)
-                throw new ArgumentException("Counter must not be negative");
+            if (count.HasValue && count.Value < 0)
+                throw new ArgumentException("count must not be negative");
 
             this.action = action;
-            this.counter = counter;
+            this.count = count;
         }
 
         public async Task RunAsync(IInteractionProvider provider)
         {
-            for (int i = 0; !counter.HasValue || i < counter.Value; i++)
+            for (int i = 0; !count.HasValue || i < count.Value; i++)
             {
                 provider.EnsureNotCanceled();
                 await action.RunAsync(provider);

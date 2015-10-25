@@ -14,16 +14,16 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions
     [Serializable]
     public class PauseAction : IAction
     {
-        private readonly int timeout;
+        private readonly int duration;
 
-        public PauseAction(int timeout)
+        public PauseAction(int duration)
         {
-            this.timeout = timeout;
+            this.duration = duration;
         }
 
         public async Task RunAsync(IInteractionProvider provider)
         {
-            await provider.WaitAsync(timeout);
+            await provider.WaitAsync(duration);
         }
     }
 }

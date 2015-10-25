@@ -10,19 +10,18 @@ namespace TTMouseclickSimulator.Core.Actions
     /// <summary>
     /// An action that loops through a list of other actions either in order or by chance.
     /// </summary>
-    [Serializable]
     public class CompoundAction : IAction
     {
 
-        public const int WaitIntervalMinimum = 0;
-        public const int WaitIntervalMaximum = 60000;
+        public const int PauseIntervalMinimum = 0;
+        public const int PauseIntervalMaximum = 60000;
 
 
         private readonly IList<IAction> actionList;
         private readonly CompoundActionType type;
 
-        private readonly int minimumWaitInterval;
-        private readonly int maximumWaitInterval;
+        private readonly int minimumPauseDuration;
+        private readonly int maximumPauseDuration;
         private readonly bool loop;
 
         private readonly Random rng = new Random();
@@ -32,28 +31,28 @@ namespace TTMouseclickSimulator.Core.Actions
         /// </summary>
         /// <param name="actionList"></param>
         /// <param name="type">Specifies in what order the actions should be run.</param>
-        /// <param name="minimumWaitInterval">Specifies the minimum wait time that
+        /// <param name="minimumPause">Specifies the minimum wait time that
         /// should be used after an action has completed</param>
-        /// <param name="maximumWaitInterval">Specifies the maximum wait time that
+        /// <param name="maximumPause">Specifies the maximum wait time that
         /// should be used after an action has completed</param>
         /// <param name="loop">If false, the action will return after a complete run. Otherwise
         /// it will loop endlessly. Note that using false is not possible when specifying
         /// CompoundActionType.RandomIndex as type.</param>
         public CompoundAction(IList<IAction> actionList,
             CompoundActionType type = CompoundActionType.Sequential, 
-            int minimumWaitInterval = 0, int maximumWaitInterval = 0, bool loop = true)
+            int minimumPause = 0, int maximumPause = 0, bool loop = true)
         {
 
             if (actionList == null || actionList.Count == 0)
                 throw new ArgumentException("There must be at least one IAction to start the simulator.");
-            if (minimumWaitInterval < WaitIntervalMinimum
-                    || minimumWaitInterval > WaitIntervalMaximum
-                    || maximumWaitInterval < WaitIntervalMinimum
-                    || maximumWaitInterval > WaitIntervalMaximum)
-                throw new ArgumentOutOfRangeException("The wait interval values must be between " +
-                    $"{WaitIntervalMinimum} and {WaitIntervalMaximum} milliseconds.");
-            if (minimumWaitInterval > maximumWaitInterval)
-                throw new ArgumentException("The minimum wait interval must not be greater "
+            if (minimumPause < PauseIntervalMinimum
+                    || minimumPause > PauseIntervalMaximum
+                    || maximumPause < PauseIntervalMinimum
+                    || maximumPause > PauseIntervalMaximum)
+                throw new ArgumentOutOfRangeException("The pause duration values must be between " +
+                    $"{PauseIntervalMinimum} and {PauseIntervalMaximum} milliseconds.");
+            if (minimumPause > maximumPause)
+                throw new ArgumentException("The minimum pause duration must not be greater "
                     + "than the maximum wait interval.");
             if (type == CompoundActionType.RandomIndex && !loop)
                 throw new ArgumentException("When using CompoundActionType.RandomIndex, it is not possible "
@@ -61,8 +60,8 @@ namespace TTMouseclickSimulator.Core.Actions
 
             this.actionList = actionList;
             this.type = type;
-            this.minimumWaitInterval = minimumWaitInterval;
-            this.maximumWaitInterval = maximumWaitInterval;
+            this.minimumPauseDuration = minimumPause;
+            this.maximumPauseDuration = maximumPause;
             this.loop = loop;
         }
 
@@ -120,7 +119,7 @@ namespace TTMouseclickSimulator.Core.Actions
                 await action.RunAsync(provider);
 
                 // After running an action, wait.
-                int waitInterval = rng.Next(minimumWaitInterval, maximumWaitInterval);
+                int waitInterval = rng.Next(minimumPauseDuration, maximumPauseDuration);
                 await provider.WaitAsync(waitInterval);
             }
         }

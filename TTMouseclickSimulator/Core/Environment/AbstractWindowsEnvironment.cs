@@ -325,29 +325,29 @@ namespace TTMouseclickSimulator.Core.Environment
             ///<summary>
             ///ENTER key
             ///</summary>
-            RETURN = 0x0D,
+            Enter = 0x0D,
 
             ///<summary>
             ///CTRL key
             ///</summary>
-            CONTROL = 0x11,
+            Control = 0x11,
 
             ///<summary>
             ///LEFT ARROW key
             ///</summary>
-            LEFT = 0x25,
+            Left = 0x25,
             ///<summary>
             ///UP ARROW key
             ///</summary>
-            UP = 0x26,
+            Up = 0x26,
             ///<summary>
             ///RIGHT ARROW key
             ///</summary>
-            RIGHT = 0x27,
+            Right = 0x27,
             ///<summary>
             ///DOWN ARROW key
             ///</summary>
-            DOWN = 0x28,
+            Down = 0x28,
 
 
 

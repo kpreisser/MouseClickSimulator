@@ -11,16 +11,15 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction
     /// <summary>
     /// An action that clicks on the doodle interaction panel (Feed, Scratch, Call)
     /// </summary>
-    [Serializable]
     public class DoodlePanelAction : IAction
     {
 
-        private readonly DoodlePanelEntry entry;
+        private readonly DoodlePanelButton entry;
 
 
-        public DoodlePanelAction(DoodlePanelEntry entry)
+        public DoodlePanelAction(DoodlePanelButton button)
         {
-            this.entry = entry;
+            this.entry = button;
         }
 
         public async Task RunAsync(IInteractionProvider provider)
@@ -30,7 +29,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction
         }
 
 
-        public enum DoodlePanelEntry : int
+        public enum DoodlePanelButton : int
         {
             Feed = 0,
             Scratch = 1,

@@ -11,45 +11,44 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
     /// <summary>
     /// An action that writes the given string and a line break into the window.
     /// </summary>
-    [Serializable]
     public class WriteTextAction : IAction
     {
 
         private string text;
-        private int? pauseTime;
+        private int? pauseDuration;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="text">The text to write.</param>
-        /// <param name="pauseTime">If not null, writes a single character
+        /// <param name="pauseDuration">If not null, writes a single character
         /// and then pauses the specified time before writing the next one.
         /// Otherwise, all characters are written immediately.</param>
-        public WriteTextAction(string text, int? pauseTime = null)
+        public WriteTextAction(string text, int? pauseDuration = null)
         {
             this.text = text;
-            this.pauseTime = pauseTime;
+            this.pauseDuration = pauseDuration;
         }
 
         public async Task RunAsync(IInteractionProvider provider)
         {
             // write the text and presses enter.
-            if (!pauseTime.HasValue)
+            if (!pauseDuration.HasValue)
                 provider.WriteText(text);
             else
             {
                 for (int i = 0; i < text.Length; i++)
                 {
                     provider.WriteText(text[i].ToString());
-                    await provider.WaitAsync(pauseTime.Value);
+                    await provider.WaitAsync(pauseDuration.Value);
                 }
             }
 
             // A CR LF (\r\n) in the above string would not have the desired effect;
             // instead we need to press the enter key.
-            provider.PressKey(AbstractWindowsEnvironment.VirtualKeyShort.RETURN);
+            provider.PressKey(AbstractWindowsEnvironment.VirtualKeyShort.Enter);
             await provider.WaitAsync(100);
-            provider.ReleaseKey(AbstractWindowsEnvironment.VirtualKeyShort.RETURN);
+            provider.ReleaseKey(AbstractWindowsEnvironment.VirtualKeyShort.Enter);
         }
     }
 }
