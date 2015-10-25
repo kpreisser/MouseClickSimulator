@@ -19,7 +19,6 @@ The GUI allows to load projects from an XML file. There are some predefined proj
 The GUI does not yet show what actions a project contains.
 
 ### TODOs:
-- In the GUI, show the actions of a project in a tree-like structure and show which action is currently running.
 - Document how to build the Mouse Click Simulator using Visual Studio or the .Net 4.6 SDK.
 - Document how to use the Mouse Click Simulator.
 - Document how to create own XML Simulator Porject files.
