@@ -2,7 +2,7 @@
 
 This is a new implementation of the [**TT Mouse Click Simulator**](http://old.preisser-it.de/tt-mausklick/) that is intended to work with TT Rewritten. It is implemented in C# and runs on Windows on .Net 4.6 or higher.
 
-To build it, you should use [Visual Studio 2015](https://www.visualstudio.com/).
+The TTR Mouse Click Simulator allows you to automate certain tasks like fishing.
 
 ![simulatorscreenshot](https://cloud.githubusercontent.com/assets/15179430/10716090/24ac7f16-7b2d-11e5-88cc-52511b380df2.png)
 
