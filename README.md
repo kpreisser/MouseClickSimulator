@@ -10,7 +10,11 @@ To build it, you should use [Visual Studio 2015](https://www.visualstudio.com/).
 Use this program at your own risk!
 Toontown Rewritten states in their Terms of Use that you should not use automation software, so you might risk a ban if you use this program.
 
-## Status
+## Running the Mouse Click Simulator
+
+Please see the topic (Running the Simulator)[https://github.com/TTExtensions/MouseClickSimulator/wiki/Running-the-Simulator] for guidance how to download, build and run the Mouse Click Simulator on your computer.
+
+## Development Status
 
 Currently, the implementation contains actions for pressing keys, writing text, SpeedChat, Doodle Interaction Panel and the Automatic Fishing Function.
 
@@ -19,6 +23,5 @@ The GUI allows to load projects from an XML file. There are some predefined proj
 When opening a project, the GUI shows the actions which the project contains in a tree-like structure. When the Simulator is running, actions that are currently active are marked blue.
 
 ### TODOs:
-- Document how to build the Mouse Click Simulator using Visual Studio or the .Net 4.6 SDK.
 - Document how to use the Mouse Click Simulator.
 - Document how to create own XML Simulator Porject files.
