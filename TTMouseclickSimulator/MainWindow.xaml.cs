@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -52,6 +53,7 @@ namespace TTMouseclickSimulator
         /// The file extension for Simulator Project files. Currently we use ".xml".
         /// </summary>
         private const string ProjectFileExtension = ".xml";
+        private const string SampleProjectsFolderName = "SampleProjects";
 
         private readonly Microsoft.Win32.OpenFileDialog openFileDialog;
 
@@ -62,6 +64,13 @@ namespace TTMouseclickSimulator
             openFileDialog = new Microsoft.Win32.OpenFileDialog();
             openFileDialog.DefaultExt = ProjectFileExtension;
             openFileDialog.Filter = "XML Simulator Project|*" + ProjectFileExtension;
+            // Set the initial directory to the executable path or the "SampleProjects" folder if it exists.
+            string exeDirectory = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            string sampleProjectsPath = System.IO.Path.Combine(exeDirectory, SampleProjectsFolderName);
+            if (Directory.Exists(sampleProjectsPath))
+                openFileDialog.InitialDirectory = sampleProjectsPath;
+            else
+                openFileDialog.InitialDirectory = exeDirectory;
 
             RefreshProjectControls();
         }
