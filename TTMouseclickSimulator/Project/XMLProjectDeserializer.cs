@@ -76,12 +76,8 @@ namespace TTMouseclickSimulator.Project
             // Find the <Desription>
             description = root.Element(ns + "Description")?.Value.Trim() ?? string.Empty;
 
-            // Find the <Configuration>
-            var configEl = root.Element(ns + "Configuration");
-            if (configEl == null)
-                throw new InvalidDataException("The <Configuration> element is missing.");
-
-            var config = ParseConfiguration(configEl);
+            // Parse the configuration elements directly from the root node.
+            var config = ParseConfiguration(root);
 
             return new SimulatorProject()
             {

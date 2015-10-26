@@ -10,46 +10,44 @@ Before you click on start, make sure that
 • your toon is standing on the front fishing board.
   </Description>
 
-  <Configuration>
-    <MainAction>
+  <MainAction>
       
-      <Compound type="Sequential">
+    <Compound type="Sequential">
         
-        <!-- Use the automatic fishing action for punchline place 19 times,
-             plus the straight fishing action.
+      <!-- Use the automatic fishing action for punchline place 19 times,
+            plus the straight fishing action.
+      -->
+      <Compound type="Sequential" minimumPause="200" maximumPause="400" loop="false">
+        <Loop count="19">
+          <AutomaticFishing flavor="PunchlinePlaceHalloween" />
+        </Loop>
+        <!--
+        The last cast must always be straight; otherwise the toon will rotate in
+        the cast direction and the Simulator would be unable to correctly move the Toon
+        to the fisherman. 
         -->
-        <Compound type="Sequential" minimumPause="200" maximumPause="400" loop="false">
-          <Loop count="19">
-            <AutomaticFishing flavor="PunchlinePlace" />
-          </Loop>
-          <!--
-          The last cast must always be straight; otherwise the toon will rotate in
-          the cast direction and the Simulator would be unable to correctly move the Toon
-          to the fisherman. 
-          -->
-          <StraightFishing />
+        <StraightFishing />
           
-          <QuitFishing />
-        </Compound>
-
-        <Pause duration="2500" />
-        
-        <!-- Now go to the fisherman and sell the fish. -->
-        <Compound type="Sequential" minimumPause="400" maximumPause="700" loop="false">
-          <PressKey key="Left" duration="210" />
-          <PressKey key="Down" duration="3500" />
-          <Pause duration="1300" />
-          
-          <SellFish />
-          
-          <Pause duration="1300" />
-          <PressKey key="Up" duration="2200" />
-          <Pause duration="2000" />
-        </Compound>
-        
+        <QuitFishing />
       </Compound>
+
+      <Pause duration="2500" />
+        
+      <!-- Now go to the fisherman and sell the fish. -->
+      <Compound type="Sequential" minimumPause="400" maximumPause="700" loop="false">
+        <PressKey key="Left" duration="210" />
+        <PressKey key="Down" duration="3500" />
+        <Pause duration="1300" />
+          
+        <SellFish />
+          
+        <Pause duration="1300" />
+        <PressKey key="Up" duration="2200" />
+        <Pause duration="2000" />
+      </Compound>
+        
+    </Compound>
       
-    </MainAction>
-  </Configuration>
+  </MainAction>
 
 </SimulatorProject>
