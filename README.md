@@ -2,7 +2,7 @@
 
 This is a new implementation of the [**TT Mouse Click Simulator**](http://old.preisser-it.de/tt-mausklick/) that is intended to work with TT Rewritten. It is implemented in C# and runs on Windows on .Net 4.6 or higher.
 
-The TTR Mouse Click Simulator allows you to automate certain tasks like fishing.
+Among automating tasks like saying SpeedChat phrases to train a Doodle, the TTR Mouse Click Simulator is able to automatically fish in specific locations like Punchling Place, TTC. To to this, it scans the screen to detect fish bubbles, calculates how far the rod must be thrown to catch the fish, and moves the Toon to the fisherman to sell the fish.
 
 ![simulatorscreenshot](https://cloud.githubusercontent.com/assets/15179430/10716090/24ac7f16-7b2d-11e5-88cc-52511b380df2.png)
 
