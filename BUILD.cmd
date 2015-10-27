@@ -11,7 +11,7 @@ if "!ProgramFiles(x86)!"=="" (
 set "BuildExe=!ProgramFiles32Bit!\MSBuild\14.0\Bin\MSBuild.exe"
 
 if not exist "!BuildExe!" (
-	echo.ERROR: MSBuild not found at "!BuildExe!"!
+	echo.ERROR: MSBuild not found at "!BuildExe!"^^!
 	pause
 	exit /b
 )
