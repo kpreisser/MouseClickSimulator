@@ -12,7 +12,7 @@ Toontown Rewritten states in their Terms of Use that you should not use automati
 
 ## Running the Mouse Click Simulator
 
-Please see the topic (Running the Simulator)[https://github.com/TTExtensions/MouseClickSimulator/wiki/Running-the-Simulator] for guidance how to download, build and run the Mouse Click Simulator on your computer.
+Please see the topic [Running the Simulator](https://github.com/TTExtensions/MouseClickSimulator/wiki/Running-the-Simulator) for guidance how to download, build and run the Mouse Click Simulator on your computer.
 
 ## Development Status
 
