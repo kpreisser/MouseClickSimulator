@@ -149,7 +149,8 @@ namespace TTMouseclickSimulator.Core.Environment
 
             if (mouseDown.HasValue)
             {
-                mi.dwFlags |= mouseDown.Value ? NativeMethods.MOUSEEVENTF.LEFTDOWN : NativeMethods.MOUSEEVENTF.LEFTUP;
+                mi.dwFlags |= mouseDown.Value ? NativeMethods.MOUSEEVENTF.LEFTDOWN 
+                    : NativeMethods.MOUSEEVENTF.LEFTUP;
             }
             
             var input = new NativeMethods.INPUT();
@@ -165,8 +166,10 @@ namespace TTMouseclickSimulator.Core.Environment
         private Coordinates GetMouseCoordinatesFromScreenCoordinates(Coordinates screenCoords)
         {
             var virtualScreen = System.Windows.Forms.SystemInformation.VirtualScreen;
-            int x = (int)Math.Ceiling((((double)screenCoords.X - virtualScreen.Left) * 65536) / virtualScreen.Width);
-            int y = (int)Math.Ceiling((((double)screenCoords.Y - virtualScreen.Top) * 65536) / virtualScreen.Height);
+            int x = (int)Math.Ceiling((((double)screenCoords.X - virtualScreen.Left) * 65536) 
+                / virtualScreen.Width);
+            int y = (int)Math.Ceiling((((double)screenCoords.Y - virtualScreen.Top) * 65536) 
+                / virtualScreen.Height);
 
             return new Coordinates(x, y);
         }
@@ -245,7 +248,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 WindowPosition = pos;
 
                 Rectangle rect = new Rectangle(
-                pos.Coordinates.X, pos.Coordinates.Y, pos.Size.Width, pos.Size.Height);
+                    pos.Coordinates.X, pos.Coordinates.Y, pos.Size.Width, pos.Size.Height);
 
                 bmp = new Bitmap(rect.Width, rect.Height,
                     System.Drawing.Imaging.PixelFormat.Format32bppRgb);
@@ -274,7 +277,8 @@ namespace TTMouseclickSimulator.Core.Environment
 
                 // This method assumes a 32-bit pixel format.
                 if (bmpData.PixelFormat != System.Drawing.Imaging.PixelFormat.Format32bppRgb)
-                    throw new InvalidOperationException("This method only works with a pixel format of Format32bppRgb.");
+                    throw new InvalidOperationException("This method only works with a " 
+                        + "pixel format of Format32bppRgb.");
 
                 // Use unsafe mode for fast access to the bitmapdata.
                 byte* ptr = (byte*)bmpData.Scan0.ToPointer();
