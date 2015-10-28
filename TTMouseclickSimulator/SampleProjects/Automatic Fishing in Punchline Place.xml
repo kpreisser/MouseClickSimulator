@@ -19,7 +19,7 @@ Before you click on start, make sure that
       -->
       <Compound type="Sequential" minimumPause="200" maximumPause="400" loop="false">
         <Loop count="19">
-          <AutomaticFishing flavor="PunchlinePlaceHalloween" />
+          <AutomaticFishing flavor="PunchlinePlace" />
         </Loop>
         <!--
         The last cast must always be straight; otherwise the toon will rotate in
