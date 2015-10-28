@@ -1,4 +1,5 @@
 # Mouse Click Simulator for TT Rewritten
+<sup>by K. Preißer, www.preisser-it.de</sup>
 
 This is a new implementation of the [**TT Mouse Click Simulator**](http://old.preisser-it.de/tt-mausklick/) that is intended to work with TT Rewritten. It is implemented in C# and runs on Windows on .Net 4.6 or higher.
 
