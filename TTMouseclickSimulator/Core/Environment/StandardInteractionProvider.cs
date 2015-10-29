@@ -49,8 +49,7 @@ namespace TTMouseclickSimulator.Core.Environment
         private void HandleCancelCallback()
         {
             canceled = true;
-            // Release the semaphore (so that a task that is waiting can continue), then
-            // dispose it.
+            // Release the semaphore (so that a task that is waiting can continue).
             try
             {
                 waitSemaphore.Release();
