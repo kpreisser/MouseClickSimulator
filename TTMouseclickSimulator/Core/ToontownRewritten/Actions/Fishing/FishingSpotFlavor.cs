@@ -11,6 +11,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
     public enum FishingSpotFlavor : int
     {
         PunchlinePlace = 0,
+        LighthouseLane,
 
         // Halloween flavors
         PunchlinePlaceHalloween = 100
@@ -27,6 +28,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             elements.Add(FishingSpotFlavor.PunchlinePlace,
                 new FishingSpotFlavorData(new Coordinates(260, 196), new Coordinates(1349, 626),
                 new ScreenshotColor(22, 140, 116), 13));
+            elements.Add(FishingSpotFlavor.LighthouseLane,
+                new FishingSpotFlavorData(new Coordinates(187, 170 - 19), new Coordinates(187 + 1241, 170 - 19 + 577),
+                new ScreenshotColor(38, 74, 135), 11));
 
             elements.Add(FishingSpotFlavor.PunchlinePlaceHalloween,
                 new FishingSpotFlavorData(new Coordinates(260, 196), new Coordinates(1349, 626),

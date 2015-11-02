@@ -138,7 +138,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SampleProjects\Automatic Fishing in Punchline Place.xml">
+    <None Include="SampleProjects\Automatic Fishing - Punchline Place.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SampleProjects\Automatic Fishing - Lighthouse Lane.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
