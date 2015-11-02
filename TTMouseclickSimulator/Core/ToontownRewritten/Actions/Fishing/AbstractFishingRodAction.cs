@@ -128,29 +128,29 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
         public class Tolerance
         {
-            public int ToleranceR { get; }
-            public int ToleranceG { get; }
-            public int ToleranceB { get; }
+            public byte ToleranceR { get; }
+            public byte ToleranceG { get; }
+            public byte ToleranceB { get; }
 
-            public int GetValueFromIndex(int index)
+            public byte GetValueFromIndex(int index)
             {
                 return index == 0 ? ToleranceR : index == 1 ? ToleranceG : ToleranceB;
 
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
 
-            public Tolerance(int toleranceR, int toleranceG, int toleranceB)
+            public Tolerance(byte toleranceR, byte toleranceG, byte toleranceB)
             {
                 ToleranceR = toleranceR;
                 ToleranceG = toleranceG;
                 ToleranceB = toleranceB;
             }
 
-            public Tolerance(int tolerance)
+            public Tolerance(byte tolerance)
                 : this(tolerance, tolerance, tolerance)
             { }
 
-            public static implicit operator Tolerance(int value)
+            public static implicit operator Tolerance(byte value)
             {
                 return new Tolerance(value);
             }
