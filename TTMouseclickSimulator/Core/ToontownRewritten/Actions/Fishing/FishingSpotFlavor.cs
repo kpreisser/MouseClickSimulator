@@ -19,6 +19,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
     public class FishingSpotFlavorData
     {
+        // TODO: We should allow the XML project file to specify these parameters so they
+        // don't need to be hard-coded in the source code. That way users could add other fishing
+        // places using the XML project file.
 
         private static readonly Dictionary<FishingSpotFlavor, FishingSpotFlavorData> elements
             = new Dictionary<FishingSpotFlavor, FishingSpotFlavorData>();
