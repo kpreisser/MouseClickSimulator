@@ -109,7 +109,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         
 
         protected bool CompareColor(ScreenshotColor refColor, ScreenshotColor actualColor,
-            int tolerance)
+            Tolerance tolerance)
         {
             // Simply compare the discrepancy of the R, G and B values
             // of each color.
@@ -118,11 +118,42 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 byte bRef = refColor.GetValueFromIndex(i);
                 byte bAct = actualColor.GetValueFromIndex(i);
 
-                if (!(Math.Abs(bRef - bAct) <= tolerance))
+                if (!(Math.Abs(bRef - bAct) <= tolerance.GetValueFromIndex(i)))
                     return false;
             }
 
             return true;
+        }
+
+
+        public class Tolerance
+        {
+            public int ToleranceR { get; }
+            public int ToleranceG { get; }
+            public int ToleranceB { get; }
+
+            public int GetValueFromIndex(int index)
+            {
+                return index == 0 ? ToleranceR : index == 1 ? ToleranceG : ToleranceB;
+
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            public Tolerance(int toleranceR, int toleranceG, int toleranceB)
+            {
+                ToleranceR = toleranceR;
+                ToleranceG = toleranceG;
+                ToleranceB = toleranceB;
+            }
+
+            public Tolerance(int tolerance)
+                : this(tolerance, tolerance, tolerance)
+            { }
+
+            public static implicit operator Tolerance(int value)
+            {
+                return new Tolerance(value);
+            }
         }
     }
 }

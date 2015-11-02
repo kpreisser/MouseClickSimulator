@@ -29,8 +29,10 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 new FishingSpotFlavorData(new Coordinates(260, 196), new Coordinates(1349, 626),
                 new ScreenshotColor(22, 140, 116), 13));
             elements.Add(FishingSpotFlavor.LighthouseLane,
-                new FishingSpotFlavorData(new Coordinates(187, 170 - 19), new Coordinates(187 + 1241, 170 - 19 + 577),
-                new ScreenshotColor(38, 74, 135), 11));
+                new FishingSpotFlavorData(new Coordinates(187, 170 - 19),
+                new Coordinates(187 + 1241, 170 - 19 + 577),
+                new ScreenshotColor(38, 81, 135),
+                new AbstractFishingRodAction.Tolerance(7, 15, 6)));
 
             elements.Add(FishingSpotFlavor.PunchlinePlaceHalloween,
                 new FishingSpotFlavorData(new Coordinates(260, 196), new Coordinates(1349, 626),
@@ -47,17 +49,18 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         public Coordinates Scan1 { get; }
         public Coordinates Scan2 { get; }
         public ScreenshotColor BubbleColor { get; }
-        public int Tolerance { get; }
+        public AbstractFishingRodAction.Tolerance Tolerance { get; }
 
 
         public FishingSpotFlavorData(Coordinates scan1, Coordinates scan2,
-            ScreenshotColor bubbleColor, int tolerance)
+            ScreenshotColor bubbleColor, AbstractFishingRodAction.Tolerance tolerance)
         {
             this.Scan1 = scan1;
             this.Scan2 = scan2;
             this.BubbleColor = bubbleColor;
             this.Tolerance = tolerance;
         }
+
 
     }
 }
