@@ -11,7 +11,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions
     /// <summary>
     /// An action that just waits using the specified amount of time.
     /// </summary>
-    [Serializable]
     public class PauseAction : AbstractAction
     {
         private readonly int duration;
