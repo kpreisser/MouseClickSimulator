@@ -6,6 +6,8 @@ Among automating tasks like saying SpeedChat phrases to train a Doodle, the TTR 
 
 ![simulatorscreenshot](https://cloud.githubusercontent.com/assets/15179430/10716090/24ac7f16-7b2d-11e5-88cc-52511b380df2.png)
 
+Note: This Simulator does not inject code into or otherwise manipulate the game. It only interacts with TTR by creating screenshots to analyze the window content (for the fishing action) and simulating mouse clicks/movements and pressing keys.
+
 ### WARNING
 Use this program at your own risk!
 Toontown Rewritten states in their Terms of Use that you should not use automation software, so you might risk a ban if you use this program.
