@@ -27,7 +27,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         protected override sealed async Task FinishThrowFishingRodAsync(IInteractionProvider provider)
         {
             // Try to find a bubble.
-            OnActionInformationUpdated("Scanning fish bubbles…");
+            const string actionInformationScanning = "Scanning fish bubbles…";
+            OnActionInformationUpdated(actionInformationScanning);
 
             const int scanStep = 15;
             FishingSpotFlavorData spotData = FishingSpotFlavorData.GetDataFromItem(flavor);
@@ -67,6 +68,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                         }
                     }
                 }
+                if (!newCoords.HasValue)
+                    OnActionInformationUpdated(actionInformationScanning);
+
 
                 if (newCoords.HasValue && oldCoords.HasValue 
                     && Math.Abs(oldCoords.Value.X - newCoords.Value.X) <= scanStep
