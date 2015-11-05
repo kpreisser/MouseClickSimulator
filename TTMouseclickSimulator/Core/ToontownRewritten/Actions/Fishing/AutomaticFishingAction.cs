@@ -58,7 +58,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                         if (CompareColor(spotData.BubbleColor, screenshot.GetPixel(c),
                             spotData.Tolerance))
                         {
-                            newCoords = new Coordinates(x + 15, y + 15);
+                            newCoords = new Coordinates(x + 15, y + 25);
                             Coordinates scaledCoords = screenshot.WindowPosition.RelativeToAbsoluteCoordinates(
                                 screenshot.WindowPosition.ScaleCoordinates(
                                 newCoords.Value, MouseHelpers.ReferenceWindowSize));
@@ -118,7 +118,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             {
                 // Calculate the destination coordinates.
                 newCoords = new Coordinates(
-                    (int)Math.Round(800d + 120d / 429d * (800d - newCoords.Value.X) * (0.78 + (820d - newCoords.Value.Y) / 820 * 0.32)),
+                    (int)Math.Round(800d + 120d / 429d * (800d - newCoords.Value.X) * (0.75 + (820d - newCoords.Value.Y) / 820 * 0.38)),
                     (int)Math.Round(846d + 169d / 428d * (820d - newCoords.Value.Y))
                 );
             }
