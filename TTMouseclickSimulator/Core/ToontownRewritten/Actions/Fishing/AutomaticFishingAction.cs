@@ -58,7 +58,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                         if (CompareColor(spotData.BubbleColor, screenshot.GetPixel(c),
                             spotData.Tolerance))
                         {
-                            newCoords = new Coordinates(x + 15, y + 25);
+                            newCoords = new Coordinates(x + 20, y + 20);
                             Coordinates scaledCoords = screenshot.WindowPosition.RelativeToAbsoluteCoordinates(
                                 screenshot.WindowPosition.ScaleCoordinates(
                                 newCoords.Value, MouseHelpers.ReferenceWindowSize));
