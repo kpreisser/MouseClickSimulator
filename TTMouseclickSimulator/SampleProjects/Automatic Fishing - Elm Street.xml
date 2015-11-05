@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
+  <Title>Automatic Fishing in Elm Street</Title>
+  <Description>
+The Toon will automatically fish in Elm Street, Daisy Gardens.
+Before you click on Start, make sure that
+• you are in a quiet district,
+• your fish bucket is empty,
+• you have enough JellyBeans for 20 casts,
+• your toon is standing on the fishing board on the right and the front (viewed from entrance).
+  </Description>
+
+  <MainAction>
+      
+    <Compound type="Sequential">
+        
+      <!-- Use the automatic fishing action for punchline place 19 times,
+            plus the straight fishing action.
+      -->
+      <Compound type="Sequential" minimumPause="200" maximumPause="400" loop="false">
+        <Loop count="19">
+          <AutomaticFishing flavor="ElmStreet" />
+        </Loop>
+        <!--
+        The last cast must always be straight; otherwise the toon will rotate in
+        the cast direction and the Simulator would be unable to correctly move the Toon
+        to the fisherman. 
+        -->
+        <StraightFishing />
+          
+        <QuitFishing />
+      </Compound>
+
+      <Pause duration="2500" />
+        
+      <!-- Now go to the fisherman and sell the fish. -->
+      <Compound type="Sequential" minimumPause="400" maximumPause="700" loop="false">
+        <PressKey key="Right" duration="240" />
+        <PressKey key="Up" duration="3000" />
+        <Pause duration="1500" />
+          
+        <SellFish />
+          
+        <Pause duration="1500" />
+        <PressKey key="Down" duration="5000" />
+        <Pause duration="2000" />
+      </Compound>
+        
+    </Compound>
+      
+  </MainAction>
+
+</SimulatorProject>

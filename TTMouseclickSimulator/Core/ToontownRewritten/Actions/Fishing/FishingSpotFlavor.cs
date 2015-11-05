@@ -12,6 +12,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
     {
         PunchlinePlace = 0,
         LighthouseLane,
+        ElmStreet,
 
         // Halloween flavors
         PunchlinePlaceHalloween = 100
@@ -36,6 +37,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 new Coordinates(187 + 1241, 170 - 19 + 577),
                 new ScreenshotColor(38, 81, 135),
                 new AbstractFishingRodAction.Tolerance(7, 15, 6)));
+            elements.Add(FishingSpotFlavor.ElmStreet,
+                new FishingSpotFlavorData(new Coordinates(49, 99 - 19),
+                new Coordinates(1430, 99 - 19 + 712),
+                new ScreenshotColor(17, 102, 75),
+                new AbstractFishingRodAction.Tolerance(5, 4, 5)));
 
             elements.Add(FishingSpotFlavor.PunchlinePlaceHalloween,
                 new FishingSpotFlavorData(new Coordinates(260, 196), new Coordinates(1349, 626),
