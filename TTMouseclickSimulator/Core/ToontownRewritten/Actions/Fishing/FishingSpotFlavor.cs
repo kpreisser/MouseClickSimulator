@@ -38,7 +38,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 new ScreenshotColor(38, 81, 135),
                 new AbstractFishingRodAction.Tolerance(7, 15, 6)));
             elements.Add(FishingSpotFlavor.ElmStreet,
-                new FishingSpotFlavorData(new Coordinates(49, 99 - 19),
+                new FishingSpotFlavorData(new Coordinates(200, 99 - 19),
                 new Coordinates(1430, 99 - 19 + 712),
                 new ScreenshotColor(17, 102, 75),
                 new AbstractFishingRodAction.Tolerance(5, 4, 5)));
