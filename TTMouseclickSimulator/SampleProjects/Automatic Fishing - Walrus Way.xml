@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
-  <Title>Automatic Fishing in Elm Street</Title>
+  <Title>Automatic Fishing in Walrus Way</Title>
   <Description>
-The Toon will automatically fish in Elm Street, Daisy Gardens.
+The Toon will automatically fish in Walrus Way, The Brrrgh.
 Before you click on Start, make sure that
 • you are in a quiet district,
 • your fish bucket is empty,
 • you have enough JellyBeans for 20 casts,
-• your toon is standing on the front right fishing board (viewed from entrance).
+• your toon is standing on the rear left fishing board (viewed from entrance).
   </Description>
 
   <MainAction>
@@ -19,8 +19,8 @@ Before you click on Start, make sure that
       -->
       <Compound type="Sequential" minimumPause="200" maximumPause="400" loop="false">
         <Loop count="19">
-          <AutomaticFishing scan1="200, 80" scan2="1430, 792" bubbleColorRgb="17, 102, 75"
-                            toleranceRgb="5, 4, 5" />
+          <AutomaticFishing scan1="153, 134" scan2="1589, 703" bubbleColorRgb="25, 144, 148"
+                            toleranceRgb="10, 11, 11" />
         </Loop>
         <!--
         The last cast must always be straight; otherwise the toon will rotate in
@@ -36,14 +36,18 @@ Before you click on Start, make sure that
         
       <!-- Now go to the fisherman and sell the fish. -->
       <Compound type="Sequential" minimumPause="400" maximumPause="700" loop="false">
-        <PressKey key="Right" duration="225" />
-        <PressKey key="Up" duration="3000" />
+        <PressKey key="Up" duration="720" />
+        <PressKey key="Left" duration="1020" />
+        <PressKey key="Up" duration="1900" />
         <Pause duration="1500" />
           
         <SellFish />
           
         <Pause duration="1500" />
-        <PressKey key="Down" duration="5000" />
+        <PressKey key="Down" duration="2118" />
+        <PressKey key="Left" duration="800" />
+        <PressKey key="Up" duration="1800" />
+        <PressKey key="Down" duration="2200" />
         <Pause duration="2000" />
       </Compound>
         
