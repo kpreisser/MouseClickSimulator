@@ -75,8 +75,33 @@ namespace TTMouseclickSimulator.Core.Environment
         public async Task WaitAsync(int millisecondsTimeout)
         {
             EnsureNotCanceled();
-            await waitSemaphore.WaitAsync(millisecondsTimeout);
-            EnsureNotCanceled();
+
+            /*
+            Instead of using a wait method for the complete timeout (which is a bit inaccurate 
+            as it may be up to ~ 15 ms longer than specified), we use the specified timeout - 12 to wait
+            and then call Thread.SpinWait() to loop until the complete wait interval has been reached
+            which we measure using a high-resolution timer.
+            This means shortly before this method returns there will be a bit CPU usage but the actual
+            time which we waited will be more accurate.
+            */
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            int waitTime = millisecondsTimeout - 15;
+            if (waitTime > 0)
+                await waitSemaphore.WaitAsync(waitTime);
+
+            // For the remaining time, loop until the complete time has passed.
+            while (true)
+            {
+                EnsureNotCanceled();
+
+                long remaining = millisecondsTimeout - sw.ElapsedMilliseconds;
+                if (remaining <= 0)
+                    break;
+                // 1000 iterations should take about 4 µs on a 3.4 GHz system.
+                Thread.SpinWait(1000);
+            }
         }
 
         private WindowPosition GetMainWindowPosition()
