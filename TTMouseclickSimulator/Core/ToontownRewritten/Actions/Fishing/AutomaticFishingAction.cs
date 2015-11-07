@@ -11,16 +11,20 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
     public class AutomaticFishingAction : AbstractFishingRodAction
     {
-        private FishingSpotFlavor flavor;
+        private FishingSpotData spotData;
 
         protected override int WaitingForFishResultDialogTime
         {
             get { return 6000; }
         }
 
-        public AutomaticFishingAction(FishingSpotFlavor flavor)
+        public AutomaticFishingAction(int[] scan1, int[] scan2, byte[] bubbleColorRgb, byte[] toleranceRgb)
         {
-            this.flavor = flavor;
+           spotData = new FishingSpotData(
+                new Coordinates(scan1[0], scan1[1]),
+                new Coordinates(scan2[0], scan2[1]),
+                new ScreenshotColor(bubbleColorRgb[0], bubbleColorRgb[1], bubbleColorRgb[2]),
+                new Tolerance(toleranceRgb[0], toleranceRgb[1], toleranceRgb[2]));
         }
         
 
@@ -31,7 +35,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             OnActionInformationUpdated(actionInformationScanning);
 
             const int scanStep = 15;
-            FishingSpotFlavorData spotData = FishingSpotFlavorData.GetDataFromItem(flavor);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -142,7 +145,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
         public override string ToString()
         {
-            return $"Automatic Fishing – Flavor: {flavor}";
+            return $"Automatic Fishing – "
+                + $"Color: [{spotData.BubbleColor.r}, {spotData.BubbleColor.g}, {spotData.BubbleColor.b}]";
         }
     }
 }

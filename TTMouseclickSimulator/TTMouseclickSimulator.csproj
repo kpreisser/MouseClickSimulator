@@ -88,7 +88,7 @@
     <Compile Include="Core\ToontownRewritten\Actions\DoodleInteraction\DoodlePanelAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\AbstractFishingRodAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\AutomaticFishingAction.cs" />
-    <Compile Include="Core\ToontownRewritten\Actions\Fishing\FishingSpotFlavor.cs" />
+    <Compile Include="Core\ToontownRewritten\Actions\Fishing\FishingSpotData.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Fishing\StraightFishingAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Keyboard\WriteTextAction.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\MouseHelpers.cs" />

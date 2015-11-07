@@ -15,11 +15,12 @@ Before you click on Start, make sure that
     <Compound type="Sequential">
         
       <!-- Use the automatic fishing action for punchline place 19 times,
-            plus the straight fishing action.
+           plus the straight fishing action.
       -->
       <Compound type="Sequential" minimumPause="200" maximumPause="400" loop="false">
         <Loop count="19">
-          <AutomaticFishing flavor="ElmStreet" />
+          <AutomaticFishing scan1="200, 80" scan2="1430, 792" bubbleColorRgb="17, 102, 75"
+                            toleranceRgb="5, 4, 5" />
         </Loop>
         <!--
         The last cast must always be straight; otherwise the toon will rotate in
@@ -35,7 +36,7 @@ Before you click on Start, make sure that
         
       <!-- Now go to the fisherman and sell the fish. -->
       <Compound type="Sequential" minimumPause="400" maximumPause="700" loop="false">
-        <PressKey key="Right" duration="230" />
+        <PressKey key="Right" duration="225" />
         <PressKey key="Up" duration="3000" />
         <Pause duration="1500" />
           

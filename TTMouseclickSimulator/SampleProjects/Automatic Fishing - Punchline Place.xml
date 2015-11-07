@@ -15,11 +15,14 @@ Before you click on Start, make sure that
     <Compound type="Sequential">
         
       <!-- Use the automatic fishing action for punchline place 19 times,
-            plus the straight fishing action.
+           plus the straight fishing action.
       -->
       <Compound type="Sequential" minimumPause="200" maximumPause="400" loop="false">
         <Loop count="19">
-          <AutomaticFishing flavor="PunchlinePlace" />
+          <!-- Note: For Halloween, the bubbleColorRgb value is "10, 76, 76"
+               and toleranceRgb is "8, 8, 8".  -->
+          <AutomaticFishing scan1="260, 196" scan2="1349, 626" bubbleColorRgb="22, 140, 116"
+                            toleranceRgb="13, 13, 13" />
         </Loop>
         <!--
         The last cast must always be straight; otherwise the toon will rotate in

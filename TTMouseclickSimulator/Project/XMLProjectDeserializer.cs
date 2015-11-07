@@ -181,15 +181,22 @@ namespace TTMouseclickSimulator.Project
                                     CultureInfo.InvariantCulture);
                                 parameterValues[i] = number;
                             }
-                            else if (param.ParameterType.IsAssignableFrom(typeof(int[])))
+                            else if (param.ParameterType.IsAssignableFrom(typeof(int[]))
+                                || param.ParameterType.IsAssignableFrom(typeof(byte[])))
                             {
                                 string[] valueElements = attrval.Split(new string[] { "," }, 
                                     StringSplitOptions.RemoveEmptyEntries);
-                                int[] values = new int[valueElements.Length];
+                                Array values = Array.CreateInstance(param.ParameterType.GetElementType(),
+                                    valueElements.Length);
+
                                 for (int j = 0; j < valueElements.Length; j++)
                                 {
-                                    values[j] = int.Parse(valueElements[j].Trim(), 
-                                        CultureInfo.InvariantCulture);
+                                    object v;
+                                    if (param.ParameterType.IsAssignableFrom(typeof(byte[])))
+                                        v = byte.Parse(valueElements[j].Trim(), CultureInfo.InvariantCulture);
+                                    else
+                                        v = int.Parse(valueElements[j].Trim(), CultureInfo.InvariantCulture);
+                                    values.SetValue(v, j);
                                 }
                                 parameterValues[i] = values;
                             }
