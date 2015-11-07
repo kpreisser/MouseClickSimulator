@@ -13,7 +13,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
         protected override int WaitingForFishResultDialogTime
         {
-            get { return 20000; }
+            get { return 25000; }
         }
 
         protected override sealed async Task FinishThrowFishingRodAsync(IInteractionProvider provider)
