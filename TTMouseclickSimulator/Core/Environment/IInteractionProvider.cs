@@ -15,18 +15,22 @@ namespace TTMouseclickSimulator.Core.Environment
     {
 
         /// <summary>
-        /// Checks that the InteractionProvider has not been canceled.
+        /// Checks that the Simulator has not been canceled.
         /// </summary>
         void EnsureNotCanceled();
 
         /// <summary>
-        /// Asynchronously waits until the specified interval is elapsed or an exception is thrown.
+        /// Asynchronously waits until the specified interval is elapsed or the Simulator
+        /// has been canceled.
         /// </summary>
-        /// <param name="interval">The interval to wait.</param>
+        /// <param name="millisecondsTimeout">The interval to wait.</param>
+        /// <param name="useAccurateTimer">If an accurate timer should be used. If true, measuring
+        /// of the time is more accurate but requires a bit CPU usage shortly before the method
+        /// returns.</param>
         /// <returns></returns>
         /// <exception cref="SimulatorCanceledException">If the wait has been cancelled.
         /// IActions don't need to catch this exception.</exception>
-        Task WaitAsync(int millisecondsTimeout);
+        Task WaitAsync(int millisecondsTimeout, bool useAccurateTimer = false);
 
         /// <summary>
         /// Gets the current position of the destination window.
