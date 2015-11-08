@@ -4,6 +4,8 @@ This is a new implementation of the [**TT Mouse Click Simulator**](http://old.pr
 
 Among automating tasks like saying SpeedChat phrases to train a Doodle, the TTR Mouse Click Simulator is able to automatically fish in specific locations like Punchling Place, TTC. To accomplish this, it scans the screen to detect fish bubbles, calculates how far the rod must be thrown to catch the fish, and moves the Toon to the fisherman to sell the fish.
 
+You can watch a video of the <a href="https://www.youtube.com/watch?v=dS-gBcvsjz4" target="_blank">Automatic Fishing Function for Punchline Place</a>.
+
 ![simulatorscreenshot](https://cloud.githubusercontent.com/assets/15179430/10716090/24ac7f16-7b2d-11e5-88cc-52511b380df2.png)
 
 Note: This Simulator does not inject code into or otherwise manipulate the game. It only interacts with TTR by creating screenshots to analyze the window content (for the fishing action) and simulating mouse clicks/movements and pressing keys.
