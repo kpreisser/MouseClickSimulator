@@ -95,7 +95,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 if (!newCoords.HasValue)
                 {
                     // If we couldn't find the bubble we use default destination x,y values.
-                    OnActionInformationUpdated("No fish bubble found.");
                     newCoords = new Coordinates(800, 1009);
                 }
                 else
