@@ -90,6 +90,36 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                     coordsMatchCounter = 0;
                 }
 
+
+                // Now position the mouse already so that we just need to release the button.
+                if (!newCoords.HasValue)
+                {
+                    // If we couldn't find the bubble we use default destination x,y values.
+                    OnActionInformationUpdated("No fish bubble found.");
+                    newCoords = new Coordinates(800, 1009);
+                }
+                else
+                {
+                    // Calculate the destination coordinates.
+                    newCoords = new Coordinates(
+                        (int)Math.Round(800d + 120d / 429d * (800d - newCoords.Value.X) * (0.75 + (820d - newCoords.Value.Y) / 820 * 0.38)),
+                        (int)Math.Round(846d + 169d / 428d * (820d - newCoords.Value.Y))
+                    );
+                }
+
+                // Note: Instead of using a center position for scaling the X coordinate,
+                // TTR seems to interpret it as being scaled from an 4/3 ratio. Therefore
+                // we need to specify "NoAspectRatio" here.
+                // However it could be that they will change this in the future, then 
+                // we would need to use "Center".
+                // Note: We assume the point to click on is exactly centered. Otherwise
+                // we would need to adjust the X coordinate accordingly.
+                var coords = screenshot.WindowPosition.RelativeToAbsoluteCoordinates(
+                    screenshot.WindowPosition.ScaleCoordinates(newCoords.Value,
+                    MouseHelpers.ReferenceWindowSize, VerticalScaleAlignment.NoAspectRatio));
+                provider.MoveMouse(coords);
+                
+
                 if (coordsMatchCounter == 2)
                 {
                     // If we found the same coordinates two times, we assume
@@ -104,41 +134,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                     break;
             }
 
-            if (!newCoords.HasValue && oldCoords.HasValue)
-            {
-                // Ensure we use the old coordinates if we have them but didn't
-                // find new coordinates.
-                newCoords = oldCoords;
-            }
 
-            if (!newCoords.HasValue)
-            {
-                // If we couldn't find the bubble we use default destination x,y values.
-                OnActionInformationUpdated("No fish bubble found.");
-                newCoords = new Coordinates(800, 1009);
-            }
-            else
-            {
-                // Calculate the destination coordinates.
-                newCoords = new Coordinates(
-                    (int)Math.Round(800d + 120d / 429d * (800d - newCoords.Value.X) * (0.75 + (820d - newCoords.Value.Y) / 820 * 0.38)),
-                    (int)Math.Round(846d + 169d / 428d * (820d - newCoords.Value.Y))
-                );
-            }
-
-            // Note: Instead of using a center position for scaling the X coordinate,
-            // TTR seems to interpret it as being scaled from an 4/3 ratio. Therefore
-            // we need to specify "NoAspectRatio" here.
-            // However it could be that they will change this in the future, then 
-            // we would need to use "Center".
-            // Note: We assume the point to click on is exactly centered. Otherwise
-            // we would need to adjust the X coordinate accordingly.
-            var coords = screenshot.WindowPosition.RelativeToAbsoluteCoordinates(
-                screenshot.WindowPosition.ScaleCoordinates(newCoords.Value,
-                MouseHelpers.ReferenceWindowSize, VerticalScaleAlignment.NoAspectRatio));
-
-            provider.MoveMouse(coords);
-            await provider.WaitAsync(300);
+            // There is no need to wait here because the mouse has already been positioned and we
+            // waited at least 2x 500 ms at the new position, so now just release the mouse button.
             provider.ReleaseMouseButton();
         }
 
