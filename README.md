@@ -28,4 +28,4 @@ When opening a project, the GUI shows the actions which the project contains in 
 
 ### TODOs:
 - Document how to use the Mouse Click Simulator.
-- Document how to create own XML Simulator Porject files.
+- Document how to create own XML Simulator Project files.
