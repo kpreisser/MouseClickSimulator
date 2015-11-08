@@ -38,7 +38,7 @@ Before you click on Start, make sure that
         
       <!-- Now go to the fisherman and sell the fish. -->
       <Compound type="Sequential" minimumPause="400" maximumPause="700" loop="false">
-        <PressKey key="Left" duration="210" />
+        <PressKey key="Left" duration="215" />
         <PressKey key="Down" duration="3500" />
         <Pause duration="1300" />
           
