@@ -132,6 +132,11 @@ namespace TTMouseclickSimulator.Core.Environment
 
         private void DoMouseInput(int x, int y, bool absoluteCoordinates, bool? mouseDown)
         {
+            // TODO: Maybe we should instead send WM_MOUSEMOVE, WM_LBUTTONDOWN etc.
+            // messages directly to the destination window so that we don't need to
+            // position the mouse cursor which makes it harder e.g. to
+            // click on the "Stop" button of the simulator.
+
             // Convert the screen coordinates into mouse coordinates.
             Coordinates cs = new Coordinates(x, y);
             cs = GetMouseCoordinatesFromScreenCoordinates(cs);
