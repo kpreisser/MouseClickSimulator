@@ -16,7 +16,7 @@ if not exist "!BuildExe!" (
 	exit /b
 )
 
-"!BuildExe!" /v:minimal /p:Configuration=Release "TTMouseclickSimulator\TTMouseclickSimulator.csproj"
+"!BuildExe!" /v:minimal /nologo /p:Configuration=Release "TTMouseclickSimulator\TTMouseclickSimulator.csproj"
 if not errorlevel 1 (
 	echo.
 	echo.Build successful^^!
