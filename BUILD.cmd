@@ -28,3 +28,4 @@ if not errorlevel 1 (
 	echo.Build successful^^!
 )
 pause
+exit /b !ERRORLEVEL!
