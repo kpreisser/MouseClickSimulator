@@ -19,7 +19,7 @@ set "BuildExe=!ProgramFiles32Bit!\MSBuild\14.0\Bin\MSBuild.exe"
 if not exist "!BuildExe!" (
 	echo.ERROR: MSBuild not found at "!BuildExe!"^^!
 	pause
-	exit /b
+	exit /b 1
 )
 
 "!BuildExe!" /v:minimal /nologo /p:Configuration=Release "TTMouseclickSimulator\TTMouseclickSimulator.csproj"
