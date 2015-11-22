@@ -1,4 +1,10 @@
 @echo off
+
+REM This build script allows you to build the TTR Mouse Click Simulator.
+REM For information about prerequisites, see the Wiki page at
+REM https://github.com/TTExtensions/MouseClickSimulator/wiki/Running-the-Simulator
+
+
 SetLocal ENABLEDELAYEDEXPANSION
 echo.Building the TTR Mouse Click Simulator...
 echo.
