@@ -170,17 +170,31 @@ namespace TTMouseclickSimulator.Core.Environment
 
         private Coordinates GetMouseCoordinatesFromScreenCoordinates(Coordinates screenCoords)
         {
-            // Note: The mouse coordinates seems to be relative to the primary monitor size and
-            // location, not to the virtual screen size. Therefore we use the PrimaryMonitorSize.
+            // Note: The mouse coordinates are relative to the primary monitor size and
+            // location, not to the virtual screen size, so we use
+            // SystemInformation.PrimaryMonitorSize.
             var primaryScreenSize = System.Windows.Forms.SystemInformation.PrimaryMonitorSize;
             
             double x = 65536d * screenCoords.X / primaryScreenSize.Width;
             double y = 65536d * screenCoords.Y / primaryScreenSize.Height;
 
-            /* For correct conversion, we need to ensure that
+            /* For correct conversion when converting the flointing point numbers
+               to integers, we need round away from 0, e.g.
                if x = 0, res = 0
                if  0 < x ≤ 1, res =  1
                if -1 ≤ x < 0, res = -1
+
+               E.g. if a second monitor is placed at the left hand side of the primary monitor
+               and both monitors have a resolution of 1280x960, the x-coordinates of the second
+               monitor would be in the range (-1280, -1) and the ones of the primary monitor
+               in the range (0, 1279).
+               If we would want to place the mouse cursor at the rightmost pixel of the second
+               monitor, we would calculate -1 / 1280 * 65536 = -51.2 and round that down to
+               -52 which results in the screen x-coordinate of -1 (whereas -51 would result in 0).
+               Similarly, +52 results in +1 whereas +51 would result in 0.
+               Also, to place the cursor on the leftmost pixel on the second monitor we would use
+               -65536 as mouse coordinates resulting in a screen x-coordinate of -1280 (whereas
+               -65535 would result in -1279).
             */
             int resX = (int)(x >= 0 ? Math.Ceiling(x) : Math.Floor(x));
             int resY = (int)(y >= 0 ? Math.Ceiling(y) : Math.Floor(y));
