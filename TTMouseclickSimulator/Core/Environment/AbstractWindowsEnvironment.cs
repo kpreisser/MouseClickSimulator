@@ -173,12 +173,19 @@ namespace TTMouseclickSimulator.Core.Environment
             // Note: The mouse coordinates seems to be relative to the primary monitor size and
             // location, not to the virtual screen size. Therefore we use the PrimaryMonitorSize.
             var primaryScreenSize = System.Windows.Forms.SystemInformation.PrimaryMonitorSize;
-            int x = (int)Math.Ceiling((((double)screenCoords.X) * 65536) 
-                / primaryScreenSize.Width);
-            int y = (int)Math.Ceiling((((double)screenCoords.Y) * 65536) 
-                / primaryScreenSize.Height);
+            
+            double x = 65536d * screenCoords.X / primaryScreenSize.Width;
+            double y = 65536d * screenCoords.Y / primaryScreenSize.Height;
 
-            return new Coordinates(x, y);
+            /* For correct conversion, we need to ensure that
+               if x = 0, res = 0
+               if  0 < x ≤ 1, res =  1
+               if -1 ≤ x < 0, res = -1
+            */
+            int resX = (int)(x >= 0 ? Math.Ceiling(x) : Math.Floor(x));
+            int resY = (int)(y >= 0 ? Math.Ceiling(y) : Math.Floor(y));
+
+            return new Coordinates(resX, resY);
         }
 
 
