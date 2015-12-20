@@ -9,7 +9,7 @@ SetLocal ENABLEDELAYEDEXPANSION
 REM Change the working directory to the script's directory.
 REM E.g. if the user right-clicks on the script and selects "Run as Administrator",
 REM the working directory would be the windows\system32 dir.
-cd "%~dp0"
+cd /d "%~dp0"
 
 echo.Building the TTR Mouse Click Simulator...
 echo.
