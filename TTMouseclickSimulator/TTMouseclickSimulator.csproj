@@ -160,9 +160,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="SampleProjects\Automatic Fishing - Punchline Place %28Winter Holidays%29.xml">
+    <None Include="SampleProjects\Automatic Fishing - Punchline Place %28Winter Holidays%29.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
