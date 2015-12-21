@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -255,13 +257,14 @@ namespace TTMouseclickSimulator.Core.Environment
 
 
 
-        private class ScreenshotContent : IScreenshotContent
+        private unsafe class ScreenshotContent : IScreenshotContent
         {
 
             private bool disposed;
 
-            private readonly System.Drawing.Bitmap bmp;
-            private readonly System.Drawing.Imaging.BitmapData bmpData;
+            private readonly Bitmap bmp;
+            private readonly BitmapData bmpData;
+            private readonly int* scan0;
 
 
             public Size Size
@@ -275,18 +278,29 @@ namespace TTMouseclickSimulator.Core.Environment
             {
                 WindowPosition = pos;
 
+                // Ensure we use Little Endian as byte order.
+                // TODO: Is there a better way than using IPAddress to check this?
+                if (IPAddress.HostToNetworkOrder((short)1) == 1)
+                    throw new InvalidOperationException("This class currently only works "
+                        + "on systems using little endian as byte order.");
+
                 Rectangle rect = new Rectangle(
                     pos.Coordinates.X, pos.Coordinates.Y, pos.Size.Width, pos.Size.Height);
 
                 bmp = new Bitmap(rect.Width, rect.Height,
-                    System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                    PixelFormat.Format32bppRgb);
                 using (var g = Graphics.FromImage(bmp))
                 {
-                    g.CopyFromScreen(rect.Location, new System.Drawing.Point(0, 0),
+                    g.CopyFromScreen(rect.Location, new Point(0, 0),
                         rect.Size, CopyPixelOperation.SourceCopy);
                 }
                 bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
-                    System.Drawing.Imaging.ImageLockMode.ReadOnly, bmp.PixelFormat);
+                    ImageLockMode.ReadOnly, bmp.PixelFormat);
+
+                // Use unsafe mode for fast access to the bitmapdata. We use a int* 
+                // pointer for faster access as the image format is 32-bit (althouth if
+                // the pointer is not 32-bit aligned it might take two read operations).
+                scan0 = (int*)bmpData.Scan0.ToPointer();
             }
 
             public ScreenshotColor GetPixel(Coordinates coords)
@@ -296,6 +310,9 @@ namespace TTMouseclickSimulator.Core.Environment
 
             public unsafe ScreenshotColor GetPixel(int x, int y)
             {
+                // Only do these checks in Debug mode so we get optimal performance
+                // when building as Release.
+#if DEBUG
                 if (disposed)
                     throw new ObjectDisposedException("ScreenshotContent");
                 if (x < 0 || x >= bmp.Width)
@@ -304,26 +321,22 @@ namespace TTMouseclickSimulator.Core.Environment
                     throw new ArgumentOutOfRangeException(nameof(y));
 
                 // This method assumes a 32-bit pixel format.
-                if (bmpData.PixelFormat != System.Drawing.Imaging.PixelFormat.Format32bppRgb)
+                if (bmpData.PixelFormat != PixelFormat.Format32bppRgb)
                     throw new InvalidOperationException("This method only works with a " 
                         + "pixel format of Format32bppRgb.");
+#endif
 
-                // Use unsafe mode for fast access to the bitmapdata.
-                byte* ptr = (byte*)bmpData.Scan0.ToPointer();
-                // Go to the line
-                ptr += y * bmpData.Stride;
-                // Go to the column. 
-                ptr += 4 * x;
-
-                byte b = *(ptr + 0);
-                byte g = *(ptr + 1);
-                byte r = *(ptr + 2);
+                // Go to the line and the column. We use a int pointer to do a single
+                // 32-Bit read instead of separate 8-Bit reads. We assume the runtime can
+                // then hold the color variable in a register.
+                int* ptr = scan0 + (y * bmpData.Width + x);
+                int color = *ptr;
 
                 return new ScreenshotColor()
                 {
-                    r = r,
-                    g = g,
-                    b = b
+                    b = (byte)(color & 0xFF),
+                    g = (byte)((color >> 0x8) & 0xFF),
+                    r = (byte)((color >> 0x10) & 0xFF)
                 };
             }
 
