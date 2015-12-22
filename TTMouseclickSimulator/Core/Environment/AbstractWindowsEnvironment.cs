@@ -31,8 +31,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         }
         /// <summary>
-        /// Finds the main window of the process with the specified name (without ".exe") 
-        /// and returns its main window handle.
+        /// Finds the main window of the given process and returns its main window handle.
         /// </summary>
         /// <param name="processname"></param>
         /// <exception cref="System.Exception"></exception>
@@ -70,8 +69,6 @@ namespace TTMouseclickSimulator.Core.Environment
             if (NativeMethods.GetForegroundWindow() != hWnd)
                 throw new Exception("The window is not in foreground any more.");
 
-            // TODO: Need to check if the calculaction done here is correct, especially with
-            // different screen DPI settings and multiple monitors.
             // Get the client size.
             NativeMethods.RECT clientRect;
             if (!NativeMethods.GetClientRect(hWnd, out clientRect))
@@ -264,7 +261,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
             private readonly Bitmap bmp;
             private readonly BitmapData bmpData;
-            private readonly int* scan0;
+            private int* scan0;
 
 
             public Size Size
@@ -308,7 +305,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 return GetPixel(coords.X, coords.Y);
             }
 
-            public unsafe ScreenshotColor GetPixel(int x, int y)
+            public ScreenshotColor GetPixel(int x, int y)
             {
                 // Only do these checks in Debug mode so we get optimal performance
                 // when building as Release.
@@ -351,6 +348,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 Dispose(true);
                 GC.SuppressFinalize(this);
             }
+
             protected void Dispose(bool disposing)
             {
                 if (!disposed && disposing)
@@ -358,6 +356,7 @@ namespace TTMouseclickSimulator.Core.Environment
                     bmp.UnlockBits(bmpData);
                     bmp.Dispose();
                 }
+                scan0 = null;
                 disposed = true;
             }
 

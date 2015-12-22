@@ -60,22 +60,23 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 await provider.WaitAsync(1000);
 
                 // Get a current screenshot.
-                var screenshot = provider.CreateCurrentWindowScreenshot();
-
-                foreach (Coordinates c in fishResultDialogCoordinates)
+                using (var screenshot = provider.CreateCurrentWindowScreenshot())
                 {
-                    var cc = screenshot.WindowPosition.ScaleCoordinates(
-                        c, MouseHelpers.ReferenceWindowSize);
-                    var col = screenshot.GetPixel(cc);
 
-                    if (CompareColor(fishResultDialogColor, col, 10))
+                    foreach (Coordinates c in fishResultDialogCoordinates)
                     {
-                        // OK, we catched a fish, so break from the loop.
-                        found = true;
-                        break;
+                        var cc = screenshot.WindowPosition.ScaleCoordinates(
+                            c, MouseHelpers.ReferenceWindowSize);
+                        var col = screenshot.GetPixel(cc);
+
+                        if (CompareColor(fishResultDialogColor, col, 10))
+                        {
+                            // OK, we catched a fish, so break from the loop.
+                            found = true;
+                            break;
+                        }
                     }
                 }
-
             }
         }
 
