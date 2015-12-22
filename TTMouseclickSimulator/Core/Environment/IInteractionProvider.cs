@@ -41,7 +41,13 @@ namespace TTMouseclickSimulator.Core.Environment
         /// IActions don't need to catch this exception.</exception>
         WindowPosition GetCurrentWindowPosition();
 
-        IScreenshotContent CreateCurrentWindowScreenshot();
+        /// <summary>
+        /// Gets a current screenshot of the window. Note that because the IInteractionProvider
+        /// caches the current screenshot for performance reason, this method may return
+        /// the same IScreenshotContent instance as previous calls but with refreshed content.
+        /// </summary>
+        /// <returns></returns>
+        IScreenshotContent GetCurrentWindowScreenshot();
 
         void MoveMouse(int x, int y);
 
@@ -70,8 +76,7 @@ namespace TTMouseclickSimulator.Core.Environment
     {
         public SimulatorCanceledException() : 
             base("The Simulator has been canceled.")
-        {
-
-        }
+        { }
     }
+    
 }

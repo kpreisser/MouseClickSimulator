@@ -24,6 +24,7 @@ namespace TTMouseclickSimulator.Core.Environment
         private readonly AbstractWindowsEnvironment environmentInterface;
 
         private Process process;
+        private AbstractWindowsEnvironment.ScreenshotContent currentScreenshot;
         private bool isMouseButtonPressed = false;
         private List<AbstractWindowsEnvironment.VirtualKeyShort> keysCurrentlyPressed 
             = new List<AbstractWindowsEnvironment.VirtualKeyShort>();
@@ -125,12 +126,13 @@ namespace TTMouseclickSimulator.Core.Environment
             return GetMainWindowPosition();
         }
 
-        public IScreenshotContent CreateCurrentWindowScreenshot()
+        public IScreenshotContent GetCurrentWindowScreenshot()
         {
             EnsureNotCanceled();
 
             IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
-            return environmentInterface.CreateWindowScreenshot(hWnd);
+            currentScreenshot = environmentInterface.CreateWindowScreenshot(hWnd, currentScreenshot);
+            return currentScreenshot;
         }
 
         public void PressKey(AbstractWindowsEnvironment.VirtualKeyShort key)
@@ -238,6 +240,9 @@ namespace TTMouseclickSimulator.Core.Environment
                     if (process != null)
                         process.Dispose();
 
+                    if (currentScreenshot != null)
+                        currentScreenshot.Dispose();
+
 
                     // Release mouse buttons and keys that are currently pressed.
                     // Note that if another task is currently waiting in the WaitAsync() method, it can
@@ -255,5 +260,6 @@ namespace TTMouseclickSimulator.Core.Environment
                 }
             }
         }
+
     }
 }

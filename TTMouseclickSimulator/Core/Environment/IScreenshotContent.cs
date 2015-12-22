@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace TTMouseclickSimulator.Core.Environment
 {
-    public interface IScreenshotContent : IDisposable
+    public interface IScreenshotContent
     {
-
         WindowPosition WindowPosition { get; }
 
         ScreenshotColor GetPixel(Coordinates coords);

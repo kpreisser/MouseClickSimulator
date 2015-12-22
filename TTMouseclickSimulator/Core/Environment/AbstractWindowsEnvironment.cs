@@ -106,11 +106,10 @@ namespace TTMouseclickSimulator.Core.Environment
             // Do nothing.
         }
 
-        public IScreenshotContent CreateWindowScreenshot(IntPtr hWnd)
+        public ScreenshotContent CreateWindowScreenshot(IntPtr hWnd, ScreenshotContent existingScreenshot = null)
         {
             WindowPosition pos = GetWindowPosition(hWnd);
-            ScreenshotContent scrn = new ScreenshotContent(pos);
-            return scrn;
+            return ScreenshotContent.Create(pos, existingScreenshot);
         }
 
 
@@ -254,13 +253,13 @@ namespace TTMouseclickSimulator.Core.Environment
 
 
 
-        private unsafe class ScreenshotContent : IScreenshotContent
+        public unsafe class ScreenshotContent : IScreenshotContent
         {
 
             private bool disposed;
 
             private readonly Bitmap bmp;
-            private readonly BitmapData bmpData;
+            private BitmapData bmpData;
             private int* scan0;
 
 
@@ -270,8 +269,29 @@ namespace TTMouseclickSimulator.Core.Environment
             }
 
             public WindowPosition WindowPosition { get; }
+            private Rectangle rect;
 
-            public ScreenshotContent(WindowPosition pos)
+            public static ScreenshotContent Create(WindowPosition pos, 
+                ScreenshotContent existingScreenshot = null)
+            {
+                // Try to reuse the existing screenshot's bitmap, if it has the same size.
+                if (existingScreenshot != null && !(existingScreenshot.Size.Width == pos.Size.Width
+                    && existingScreenshot.Size.Height == pos.Size.Height))
+                {
+                    // We cannot use the existing screenshot, so dispose of it.
+                    existingScreenshot.Dispose();
+                    existingScreenshot = null;
+                }
+
+                if (existingScreenshot == null)
+                    existingScreenshot = new ScreenshotContent(pos);
+
+                existingScreenshot.FillScreenshot();
+                return existingScreenshot;
+            }
+
+
+            private ScreenshotContent(WindowPosition pos)
             {
                 WindowPosition = pos;
 
@@ -281,23 +301,48 @@ namespace TTMouseclickSimulator.Core.Environment
                     throw new InvalidOperationException("This class currently only works "
                         + "on systems using little endian as byte order.");
 
-                Rectangle rect = new Rectangle(
+                rect = new Rectangle(
                     pos.Coordinates.X, pos.Coordinates.Y, pos.Size.Width, pos.Size.Height);
 
                 bmp = new Bitmap(rect.Width, rect.Height,
                     PixelFormat.Format32bppRgb);
+            }
+
+            private void OpenBitmapData()
+            {
+                if (bmpData == null)
+                {
+                    bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
+                        ImageLockMode.ReadOnly, bmp.PixelFormat);
+
+                    // Use unsafe mode for fast access to the bitmapdata. We use a int* 
+                    // pointer for faster access as the image format is 32-bit (althouth if
+                    // the pointer is not 32-bit aligned it might take two read operations).
+                    scan0 = (int*)bmpData.Scan0.ToPointer();
+                }
+            }
+
+            private void CloseBitmapData()
+            {
+                if (bmpData != null)
+                {
+                    bmp.UnlockBits(bmpData);
+                    bmpData = null;
+                    scan0 = null;
+                }
+            }
+
+            private void FillScreenshot()
+            {
+                CloseBitmapData();
+
                 using (var g = Graphics.FromImage(bmp))
                 {
                     g.CopyFromScreen(rect.Location, new Point(0, 0),
                         rect.Size, CopyPixelOperation.SourceCopy);
                 }
-                bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
-                    ImageLockMode.ReadOnly, bmp.PixelFormat);
 
-                // Use unsafe mode for fast access to the bitmapdata. We use a int* 
-                // pointer for faster access as the image format is 32-bit (althouth if
-                // the pointer is not 32-bit aligned it might take two read operations).
-                scan0 = (int*)bmpData.Scan0.ToPointer();
+                OpenBitmapData();
             }
 
             public ScreenshotColor GetPixel(Coordinates coords)
@@ -353,10 +398,9 @@ namespace TTMouseclickSimulator.Core.Environment
             {
                 if (!disposed && disposing)
                 {
-                    bmp.UnlockBits(bmpData);
+                    CloseBitmapData();
                     bmp.Dispose();
                 }
-                scan0 = null;
                 disposed = true;
             }
 
