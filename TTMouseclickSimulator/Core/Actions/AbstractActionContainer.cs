@@ -12,10 +12,8 @@ namespace TTMouseclickSimulator.Core.Actions
 
         public event Action<int?> SubActionStartedOrStopped;
 
-        protected void OnSubActionStartedOrStopped(int? index)
-        {
-            if (SubActionStartedOrStopped != null)
-                SubActionStartedOrStopped(index);
-        }
+
+        protected void OnSubActionStartedOrStopped(int? index) =>
+            SubActionStartedOrStopped?.Invoke(index);
     }
 }

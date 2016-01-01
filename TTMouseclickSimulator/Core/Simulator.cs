@@ -88,16 +88,8 @@ namespace TTMouseclickSimulator.Core
         }
 
 
-        protected void OnSimulatorStarted()
-        {
-            if (SimulatorStarted != null)
-                SimulatorStarted();
-        }
+        protected void OnSimulatorStarted() => SimulatorStarted?.Invoke();
 
-        protected void OnSimulatorStopped()
-        {
-            if (SimulatorStopped != null)
-                SimulatorStopped();
-        }
+        protected void OnSimulatorStopped() => SimulatorStopped?.Invoke();
     }
 }
