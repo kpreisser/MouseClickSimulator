@@ -33,9 +33,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
         }
 
 
-        public override string ToString()
-        {
-            return $"Press Key – Key: {key}, Duration: {duration}";
-        }
+        public override string ToString() => $"Press Key – Key: {key}, Duration: {duration}";
     }
 }

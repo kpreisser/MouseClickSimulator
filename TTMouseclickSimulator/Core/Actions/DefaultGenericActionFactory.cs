@@ -11,14 +11,8 @@ namespace TTMouseclickSimulator.Core.Actions
     /// </summary>
     public class DefaultGenericActionFactory<T> : IActionFactory<T> where T : IAction, new()
     {
-        public T CreateAction()
-        {
-            return new T();
-        }
-
-        IAction IActionFactory.CreateAction()
-        {
-            return CreateAction();
-        }
+        public T CreateAction() => new T();
+        
+        IAction IActionFactory.CreateAction() => CreateAction();
     }
 }

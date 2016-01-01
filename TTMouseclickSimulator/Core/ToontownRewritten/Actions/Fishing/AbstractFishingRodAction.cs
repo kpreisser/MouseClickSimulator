@@ -22,9 +22,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
 
         public AbstractFishingRodAction()
-        {
-            
-        }
+        { }
 
 
         /// <summary>
@@ -38,8 +36,10 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             new Coordinates(634, 504),
             new Coordinates(564, 100)
         };
+
         private static readonly ScreenshotColor fishResultDialogColor =
             new ScreenshotColor(255, 255, 191);
+
 
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
@@ -133,9 +133,17 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
             public byte GetValueFromIndex(int index)
             {
-                return index == 0 ? ToleranceR : index == 1 ? ToleranceG : ToleranceB;
-
-                throw new ArgumentOutOfRangeException(nameof(index));
+                switch (index)
+                {
+                    case 0:
+                        return ToleranceR;
+                    case 1:
+                        return ToleranceG;
+                    case 2:
+                        return ToleranceB;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(index));
+                }
             }
 
             public Tolerance(byte toleranceR, byte toleranceG, byte toleranceB)
@@ -149,10 +157,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 : this(tolerance, tolerance, tolerance)
             { }
 
-            public static implicit operator Tolerance(byte value)
-            {
-                return new Tolerance(value);
-            }
+            public static implicit operator Tolerance(byte value) => new Tolerance(value);
         }
     }
 }

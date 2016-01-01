@@ -31,20 +31,18 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public byte GetValueFromIndex(int index)
         {
-            if (index == 0)
-                return r;
-            else if (index == 1)
-                return g;
-            else if (index == 2)
-                return b;
-
-            throw new ArgumentOutOfRangeException(nameof(index));
+            switch (index) {
+                case 0:
+                    return r;
+                case 1:
+                    return g;
+                case 2:
+                    return b;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(index));
+            }
         }
 
-        public System.Windows.Media.Color ToColor()
-        {
-            return System.Windows.Media.Color.FromArgb(255, r, g, b);
-        }
+        public System.Windows.Media.Color ToColor() => System.Windows.Media.Color.FromArgb(255, r, g, b);
     }
-
 }

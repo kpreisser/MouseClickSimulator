@@ -20,14 +20,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment
         public static TTRWindowsEnvironment Instance { get; } = new TTRWindowsEnvironment();
 
         private TTRWindowsEnvironment()
-        {
+        { }
 
-        }
-
-        public override sealed Process FindProcess()
-        {
-            return FindProcessByName(ProcessName);
-        }
+        public override sealed Process FindProcess() => FindProcessByName(ProcessName);
 
 
         protected override sealed void ValidateWindowPosition(WindowPosition pos)

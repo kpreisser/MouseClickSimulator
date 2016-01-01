@@ -10,16 +10,13 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
     public class QuitFishingAction : AbstractAction
     {
-
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             Coordinates c = new Coordinates(1503, 1086);
             await MouseHelpers.DoSimpleMouseClickAsync(provider, c, 200);
         }
 
-        public override string ToString()
-        {
-            return "Quit Fishing";
-        }
+
+        public override string ToString() => "Quit Fishing";
     }
 }

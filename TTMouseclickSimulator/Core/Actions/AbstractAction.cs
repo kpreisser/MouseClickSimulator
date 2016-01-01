@@ -9,7 +9,6 @@ namespace TTMouseclickSimulator.Core.Actions
 {
     public abstract class AbstractAction : IAction
     {
-
         public event Action<string> ActionInformationUpdated;
         
         public abstract Task RunAsync(IInteractionProvider provider);

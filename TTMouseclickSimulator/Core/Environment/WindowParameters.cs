@@ -7,14 +7,6 @@ using System.Threading.Tasks;
 namespace TTMouseclickSimulator.Core.Environment
 {
     
-    //public class WindowParameters
-    //{
-    //    public IntPtr hWnd;
-    //    public WindowPosition windowPosition { get; set; }
-
-    //}
-
-
     /// <summary>
     /// Specifies parameters of the destination window in pixels.
     /// Note that the window border is excluded.
@@ -31,10 +23,7 @@ namespace TTMouseclickSimulator.Core.Environment
         public Size Size { get; set; }
 
         
-        public Coordinates RelativeToAbsoluteCoordinates(Coordinates c)
-        {
-            return Coordinates.Add(c);
-        }
+        public Coordinates RelativeToAbsoluteCoordinates(Coordinates c) => Coordinates.Add(c);
     }
 
     public struct Coordinates
@@ -48,10 +37,7 @@ namespace TTMouseclickSimulator.Core.Environment
             this.Y = y;
         }
 
-        public Coordinates Add(Coordinates c)
-        {
-            return new Coordinates(X + c.X, Y + c.Y);
-        }
+        public Coordinates Add(Coordinates c) => new Coordinates(X + c.X, Y + c.Y);
     }
 
     public struct Size

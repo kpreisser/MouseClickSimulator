@@ -11,7 +11,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat
     [Serializable]
     public class SpeedchatAction : AbstractAction
     {
-        private static readonly int[] xWidths = {
+        private static readonly int[] xWidths =
+        {
             215,
             215 + 250,
             215 + 250 + 180

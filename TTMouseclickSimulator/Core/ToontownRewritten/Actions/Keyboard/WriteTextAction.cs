@@ -52,9 +52,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
         }
 
 
-        public override string ToString()
-        {
-            return $"Write Text – Text: \"{text}\"" + (pauseDuration.HasValue ? "" : $", Pause Duration: {pauseDuration}");
-        }
+        public override string ToString() => $"Write Text – Text: \"{text}\"" 
+            + (pauseDuration.HasValue ? "" : $", Pause Duration: {pauseDuration}");
     }
 }

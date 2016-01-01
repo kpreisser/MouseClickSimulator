@@ -12,7 +12,6 @@ namespace TTMouseclickSimulator.Core.Actions
     /// </summary>
     public class LoopAction : AbstractActionContainer
     {
-
         private readonly IAction action;
         /// <summary>
         /// Specifies how often the action is run. null means infinite.
@@ -30,10 +29,7 @@ namespace TTMouseclickSimulator.Core.Actions
             this.count = count;
         }
 
-        public override IList<IAction> SubActions
-        {
-            get { return new List<IAction>() { action }; }
-        }
+        public override IList<IAction> SubActions => new List<IAction>() { action };
 
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
@@ -54,9 +50,6 @@ namespace TTMouseclickSimulator.Core.Actions
         }
 
 
-        public override string ToString()
-        {
-            return $"Loop – Count: {count}";
-        }
+        public override string ToString() => $"Loop – Count: {count}";
     }
 }

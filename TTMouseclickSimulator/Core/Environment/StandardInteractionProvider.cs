@@ -11,8 +11,8 @@ namespace TTMouseclickSimulator.Core.Environment
 {
     internal class StandardInteractionProvider : IInteractionProvider, IDisposable
     {
-
         private bool disposed = false;
+
         /// <summary>
         /// Specifies if this InteractionProvider has been canceled. This flag can be set by
         /// another thread while the simulator is running.
@@ -113,11 +113,9 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
-        private WindowPosition GetMainWindowPosition()
-        {
-            IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
-            return environmentInterface.GetWindowPosition(hWnd);
-        }
+        private WindowPosition GetMainWindowPosition() =>
+            environmentInterface.GetWindowPosition(environmentInterface.FindMainWindowHandleOfProcess(process));
+        
 
         public WindowPosition GetCurrentWindowPosition()
         {
@@ -167,11 +165,8 @@ namespace TTMouseclickSimulator.Core.Environment
             environmentInterface.WriteText(text);
         }
 
-        public void MoveMouse(Coordinates c)
-        {
-            MoveMouse(c.X, c.Y);
-        }
-
+        public void MoveMouse(Coordinates c) => MoveMouse(c.X, c.Y);
+        
         public void MoveMouse(int x, int y)
         {
             EnsureNotCanceled();

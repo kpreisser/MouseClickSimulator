@@ -10,7 +10,6 @@ namespace TTMouseclickSimulator.Core
 {
     public class Simulator
     {
-        
         private readonly SimulatorConfiguration config;
         private readonly AbstractWindowsEnvironment environmentInterface;
 
@@ -24,8 +23,7 @@ namespace TTMouseclickSimulator.Core
         // TODO: This needs a refactoring so that an action can update its state.
         //public event Action<IAction, int> ActionStarted;
         public event Action SimulatorStopped;
-
-
+        
 
         public Simulator(SimulatorConfiguration config, AbstractWindowsEnvironment environmentInterface)
         {
@@ -41,8 +39,6 @@ namespace TTMouseclickSimulator.Core
             this.environmentInterface = environmentInterface;
 
             provider = new StandardInteractionProvider(environmentInterface, out cancelCallback);
-            
-
         }
 
         /// <summary>
@@ -98,19 +94,10 @@ namespace TTMouseclickSimulator.Core
                 SimulatorStarted();
         }
 
-        //protected void OnActionStarted(IAction simAction, int idx)
-        //{
-        //    if (ActionStarted != null)
-        //        ActionStarted(simAction, idx);
-        //}
-
         protected void OnSimulatorStopped()
         {
             if (SimulatorStopped != null)
-            {
                 SimulatorStopped();
-            }
         }
-
     }
 }

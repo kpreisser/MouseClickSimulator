@@ -12,7 +12,6 @@ namespace TTMouseclickSimulator.Core.Actions
     /// </summary>
     public class CompoundAction : AbstractActionContainer
     {
-
         public const int PauseIntervalMinimum = 0;
         public const int PauseIntervalMaximum = 60000;
 
@@ -26,10 +25,7 @@ namespace TTMouseclickSimulator.Core.Actions
 
         private readonly Random rng = new Random();
 
-        public override sealed IList<IAction> SubActions
-        {
-            get { return actionList; }
-        }
+        public override sealed IList<IAction> SubActions => actionList;
 
 
         /// <summary>
@@ -142,10 +138,9 @@ namespace TTMouseclickSimulator.Core.Actions
             }
         }
 
-        public override string ToString()
-        {
-            return $"Compound – Type: {type}, MinPause: {minimumPauseDuration}, MaxPause: {maximumPauseDuration}, Loop: {loop}";
-        }
+
+        public override string ToString() => $"Compound – Type: {type}, " 
+            + $"MinPause: {minimumPauseDuration}, MaxPause: {maximumPauseDuration}, Loop: {loop}";
 
 
         public enum CompoundActionType : int

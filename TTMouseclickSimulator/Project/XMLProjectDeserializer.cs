@@ -57,10 +57,7 @@ namespace TTMouseclickSimulator.Project
         }
 
 
-        public SimulatorProject Deserialize(Stream s)
-        {
-            return ParseDocument(XDocument.Load(s));
-        }
+        public SimulatorProject Deserialize(Stream s) => ParseDocument(XDocument.Load(s));
 
         private SimulatorProject ParseDocument(XDocument doc)
         {
@@ -263,6 +260,5 @@ namespace TTMouseclickSimulator.Project
 
             return actionList;
         }
-        
     }
 }

@@ -29,11 +29,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction
         }
 
 
-        public override string ToString()
-        {
-            return $"Doodle Panel – Button: {button}";
-        }
-
+        public override string ToString() =>  $"Doodle Panel – Button: {button}";
+        
 
         public enum DoodlePanelButton : int
         {

@@ -13,7 +13,6 @@ namespace TTMouseclickSimulator.Core.Environment
     /// </summary>
     public interface IInteractionProvider
     {
-
         /// <summary>
         /// Checks that the Simulator has not been canceled.
         /// </summary>
@@ -65,7 +64,6 @@ namespace TTMouseclickSimulator.Core.Environment
         /// </summary>
         /// <param name="text"></param>
         void WriteText(string text);
-
     }
 
 

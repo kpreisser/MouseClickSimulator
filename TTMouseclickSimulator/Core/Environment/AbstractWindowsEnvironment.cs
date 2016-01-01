@@ -15,7 +15,6 @@ namespace TTMouseclickSimulator.Core.Environment
     /// </summary>
     public abstract class AbstractWindowsEnvironment
     {
-
         /// <summary>
         /// Finds the process with the specified name (without ".exe").
         /// </summary>
@@ -30,6 +29,7 @@ namespace TTMouseclickSimulator.Core.Environment
             return processes[0];
 
         }
+
         /// <summary>
         /// Finds the main window of the given process and returns its main window handle.
         /// </summary>
@@ -106,28 +106,17 @@ namespace TTMouseclickSimulator.Core.Environment
             // Do nothing.
         }
 
-        public ScreenshotContent CreateWindowScreenshot(IntPtr hWnd, ScreenshotContent existingScreenshot = null)
-        {
-            WindowPosition pos = GetWindowPosition(hWnd);
-            return ScreenshotContent.Create(pos, existingScreenshot);
-        }
+        public ScreenshotContent CreateWindowScreenshot(IntPtr hWnd, ScreenshotContent existingScreenshot = null) =>
+            ScreenshotContent.Create(GetWindowPosition(hWnd), existingScreenshot);
+        
+        
 
-
-        public void MoveMouse(int x, int y)
-        {
-            DoMouseInput(x, y, true, null);
-        }
-
-        public void PressMouseButton()
-        {
-            DoMouseInput(0, 0, false, true);
-        }
-
-        public void ReleaseMouseButton()
-        {
-            DoMouseInput(0, 0, false, false);
-        }
-
+        public void MoveMouse(int x, int y) => DoMouseInput(x, y, true, null);
+        
+        public void PressMouseButton() => DoMouseInput(0, 0, false, true);
+        
+        public void ReleaseMouseButton() => DoMouseInput(0, 0, false, false);
+        
         private void DoMouseInput(int x, int y, bool absoluteCoordinates, bool? mouseDown)
         {
             // TODO: Maybe we should instead send WM_MOUSEMOVE, WM_LBUTTONDOWN etc.
@@ -201,16 +190,10 @@ namespace TTMouseclickSimulator.Core.Environment
         }
 
 
-        public void PressKey(VirtualKeyShort keyCode)
-        {
-            PressOrReleaseKey(keyCode, true);
-        }
-
-        public void ReleaseKey(VirtualKeyShort keyCode)
-        {
-            PressOrReleaseKey(keyCode, false);
-        }
-
+        public void PressKey(VirtualKeyShort keyCode) => PressOrReleaseKey(keyCode, true);
+        
+        public void ReleaseKey(VirtualKeyShort keyCode) => PressOrReleaseKey(keyCode, false);
+        
         private void PressOrReleaseKey(VirtualKeyShort keyCode, bool down)
         {
             var ki = new NativeMethods.KEYBDINPUT();
@@ -248,7 +231,6 @@ namespace TTMouseclickSimulator.Core.Environment
 
             if (NativeMethods.SendInput((uint)inputs.Length, inputs, NativeMethods.INPUT.Size) == 0)
                 throw new System.ComponentModel.Win32Exception();
-
         }
 
 
@@ -263,10 +245,7 @@ namespace TTMouseclickSimulator.Core.Environment
             private int* scan0;
 
 
-            public Size Size
-            {
-                get { return new Size(bmp.Width, bmp.Height); }
-            }
+            public Size Size => new Size(bmp.Width, bmp.Height); 
 
             public WindowPosition WindowPosition { get; }
             private Rectangle rect;
@@ -345,11 +324,8 @@ namespace TTMouseclickSimulator.Core.Environment
                 OpenBitmapData();
             }
 
-            public ScreenshotColor GetPixel(Coordinates coords)
-            {
-                return GetPixel(coords.X, coords.Y);
-            }
-
+            public ScreenshotColor GetPixel(Coordinates coords) => GetPixel(coords.X, coords.Y);
+            
             public ScreenshotColor GetPixel(int x, int y)
             {
                 // Only do these checks in Debug mode so we get optimal performance
@@ -403,7 +379,6 @@ namespace TTMouseclickSimulator.Core.Environment
                 }
                 disposed = true;
             }
-
         }
 
         

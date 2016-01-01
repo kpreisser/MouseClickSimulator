@@ -9,11 +9,9 @@ namespace TTMouseclickSimulator.Core
 {
     public class SimulatorConfiguration
     {
-
         /// <summary>
         /// Specifies the action that is run by the simulator.
         /// </summary>
         public IAction MainAction { get; set; }
-        
     }
 }

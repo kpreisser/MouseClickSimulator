@@ -38,6 +38,5 @@ namespace TTMouseclickSimulator.Core.Actions
         /// or stopped.
         /// </summary>
         event Action<int?> SubActionStartedOrStopped;
-
     }
 }

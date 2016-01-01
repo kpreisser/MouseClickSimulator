@@ -13,10 +13,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
     {
         private FishingSpotData spotData;
 
-        protected override int WaitingForFishResultDialogTime
-        {
-            get { return 6000; }
-        }
+        protected override int WaitingForFishResultDialogTime => 6000;
 
         public AutomaticFishingAction(int[] scan1, int[] scan2, byte[] bubbleColorRgb, byte[] toleranceRgb)
         {
@@ -139,10 +136,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         }
 
 
-        public override string ToString()
-        {
-            return $"Automatic Fishing – "
+        public override string ToString() => $"Automatic Fishing – "
                 + $"Color: [{spotData.BubbleColor.r}, {spotData.BubbleColor.g}, {spotData.BubbleColor.b}]";
-        }
     }
 }

@@ -9,7 +9,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
     public class FishingSpotData
     {
-        
         public Coordinates Scan1 { get; }
         public Coordinates Scan2 { get; }
         public ScreenshotColor BubbleColor { get; }
@@ -24,7 +23,5 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             this.BubbleColor = bubbleColor;
             this.Tolerance = tolerance;
         }
-
-
     }
 }
