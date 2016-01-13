@@ -113,7 +113,7 @@ namespace TTMouseclickSimulator.Project
                     // Look if we find the action type.
                     Type t;
                     if (!actionTypes.TryGetValue(child.Name.LocalName, out t))
-                        throw new InvalidDataException($"{child.Name} could not be recognized " 
+                        throw new InvalidDataException($"{child.Name.LocalName} could not be recognized " 
                             + "as an Action type.");
 
                     // Get the constructor.
