@@ -24,7 +24,7 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             Process[] processes = Process.GetProcessesByName(processname);
             if (processes.Length == 0)
-                throw new ArgumentException($"Could not find Process '{processname}'.");
+                throw new ArgumentException($"Could not find Process '{processname}.exe'.");
 
             return processes[0];
 
