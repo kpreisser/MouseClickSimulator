@@ -22,7 +22,19 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment
         private TTRWindowsEnvironment()
         { }
 
-        public override sealed Process FindProcess() => FindProcessByName(ProcessName);
+        public override sealed Process FindProcess()
+        {
+            try
+            {
+                return FindProcessByName(ProcessName);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException("Could not find Toontown Rewritten. Please make sure " 
+                    + "TT Rewritten is running before starting the simulator.\r\n\r\n"
+                    + "Details: " + ex.Message, ex);
+            }
+        }
 
 
         protected override sealed void ValidateWindowPosition(WindowPosition pos)
