@@ -27,7 +27,10 @@ if not exist "!BuildExe!" (
 	exit /b 1
 )
 
-"!BuildExe!" /v:minimal /nologo /p:Configuration=Release "TTMouseclickSimulator\TTMouseclickSimulator.csproj"
+REM Note that we need to specify both "Configuration" and "Platform" parameters, because
+REM otherwise MSBuild will fill missing parameters from environment variables (and some
+REM systems may have set a "Platform" variable).
+"!BuildExe!" /v:minimal /nologo /p:Configuration=Release /p:Platform=AnyCPU "TTMouseclickSimulator\TTMouseclickSimulator.csproj"
 if not errorlevel 1 (
 	echo.
 	echo.Build successful^^!
