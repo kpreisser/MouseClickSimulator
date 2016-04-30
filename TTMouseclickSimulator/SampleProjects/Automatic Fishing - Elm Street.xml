@@ -14,7 +14,7 @@ Before you click on Start, make sure that
       
     <Compound type="Sequential">
         
-      <!-- Use the automatic fishing action for punchline place 19 times,
+      <!-- Use the automatic fishing action 19 times,
            plus the straight fishing action.
       -->
       <Compound type="Sequential" minimumPause="200" maximumPause="400" loop="false">

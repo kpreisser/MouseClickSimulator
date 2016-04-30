@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
-  <Title>Automatic Fishing in Lighthouse Lane</Title>
+  <Title>Automatic Fishing in Lullaby Lane</Title>
   <Description>
-The Toon will automatically fish in Lighthouse Lane, Donald's Dock.
+The Toon will automatically fish in Lullaby Lane, Donald's Dreamland.
 Before you click on Start, make sure that
 • you are in a quiet district,
 • your fish bucket is empty,
 • you have enough JellyBeans for 20 casts,
-• your toon is standing on the second fishing board on the right (viewed from entrance).
+• your toon is standing on the second fishing board (viewed from entrance).
   </Description>
 
   <MainAction>
@@ -19,8 +19,8 @@ Before you click on Start, make sure that
       -->
       <Compound type="Sequential" minimumPause="200" maximumPause="400" loop="false">
         <Loop count="19">
-          <AutomaticFishing scan1="140, 151" scan2="1428, 728" bubbleColorRgb="38, 81, 135"
-                            toleranceRgb="7, 15, 6" />
+          <AutomaticFishing scan1="248, 239" scan2="1492, 660" bubbleColorRgb="55, 103, 116"
+                            toleranceRgb="8, 14, 11" />
         </Loop>
         <!--
         The last cast must always be straight; otherwise the toon will rotate in
@@ -36,14 +36,13 @@ Before you click on Start, make sure that
         
       <!-- Now go to the fisherman and sell the fish. -->
       <Compound type="Sequential" minimumPause="400" maximumPause="700" loop="false">
-        <PressKey key="Right" duration="320" />
-        <PressKey key="Up" duration="3000" />
-        <Pause duration="1500" />
+        <PressKey key="Up" duration="3600" />
+        <Pause duration="1300" />
           
         <SellFish />
           
-        <Pause duration="1500" />
-        <PressKey key="Down" duration="5000" />
+        <Pause duration="1300" />
+        <PressKey key="Down" duration="6800" />
         <Pause duration="2000" />
       </Compound>
         
