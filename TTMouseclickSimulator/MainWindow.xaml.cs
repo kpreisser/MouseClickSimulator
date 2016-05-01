@@ -93,7 +93,7 @@ namespace TTMouseclickSimulator
             simulatorStopAction?.Invoke();
 
             // Don't show a messagebox if we need to close the window.
-            if (!closeWindowAfterStop && runException != null && (runException is SimulatorCanceledException))
+            if (!closeWindowAfterStop && runException != null && !(runException is SimulatorCanceledException))
                 TaskDialog.Show(this, runException.Message, "Simulator stopped!", AppName, TaskDialog.TaskDialogButtons.OK, TaskDialog.TaskDialogIcon.Stop);
 
             HandleSimulatorCanceled();
