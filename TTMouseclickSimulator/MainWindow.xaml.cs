@@ -94,7 +94,21 @@ namespace TTMouseclickSimulator
 
             // Don't show a messagebox if we need to close the window.
             if (!closeWindowAfterStop && runException != null && !(runException is SimulatorCanceledException))
-                TaskDialog.Show(this, runException.Message, "Simulator stopped!", AppName, TaskDialog.TaskDialogButtons.OK, TaskDialog.TaskDialogIcon.Stop);
+            {
+                TaskDialog dialog = new TaskDialog()
+                {
+                    Title = AppName,
+                    MainInstruction = "Simulator stopped!",
+                    Content = runException.Message,
+                    ExpandedInformation = GetExceptionDetailsText(runException),
+                    Flags = TaskDialog.TaskDialogFlags.SizeToContent | TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
+                        TaskDialog.TaskDialogFlags.ExpandFooterArea,
+                    MainIcon = TaskDialog.TaskDialogIcon.Stop,
+                    MainBarIcon = TaskDialog.TaskDialogBarIcon.RedBar,
+                    CommonButtons = TaskDialog.TaskDialogButtons.OK
+                };
+                dialog.Show(this);
+            }
 
             HandleSimulatorCanceled();
         }
@@ -195,8 +209,8 @@ namespace TTMouseclickSimulator
                         MainInstruction = "Could not load the selected project.",
                         Content = ex.Message,
                         ExpandedInformation = GetExceptionDetailsText(ex),
-                        Flags = TaskDialog.TaskDialogFlags.SizeToContent | 
-                            TaskDialog.TaskDialogFlags.PositionRelativeToWindow | TaskDialog.TaskDialogFlags.ExpandFooterArea,
+                        Flags = TaskDialog.TaskDialogFlags.SizeToContent | TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
+                            TaskDialog.TaskDialogFlags.ExpandFooterArea,
                         MainIcon = TaskDialog.TaskDialogIcon.Stop,
                         MainBarIcon = TaskDialog.TaskDialogBarIcon.RedBar,
                         CommonButtons = TaskDialog.TaskDialogButtons.OK
