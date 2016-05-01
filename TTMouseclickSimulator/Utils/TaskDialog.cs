@@ -47,6 +47,8 @@ namespace TTMouseclickSimulator.Utils
         private RadioButton resultRadioButton;
         private bool verificationFlagChecked;
 
+        private Action internalNavigatedHandler;
+
 
         /// <summary>
         /// The window handle of the dialog, or <see cref="IntPtr.Zero"/> if the dialog is not active.
@@ -74,6 +76,12 @@ namespace TTMouseclickSimulator.Utils
         public TaskDialogIcon MainIcon { get; set; }
 
         public TaskDialogIcon FooterIcon { get; set; }
+
+        /// <summary>
+        /// If set to one of the bar icons, the TaskDialog will get that color in
+        /// the main instruction bar.
+        /// </summary>
+        public TaskDialogIcon MainBarIcon { get; set; }
 
         public TaskDialogButtons CommonButtons { get; set; }
 
@@ -251,7 +259,7 @@ namespace TTMouseclickSimulator.Utils
             }
         }
 
-        private void CreateConfig(out TaskDialogConfig config)
+        private void CreateConfig(out TaskDialogConfig config, TaskDialogIcon mainIcon)
         {
             config = new TaskDialogConfig()
             {
@@ -262,7 +270,7 @@ namespace TTMouseclickSimulator.Utils
                 pszContent = Content,
                 pszFooter = Footer,
                 dwCommonButtons = CommonButtons,
-                hMainIcon = (IntPtr)MainIcon,
+                hMainIcon = (IntPtr)mainIcon,
                 dwFlags = Flags,
                 hFooterIcon = (IntPtr)FooterIcon,
                 pszVerificationText = VerificationText,
@@ -371,7 +379,19 @@ namespace TTMouseclickSimulator.Utils
                 {
                     case TaskDialogNotifications.Created:
                         ApplyButtonInitialization();
-                        OnOpened(EventArgs.Empty);
+                        if (MainBarIcon != default(TaskDialogIcon))
+                        {
+                            // When the user wants to use one of the bar icons with a different main icon,
+                            // we need to recreate the dialog with the bar icon, then update the main icon to the
+                            // original one. The additional step of Navigating is required for the system to
+                            // play the correct sound for the original icon when the dialog appears.
+                            internalNavigatedHandler = () => UpdateElements(TaskDialogUpdateElements.MainIcon);
+                            Navigate(MainBarIcon);
+                        }
+                        else
+                        {
+                            OnOpened(EventArgs.Empty);
+                        }
                         break;
                     case TaskDialogNotifications.Destroyed:
                         OnClosing(EventArgs.Empty);
@@ -380,7 +400,16 @@ namespace TTMouseclickSimulator.Utils
                         break;
                     case TaskDialogNotifications.Navigated:
                         ApplyButtonInitialization();
-                        OnNavigated(EventArgs.Empty);
+                        if (internalNavigatedHandler != null)
+                        {
+                            internalNavigatedHandler();
+                            internalNavigatedHandler = null;
+                            OnOpened(EventArgs.Empty);
+                        }
+                        else
+                        {
+                            OnNavigated(EventArgs.Empty);
+                        }
                         break;
                     case TaskDialogNotifications.HyperlinkClicked:
                         string link = Marshal.PtrToStringUni(lparam);
@@ -511,7 +540,7 @@ namespace TTMouseclickSimulator.Utils
 
             currentOwnerHwnd = hwndOwner;
             TaskDialogConfig config;
-            CreateConfig(out config);
+            CreateConfig(out config, MainIcon);
             try
             {
                 int ret = 0;
@@ -602,7 +631,9 @@ namespace TTMouseclickSimulator.Utils
         /// Recreates an active task dialog with the current properties. After the dialog is recreated,
         /// the <see cref="Navigated"/> event occurs which allows to customize the dialog.
         /// </summary>
-        public void Navigate()
+        public void Navigate() => Navigate(MainIcon);
+
+        private void Navigate(TaskDialogIcon mainIcon)
         {
             // Need to check the button config before releasing the old one and preparing the new one.
             CheckButtonConfig();
@@ -613,7 +644,7 @@ namespace TTMouseclickSimulator.Utils
 
             // Create a new config and marshal it.
             TaskDialogConfig config;
-            CreateConfig(out config);
+            CreateConfig(out config, mainIcon);
 
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf<TaskDialogConfig>());
             Marshal.StructureToPtr(config, ptr, false);
