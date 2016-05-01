@@ -116,7 +116,7 @@ namespace TTMouseclickSimulator
                         Flags = TaskDialog.TaskDialogFlags.UseCommandLinks |
                             TaskDialog.TaskDialogFlags.PositionRelativeToWindow | TaskDialog.TaskDialogFlags.ExpandFooterArea,
                         MainIcon = TaskDialog.TaskDialogIcon.Warning,
-                        MainBarIcon = TaskDialog.TaskDialogIcon.SecurityShieldBlueBar,
+                        MainBarIcon = TaskDialog.TaskDialogBarIcon.BlueBar,
                         CommonButtons = TaskDialog.TaskDialogButtons.Cancel
                     };
 
@@ -198,7 +198,7 @@ namespace TTMouseclickSimulator
                         Flags = TaskDialog.TaskDialogFlags.SizeToContent | 
                             TaskDialog.TaskDialogFlags.PositionRelativeToWindow | TaskDialog.TaskDialogFlags.ExpandFooterArea,
                         MainIcon = TaskDialog.TaskDialogIcon.Stop,
-                        MainBarIcon = TaskDialog.TaskDialogIcon.SecurityErrorBar,
+                        MainBarIcon = TaskDialog.TaskDialogBarIcon.RedBar,
                         CommonButtons = TaskDialog.TaskDialogButtons.OK
                     };
 

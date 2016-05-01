@@ -78,10 +78,10 @@ namespace TTMouseclickSimulator.Utils
         public TaskDialogIcon FooterIcon { get; set; }
 
         /// <summary>
-        /// If set to one of the bar icons, the TaskDialog will get that color in
-        /// the main instruction bar.
+        /// If set, the TaskDialog will get that color in the main instruction bar while
+        /// still displaying the <see cref="MainIcon"/> as icon.
         /// </summary>
-        public TaskDialogIcon MainBarIcon { get; set; }
+        public TaskDialogBarIcon MainBarIcon { get; set; }
 
         public TaskDialogButtons CommonButtons { get; set; }
 
@@ -379,14 +379,14 @@ namespace TTMouseclickSimulator.Utils
                 {
                     case TaskDialogNotifications.Created:
                         ApplyButtonInitialization();
-                        if (MainBarIcon != default(TaskDialogIcon))
+                        if (MainBarIcon != default(TaskDialogBarIcon))
                         {
                             // When the user wants to use one of the bar icons with a different main icon,
                             // we need to recreate the dialog with the bar icon, then update the main icon to the
                             // original one. The additional step of Navigating is required for the system to
                             // play the correct sound for the original icon when the dialog appears.
                             internalNavigatedHandler = () => UpdateElements(TaskDialogUpdateElements.MainIcon);
-                            Navigate(MainBarIcon);
+                            Navigate((TaskDialogIcon)MainBarIcon);
                         }
                         else
                         {
@@ -408,7 +408,7 @@ namespace TTMouseclickSimulator.Utils
                         }
                         else
                         {
-                            if (MainBarIcon != default(TaskDialogIcon))
+                            if (MainBarIcon != default(TaskDialogBarIcon))
                             {
                                 // Need to update the icon.
                                 UpdateElements(TaskDialogUpdateElements.MainIcon);
@@ -638,7 +638,7 @@ namespace TTMouseclickSimulator.Utils
         /// Recreates an active task dialog with the current properties. After the dialog is recreated,
         /// the <see cref="Navigated"/> event occurs which allows to customize the dialog.
         /// </summary>
-        public void Navigate() => Navigate(MainBarIcon != default(TaskDialogIcon) ? MainBarIcon : MainIcon);
+        public void Navigate() => Navigate(MainBarIcon != default(TaskDialogBarIcon) ? (TaskDialogIcon)MainBarIcon : MainIcon);
 
         private void Navigate(TaskDialogIcon mainIcon)
         {
@@ -999,6 +999,15 @@ namespace TTMouseclickSimulator.Utils
             SecuritySuccess = 106,
 
             CommandButtons = ushort.MaxValue - 99
+        }
+
+        public enum TaskDialogBarIcon : int
+        {
+            BlueBar = TaskDialogIcon.SecurityShieldBlueBar,
+            GrayBar = TaskDialogIcon.SecurityShieldGrayBar,
+            YellowBar = TaskDialogIcon.SecurityWarningBar,
+            RedBar = TaskDialogIcon.SecurityErrorBar,
+            Greenbar = TaskDialogIcon.SecuritySuccessBar,
         }
 
         [Flags]
