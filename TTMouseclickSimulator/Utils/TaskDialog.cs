@@ -920,8 +920,9 @@ namespace TTMouseclickSimulator.Utils
         {
             None = 0,
             EnableHyperlinks = 0x0001,
-            UseMainIcon = 0x0002,
-            UseFooterIcon = 0x0004,
+            // We currently don't support using Icon handles.
+            //UseMainIconHandle = 0x0002,
+            //UseFooterIconHandle = 0x0004,
             AllowCancel = 0x0008,
             UseCommandLinks = 0x0010,
             UseNoIconCommandLinks = 0x0020,
