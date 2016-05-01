@@ -75,7 +75,7 @@ namespace TTMouseclickSimulator
             // Run the simulator in another task so it is not executed in the GUI thread.
             // However, we then await that new task so we are notified when it is finished.
             Simulator sim = simulator = new Simulator(project.Configuration, TTRWindowsEnvironment.Instance);
-            sim.AsyncRetryHandler = async (ex) => await HandleSimulatorRetryAsync(sim, ex);
+            sim.AsyncRetryHandler = async (ex) => !closeWindowAfterStop && await HandleSimulatorRetryAsync(sim, ex);
 
             Exception runException = null;
             simulatorStartAction?.Invoke();
