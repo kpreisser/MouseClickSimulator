@@ -14,6 +14,13 @@ namespace TTMouseclickSimulator.Core.Environment
     public interface IInteractionProvider
     {
         /// <summary>
+        /// If this method returns, this means the action should run again. Otherwise, this method will
+        /// re-throw the exception or throw an <see cref="SimulatorCanceledException"/>.
+        /// </summary>
+        /// <param name="ex"></param>
+        Task CheckRetryForExceptionAsync(Exception ex);
+
+        /// <summary>
         /// Checks that the Simulator has not been canceled.
         /// </summary>
         void EnsureNotCanceled();

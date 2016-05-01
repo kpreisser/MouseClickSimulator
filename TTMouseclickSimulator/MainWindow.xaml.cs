@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,11 +14,13 @@ using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 using TTMouseclickSimulator.Core.ToontownRewritten.Environment;
 using TTMouseclickSimulator.Project;
+using TTMouseclickSimulator.Utils;
 
 namespace TTMouseclickSimulator
 {
     public partial class MainWindow : Window
     {
+        private const string AppName = "TTR Mouse Click Simulator";
 
         private SimulatorProject project;
         private Simulator simulator;
@@ -39,6 +42,9 @@ namespace TTMouseclickSimulator
         public MainWindow()
         {
             InitializeComponent();
+
+            lblAppName.Content = AppName;
+            Title = AppName;
 
             openFileDialog = new Microsoft.Win32.OpenFileDialog();
             openFileDialog.DefaultExt = ProjectFileExtension;
@@ -69,10 +75,10 @@ namespace TTMouseclickSimulator
             // Run the simulator in another task so it is not executed in the GUI thread.
             // However, we then await that new task so we are notified when it is finished.
             Simulator sim = simulator = new Simulator(project.Configuration, TTRWindowsEnvironment.Instance);
+            sim.AsyncRetryHandler = async (ex) => await HandleSimulatorRetryAsync(sim, ex);
 
             Exception runException = null;
-            if (simulatorStartAction != null)
-                simulatorStartAction();
+            simulatorStartAction?.Invoke();
             await Task.Run(async () =>
             {
                 try
@@ -84,14 +90,74 @@ namespace TTMouseclickSimulator
                     runException = ex;   
                 }
             });
-            if (simulatorStopAction != null)
-                simulatorStopAction();
+            simulatorStopAction?.Invoke();
 
             // Don't show a messagebox if we need to close the window.
-            if (!closeWindowAfterStop && runException != null && !(runException is SimulatorCanceledException))
-                MessageBox.Show(this, runException.Message, "Simulator stopped!", MessageBoxButton.OK, MessageBoxImage.Warning);
+            if (!closeWindowAfterStop && runException != null && (runException is SimulatorCanceledException))
+                TaskDialog.Show(this, runException.Message, "Simulator stopped!", AppName, TaskDialog.TaskDialogButtons.OK, TaskDialog.TaskDialogIcon.Stop);
 
             HandleSimulatorCanceled();
+        }
+
+        private async Task<bool> HandleSimulatorRetryAsync(Simulator sim, Exception ex)
+        {
+            // Show a TaskDialog.
+            bool result = false;
+            await Dispatcher.InvokeAsync(new Action(() =>
+            {
+                if (!closeWindowAfterStop)
+                {
+                    TaskDialog dialog = new TaskDialog()
+                    {
+                        Title = AppName,
+                        MainInstruction = "Simulator interrupted!",
+                        Content = ex.Message,
+                        ExpandedInformation = GetExceptionDetailsText(ex),
+                        Flags = TaskDialog.TaskDialogFlags.UseCommandLinks |
+                            TaskDialog.TaskDialogFlags.PositionRelativeToWindow | TaskDialog.TaskDialogFlags.ExpandFooterArea,
+                        MainIcon = TaskDialog.TaskDialogIcon.SecurityShieldBlueBar,
+                        CommonButtons = TaskDialog.TaskDialogButtons.Cancel
+                    };
+                    dialog.Opened += (_s, _e) =>
+                    {
+                        // Show the warning icon with the blue bar.
+                        dialog.MainIcon = TaskDialog.TaskDialogIcon.Warning;
+                        dialog.UpdateElements(TaskDialog.TaskDialogUpdateElements.MainIcon);
+                    };
+
+                    var buttonTryAgain = dialog.CreateCustomButton("Try again\nThe Simulator will try to run the current action again.");
+                    var buttonStop = dialog.CreateCustomButton("Stop the Simulator");
+
+                    dialog.CustomButtons = new TaskDialog.ICustomButton[] { buttonTryAgain, buttonStop };
+                    dialog.DefaultCustomButton = buttonStop;
+
+                    dialog.Show(this);
+
+                    if (dialog.ResultCustomButton == buttonTryAgain)
+                        result = true;
+                }
+            }));
+
+            return result;
+        }
+
+        private static string GetExceptionDetailsText(Exception ex)
+        {
+            StringBuilder detailsSb = null;
+            Exception innerEx = ex.InnerException;
+            while (innerEx != null)
+            {
+                if (detailsSb == null)
+                    detailsSb = new StringBuilder();
+                else
+                    detailsSb.Append("\n\n");
+
+                detailsSb.Append(innerEx.Message);
+
+                innerEx = innerEx.InnerException;
+            }
+
+            return detailsSb?.ToString();
         }
 
         private void HandleSimulatorCanceled()
@@ -120,17 +186,32 @@ namespace TTMouseclickSimulator
                 // Try to load the given project.
                 try
                 {
-                    using (FileStream fs = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read))
+                    using (FileStream fs = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         XmlProjectDeserializer deser = new XmlProjectDeserializer();
                         project = deser.Deserialize(fs);
                     }
-                   
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(this, "Could not load the given project.\r\n\r\n"
-                       + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    TaskDialog dialog = new TaskDialog()
+                    {
+                        Title = AppName,
+                        MainInstruction = "Could not load the selected project.",
+                        Content = ex.Message,
+                        ExpandedInformation = GetExceptionDetailsText(ex),
+                        Flags = TaskDialog.TaskDialogFlags.SizeToContent | 
+                            TaskDialog.TaskDialogFlags.PositionRelativeToWindow | TaskDialog.TaskDialogFlags.ExpandFooterArea,
+                        MainIcon = TaskDialog.TaskDialogIcon.SecurityErrorBar,
+                        CommonButtons = TaskDialog.TaskDialogButtons.OK
+                    };
+                    dialog.Opened += (_s, _e) =>
+                    {
+                        dialog.MainIcon = TaskDialog.TaskDialogIcon.Stop;
+                        dialog.UpdateElements(TaskDialog.TaskDialogUpdateElements.MainIcon);
+                    };
+
+                    dialog.Show(this);
                 }
 
                 RefreshProjectControls();

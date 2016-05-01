@@ -412,8 +412,6 @@ namespace TTMouseclickSimulator.Core.Environment
             ///</summary>
             Down = 0x28,
 
-
-
         }
     }
 }

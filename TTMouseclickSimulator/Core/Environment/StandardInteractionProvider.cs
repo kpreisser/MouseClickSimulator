@@ -20,6 +20,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         private readonly SemaphoreSlim waitSemaphore = new SemaphoreSlim(0);
 
+        private readonly Simulator simulator;
         private readonly AbstractWindowsEnvironment environmentInterface;
 
         private Process process;
@@ -29,21 +30,37 @@ namespace TTMouseclickSimulator.Core.Environment
             = new List<AbstractWindowsEnvironment.VirtualKeyShort>();
 
 
-        public StandardInteractionProvider(AbstractWindowsEnvironment environmentInterface,
+        public StandardInteractionProvider(Simulator simulator, AbstractWindowsEnvironment environmentInterface,
             out Action cancelCallback)
         {
+            this.simulator = simulator;
             this.environmentInterface = environmentInterface;
             cancelCallback = HandleCancelCallback;
         }
 
 
-        public void Initialize()
+        public async Task InitializeAsync()
         {
-            process = environmentInterface.FindProcess();
+            for (;;)
+            {
+                try
+                {
+                    process = environmentInterface.FindProcess();
 
-            // Bring the destination window to foreground.
-            IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
-            environmentInterface.BringWindowToForeground(hWnd);
+                    // Bring the destination window to foreground.
+                    IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
+                    environmentInterface.BringWindowToForeground(hWnd);
+
+                    // Wait a bit so that the window can go into foreground.
+                    await WaitAsync(1000);
+                }
+                catch (Exception ex) when (!(ex is SimulatorCanceledException))
+                {
+                    await CheckRetryForExceptionAsync(ex, false);
+                    continue;
+                }
+                break;
+            }
         }
 
         private void HandleCancelCallback()
@@ -60,6 +77,28 @@ namespace TTMouseclickSimulator.Core.Environment
                 // that runs the Simulator.RunAsync() method has already disposed the
                 // StandardInteractionProvider.
                 // In that case we do nothing.
+            }
+        }
+
+        public async Task CheckRetryForExceptionAsync(Exception ex) => await CheckRetryForExceptionAsync(ex, true);
+
+        private async Task CheckRetryForExceptionAsync(Exception ex, bool reinitialize)
+        {
+            
+            if (simulator.AsyncRetryHandler == null)
+            {
+                // Simply rethrow the exception.
+                throw ex;
+            }
+            else
+            {
+                bool result = await simulator.AsyncRetryHandler(ex);
+                if (!result)
+                    throw new SimulatorCanceledException();
+
+                // When trying again, we need to re-initialize.
+                if (reinitialize)
+                    await InitializeAsync();
             }
         }
 
@@ -161,6 +200,10 @@ namespace TTMouseclickSimulator.Core.Environment
         public void WriteText(string text)
         {
             EnsureNotCanceled();
+
+            // Check if the window is still active and in foreground.
+            GetMainWindowPosition();
+
             environmentInterface.WriteText(text);
         }
 

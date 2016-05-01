@@ -31,8 +31,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment
             catch (ArgumentException ex)
             {
                 throw new ArgumentException("Could not find Toontown Rewritten. Please make sure " 
-                    + "TT Rewritten is running before starting the simulator.\r\n\r\n"
-                    + "Details: " + ex.Message, ex);
+                    + "TT Rewritten is running before starting the simulator.", ex);
             }
         }
 

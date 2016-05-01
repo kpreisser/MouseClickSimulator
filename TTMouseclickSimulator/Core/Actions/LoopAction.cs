@@ -38,9 +38,21 @@ namespace TTMouseclickSimulator.Core.Actions
             {
                 for (int i = 0; !count.HasValue || i < count.Value; i++)
                 {
-                    provider.EnsureNotCanceled();
-                    OnActionInformationUpdated($"Iteration {i + 1}/{count}");
-                    await action.RunAsync(provider);
+                    for (;;)
+                    {
+                        try
+                        {
+                            provider.EnsureNotCanceled();
+                            OnActionInformationUpdated($"Iteration {i + 1}/{count}");
+                            await action.RunAsync(provider);
+                        }
+                        catch (Exception ex) when (!(ex is SimulatorCanceledException))
+                        {
+                            await provider.CheckRetryForExceptionAsync(ex);
+                            continue;
+                        }
+                        break;
+                    }
                 }
             }
             finally

@@ -23,6 +23,13 @@ namespace TTMouseclickSimulator.Core
         // TODO: This needs a refactoring so that an action can update its state.
         //public event Action<IAction, int> ActionStarted;
         public event Action SimulatorStopped;
+
+        /// <summary>
+        /// When an exception (which is not a <see cref="SimulatorCanceledException"/>) occurs while an action runs,
+        /// this allows the action to check if it should retry or cancel the simulator (in that case, it should
+        /// throw an <see cref="SimulatorCanceledException"/>).
+        /// </summary>
+        public Func<Exception, Task<bool>> AsyncRetryHandler;
         
 
         public Simulator(SimulatorConfiguration config, AbstractWindowsEnvironment environmentInterface)
@@ -38,7 +45,7 @@ namespace TTMouseclickSimulator.Core
             this.config = config;
             this.environmentInterface = environmentInterface;
 
-            provider = new StandardInteractionProvider(environmentInterface, out cancelCallback);
+            provider = new StandardInteractionProvider(this, environmentInterface, out cancelCallback);
         }
 
         /// <summary>
@@ -56,16 +63,26 @@ namespace TTMouseclickSimulator.Core
                 {
                     OnSimulatorStarted();
 
-                    provider.Initialize();
+                    // InitializeAsync() does not need to be in the try block because it has its own.
+                    await provider.InitializeAsync();
 
-                    // Wait a bit so that the window can go into foreground.
-                    await provider.WaitAsync(1000);
+                    for (;;)
+                    {
+                        try
+                        {
+                            // Run the action.
+                            await config.MainAction.RunAsync(provider);
 
-                    // Run the action.
-                    await config.MainAction.RunAsync(provider);
-
-                    // Normally the main action would be a CompoundAction that never returns, but
-                    // it is possible that the action will return normally.
+                            // Normally the main action would be a CompoundAction that never returns, but
+                            // it is possible that the action will return normally.
+                        }
+                        catch (Exception ex) when (!(ex is SimulatorCanceledException))
+                        {
+                            await provider.CheckRetryForExceptionAsync(ex);
+                            continue;
+                        }
+                        break;
+                    }
                 }
 
             }

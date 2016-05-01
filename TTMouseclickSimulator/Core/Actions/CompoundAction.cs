@@ -110,31 +110,43 @@ namespace TTMouseclickSimulator.Core.Actions
 
             while (true)
             {
-                // Check if the simulator has already been canceled.
-                provider.EnsureNotCanceled();
-
                 int nextIdx = getNextActionIndex();
                 if (nextIdx == -1)
                     break;
 
                 OnActionInformationUpdated($"Running action {nextIdx + 1}");
 
-                OnSubActionStartedOrStopped(nextIdx);
-                try
+                for (;;)
                 {
-                    IAction action = actionList[nextIdx];
-                    await action.RunAsync(provider);
-                }
-                finally
-                {
-                    OnSubActionStartedOrStopped(null);
-                }
+                    try
+                    {
+                        // Check if the simulator has already been canceled.
+                        provider.EnsureNotCanceled();
 
-                // After running an action, wait.
-                int waitInterval = rng.Next(minimumPauseDuration, maximumPauseDuration);
-                OnActionInformationUpdated($"Pausing {waitInterval} ms");
+                        OnSubActionStartedOrStopped(nextIdx);
+                        try
+                        {
+                            IAction action = actionList[nextIdx];
+                            await action.RunAsync(provider);
+                        }
+                        finally
+                        {
+                            OnSubActionStartedOrStopped(null);
+                        }
 
-                await provider.WaitAsync(waitInterval);
+                        // After running an action, wait.
+                        int waitInterval = rng.Next(minimumPauseDuration, maximumPauseDuration);
+                        OnActionInformationUpdated($"Pausing {waitInterval} ms");
+
+                        await provider.WaitAsync(waitInterval);
+                    }
+                    catch (Exception ex) when (!(ex is SimulatorCanceledException))
+                    {
+                        await provider.CheckRetryForExceptionAsync(ex);
+                        continue;
+                    }
+                    break;
+                }
             }
         }
 
