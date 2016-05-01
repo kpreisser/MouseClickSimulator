@@ -18,7 +18,7 @@ Before you click on Start, make sure that
            plus the straight fishing action.
       -->
       <Compound type="Sequential" minimumPause="200" maximumPause="400" loop="false">
-        <Loop count="19">
+        <Loop count="1">
           <AutomaticFishing scan1="248, 239" scan2="1492, 660" bubbleColorRgb="55, 103, 116"
                             toleranceRgb="8, 14, 11" />
         </Loop>
@@ -36,13 +36,13 @@ Before you click on Start, make sure that
         
       <!-- Now go to the fisherman and sell the fish. -->
       <Compound type="Sequential" minimumPause="400" maximumPause="700" loop="false">
-        <PressKey key="Up" duration="3200" />
+        <PressKey key="Up" duration="3300" />
         <Pause duration="1300" />
           
         <SellFish />
           
         <Pause duration="1300" />
-        <PressKey key="Down" duration="6000" />
+        <PressKey key="Down" duration="5900" />
         <Pause duration="2000" />
       </Compound>
         
