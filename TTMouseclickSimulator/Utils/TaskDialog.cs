@@ -408,6 +408,11 @@ namespace TTMouseclickSimulator.Utils
                         }
                         else
                         {
+                            if (MainBarIcon != default(TaskDialogIcon))
+                            {
+                                // Need to update the icon.
+                                UpdateElements(TaskDialogUpdateElements.MainIcon);
+                            }
                             OnNavigated(EventArgs.Empty);
                         }
                         break;
@@ -633,7 +638,7 @@ namespace TTMouseclickSimulator.Utils
         /// Recreates an active task dialog with the current properties. After the dialog is recreated,
         /// the <see cref="Navigated"/> event occurs which allows to customize the dialog.
         /// </summary>
-        public void Navigate() => Navigate(MainIcon);
+        public void Navigate() => Navigate(MainBarIcon != default(TaskDialogIcon) ? MainBarIcon : MainIcon);
 
         private void Navigate(TaskDialogIcon mainIcon)
         {
