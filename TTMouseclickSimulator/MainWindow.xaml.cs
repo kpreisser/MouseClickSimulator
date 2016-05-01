@@ -60,12 +60,12 @@ namespace TTMouseclickSimulator
             RefreshProjectControls();
         }
 
-        private void btnStart_Click(object sender, RoutedEventArgs e)
+        private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            StartSimulator();
+            await RunSimulator();
         }
 
-        private async void StartSimulator()
+        private async Task RunSimulator()
         {
             btnStart.IsEnabled = false;
             btnStop.IsEnabled = true;
