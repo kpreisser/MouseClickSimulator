@@ -610,6 +610,8 @@ namespace TTMouseclickSimulator.Utils
                 currentCustomButtons = null;
                 currentRadioButtons = null;
 
+                internalNavigatedHandler = null;
+
                 // We need to ensure the callback delegate is not garbage-collected as long as TaskDialogIndirect doesn't return.
                 GC.KeepAlive(callbackProcDelegate);
             }
