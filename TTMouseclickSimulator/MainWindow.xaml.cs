@@ -107,6 +107,7 @@ namespace TTMouseclickSimulator
             {
                 if (!closeWindowAfterStop)
                 {
+                    var icon = TaskDialog.TaskDialogIcon.Warning;
                     TaskDialog dialog = new TaskDialog()
                     {
                         Title = AppName,
@@ -115,13 +116,19 @@ namespace TTMouseclickSimulator
                         ExpandedInformation = GetExceptionDetailsText(ex),
                         Flags = TaskDialog.TaskDialogFlags.UseCommandLinks |
                             TaskDialog.TaskDialogFlags.PositionRelativeToWindow | TaskDialog.TaskDialogFlags.ExpandFooterArea,
-                        MainIcon = TaskDialog.TaskDialogIcon.SecurityShieldBlueBar,
+                        MainIcon = icon,
                         CommonButtons = TaskDialog.TaskDialogButtons.Cancel
                     };
+                    // After the dialog is opened, navigate so that we get a blue bar. That bar icon cannot
+                    // be specified directly when opening it because then we wouldn't get a error sound.
                     dialog.Opened += (_s, _e) =>
                     {
-                        // Show the warning icon with the blue bar.
-                        dialog.MainIcon = TaskDialog.TaskDialogIcon.Warning;
+                        dialog.MainIcon = TaskDialog.TaskDialogIcon.SecurityShieldBlueBar;
+                        dialog.Navigate();
+                    };
+                    dialog.Navigated += (_s, _e) =>
+                    {
+                        dialog.MainIcon = icon;
                         dialog.UpdateElements(TaskDialog.TaskDialogUpdateElements.MainIcon);
                     };
 
@@ -194,6 +201,7 @@ namespace TTMouseclickSimulator
                 }
                 catch (Exception ex)
                 {
+                    var icon = TaskDialog.TaskDialogIcon.Stop;
                     TaskDialog dialog = new TaskDialog()
                     {
                         Title = AppName,
@@ -202,12 +210,18 @@ namespace TTMouseclickSimulator
                         ExpandedInformation = GetExceptionDetailsText(ex),
                         Flags = TaskDialog.TaskDialogFlags.SizeToContent | 
                             TaskDialog.TaskDialogFlags.PositionRelativeToWindow | TaskDialog.TaskDialogFlags.ExpandFooterArea,
-                        MainIcon = TaskDialog.TaskDialogIcon.SecurityErrorBar,
+                        MainIcon = TaskDialog.TaskDialogIcon.Stop,
                         CommonButtons = TaskDialog.TaskDialogButtons.OK
                     };
                     dialog.Opened += (_s, _e) =>
                     {
-                        dialog.MainIcon = TaskDialog.TaskDialogIcon.Stop;
+                        // See comment in HandleSimulatorRetryAsync.
+                        dialog.MainIcon = TaskDialog.TaskDialogIcon.SecurityErrorBar;
+                        dialog.Navigate();
+                    };
+                    dialog.Navigated += (_s, _e) =>
+                    {
+                        dialog.MainIcon = icon;
                         dialog.UpdateElements(TaskDialog.TaskDialogUpdateElements.MainIcon);
                     };
 
