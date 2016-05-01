@@ -602,15 +602,15 @@ namespace TTMouseclickSimulator.Utils
             }
             finally
             {
-                // Clear the hndles and free the memory.
+                internalNavigatedHandler = null;
+
+                // Clear the handles and free the memory.
                 currentOwnerHwnd = null;
                 DisposeConfig(ref config);
 
                 ClearButtonConfig(currentCustomButtons, currentRadioButtons);
                 currentCustomButtons = null;
                 currentRadioButtons = null;
-
-                internalNavigatedHandler = null;
 
                 // We need to ensure the callback delegate is not garbage-collected as long as TaskDialogIndirect doesn't return.
                 GC.KeepAlive(callbackProcDelegate);
