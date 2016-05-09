@@ -316,7 +316,7 @@ namespace TTMouseclickSimulator.Utils
 
         private static IntPtr AllocateAndMarshalButtons(TaskDialogButtonStruct[] structs)
         {
-            // Allote memory for the array.
+            // Allocate memory for the array.
             IntPtr initialPtr = Marshal.AllocHGlobal(
                 Marshal.SizeOf<TaskDialogButtonStruct>() * structs.Length);
 
