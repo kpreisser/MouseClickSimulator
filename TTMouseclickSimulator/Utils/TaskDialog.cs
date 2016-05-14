@@ -75,13 +75,13 @@ namespace TTMouseclickSimulator.Utils
 
         public TaskDialogIcon MainIcon { get; set; }
 
-        public TaskDialogIcon FooterIcon { get; set; }
-
         /// <summary>
-        /// If set, the TaskDialog will get that color in the main instruction bar while
-        /// still displaying the <see cref="MainIcon"/> as icon.
+        /// If specified, after the TaskDialog is opened or navigated, its main icon will be updated
+        /// to the specified one.
         /// </summary>
-        public TaskDialogBarIcon MainBarIcon { get; set; }
+        public TaskDialogIcon MainUpdateIcon { get; set; }
+
+        public TaskDialogIcon FooterIcon { get; set; }
 
         public TaskDialogButtons CommonButtons { get; set; }
 
@@ -124,6 +124,9 @@ namespace TTMouseclickSimulator.Utils
         public bool VerificationFlagChecked => verificationFlagChecked;
 
 
+        /// <summary>
+        /// Called after the TaskDialog has been created but before it is displayed.
+        /// </summary>
         public event EventHandler Opened;
         public event EventHandler Closing;
         public event EventHandler Navigated;
@@ -259,7 +262,7 @@ namespace TTMouseclickSimulator.Utils
             }
         }
 
-        private void CreateConfig(out TaskDialogConfig config, TaskDialogIcon mainIcon)
+        private void CreateConfig(out TaskDialogConfig config)
         {
             config = new TaskDialogConfig()
             {
@@ -270,7 +273,7 @@ namespace TTMouseclickSimulator.Utils
                 pszContent = Content,
                 pszFooter = Footer,
                 dwCommonButtons = CommonButtons,
-                hMainIcon = (IntPtr)mainIcon,
+                hMainIcon = (IntPtr)MainIcon,
                 dwFlags = Flags,
                 hFooterIcon = (IntPtr)FooterIcon,
                 pszVerificationText = VerificationText,
@@ -367,6 +370,12 @@ namespace TTMouseclickSimulator.Utils
                         btn.Enabled = false;
                 }
             }
+
+            // Check if we need to update the icon.
+            if (MainUpdateIcon != default(TaskDialogIcon) && MainIcon != MainUpdateIcon)
+            {
+                CheckUpdateIcon(TaskDialogUpdateElements.MainIcon, TaskDialogUpdateElements.MainIcon, TaskDialogIconElement.Main, (IntPtr)MainUpdateIcon);
+            }
         }
 
         private int TaskDialogCallbackProc(IntPtr hWnd, TaskDialogNotifications notification,
@@ -379,19 +388,7 @@ namespace TTMouseclickSimulator.Utils
                 {
                     case TaskDialogNotifications.Created:
                         ApplyButtonInitialization();
-                        if (MainBarIcon != default(TaskDialogBarIcon))
-                        {
-                            // When the user wants to use one of the bar icons with a different main icon,
-                            // we need to recreate the dialog with the bar icon, then update the main icon to the
-                            // original one. The additional step of Navigating is required for the system to
-                            // play the correct sound for the original icon when the dialog appears.
-                            internalNavigatedHandler = () => UpdateElements(TaskDialogUpdateElements.MainIcon);
-                            Navigate((TaskDialogIcon)MainBarIcon);
-                        }
-                        else
-                        {
-                            OnOpened(EventArgs.Empty);
-                        }
+                        OnOpened(EventArgs.Empty);
                         break;
                     case TaskDialogNotifications.Destroyed:
                         OnClosing(EventArgs.Empty);
@@ -408,11 +405,6 @@ namespace TTMouseclickSimulator.Utils
                         }
                         else
                         {
-                            if (MainBarIcon != default(TaskDialogBarIcon))
-                            {
-                                // Need to update the icon.
-                                UpdateElements(TaskDialogUpdateElements.MainIcon);
-                            }
                             OnNavigated(EventArgs.Empty);
                         }
                         break;
@@ -545,7 +537,7 @@ namespace TTMouseclickSimulator.Utils
 
             currentOwnerHwnd = hwndOwner;
             TaskDialogConfig config;
-            CreateConfig(out config, MainIcon);
+            CreateConfig(out config);
             try
             {
                 int ret = 0;
@@ -637,10 +629,10 @@ namespace TTMouseclickSimulator.Utils
         /// <summary>
         /// Recreates an active task dialog with the current properties. After the dialog is recreated,
         /// the <see cref="Navigated"/> event occurs which allows to customize the dialog.
+        /// Note that you should not call this method in the <see cref="Opened"/> event because the TaskDialog
+        /// is not yet displayed in that state.
         /// </summary>
-        public void Navigate() => Navigate(MainBarIcon != default(TaskDialogBarIcon) ? (TaskDialogIcon)MainBarIcon : MainIcon);
-
-        private void Navigate(TaskDialogIcon mainIcon)
+        public void Navigate()
         {
             // Need to check the button config before releasing the old one and preparing the new one.
             CheckButtonConfig();
@@ -651,7 +643,7 @@ namespace TTMouseclickSimulator.Utils
 
             // Create a new config and marshal it.
             TaskDialogConfig config;
-            CreateConfig(out config, mainIcon);
+            CreateConfig(out config);
 
             IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf<TaskDialogConfig>());
             Marshal.StructureToPtr(config, ptr, false);
@@ -982,7 +974,7 @@ namespace TTMouseclickSimulator.Utils
 
         public enum TaskDialogIcon : int
         {
-            Question = 32514,
+            Question = 99,
             Information = ushort.MaxValue - 2,
             Warning = ushort.MaxValue,
             Stop = ushort.MaxValue - 1,
@@ -998,18 +990,10 @@ namespace TTMouseclickSimulator.Utils
             SecurityError = 105,
             SecuritySuccess = 106,
 
-            CommandButtons = ushort.MaxValue - 99
+            //CommandButtons = ushort.MaxValue - 99
         }
 
-        public enum TaskDialogBarIcon : int
-        {
-            BlueBar = TaskDialogIcon.SecurityShieldBlueBar,
-            GrayBar = TaskDialogIcon.SecurityShieldGrayBar,
-            YellowBar = TaskDialogIcon.SecurityWarningBar,
-            RedBar = TaskDialogIcon.SecurityErrorBar,
-            Greenbar = TaskDialogIcon.SecuritySuccessBar,
-        }
-
+        
         [Flags]
         public enum TaskDialogUpdateElements
         {

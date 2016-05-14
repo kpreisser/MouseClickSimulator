@@ -104,7 +104,6 @@ namespace TTMouseclickSimulator
                     Flags = TaskDialog.TaskDialogFlags.SizeToContent | TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
                         TaskDialog.TaskDialogFlags.ExpandFooterArea,
                     MainIcon = TaskDialog.TaskDialogIcon.Stop,
-                    MainBarIcon = TaskDialog.TaskDialogBarIcon.RedBar,
                     CommonButtons = TaskDialog.TaskDialogButtons.OK
                 };
                 dialog.Show(this);
@@ -130,7 +129,6 @@ namespace TTMouseclickSimulator
                         Flags = TaskDialog.TaskDialogFlags.UseCommandLinks |
                             TaskDialog.TaskDialogFlags.PositionRelativeToWindow | TaskDialog.TaskDialogFlags.ExpandFooterArea,
                         MainIcon = TaskDialog.TaskDialogIcon.Warning,
-                        MainBarIcon = TaskDialog.TaskDialogBarIcon.BlueBar,
                         CommonButtons = TaskDialog.TaskDialogButtons.Cancel
                     };
 
@@ -211,8 +209,8 @@ namespace TTMouseclickSimulator
                         ExpandedInformation = GetExceptionDetailsText(ex),
                         Flags = TaskDialog.TaskDialogFlags.SizeToContent | TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
                             TaskDialog.TaskDialogFlags.ExpandFooterArea,
-                        MainIcon = TaskDialog.TaskDialogIcon.Stop,
-                        MainBarIcon = TaskDialog.TaskDialogBarIcon.RedBar,
+                        MainIcon = TaskDialog.TaskDialogIcon.SecurityErrorBar,
+                        MainUpdateIcon = TaskDialog.TaskDialogIcon.Stop,
                         CommonButtons = TaskDialog.TaskDialogButtons.OK
                     };
 
