@@ -253,12 +253,14 @@ namespace TTMouseclickSimulator.Core.Environment
             if (isMouseButtonPressed)
             {
                 environmentInterface.ReleaseMouseButton();
+                isMouseButtonPressed = false;
             }
 
             foreach (AbstractWindowsEnvironment.VirtualKeyShort key in keysCurrentlyPressed)
             {
                 environmentInterface.ReleaseKey(key);
             }
+            keysCurrentlyPressed.Clear();
         }
 
         ~StandardInteractionProvider()
