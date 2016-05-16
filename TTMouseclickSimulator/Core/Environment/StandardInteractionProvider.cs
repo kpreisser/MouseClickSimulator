@@ -113,10 +113,29 @@ namespace TTMouseclickSimulator.Core.Environment
                 throw new SimulatorCanceledException();
         }
 
-        public async Task WaitAsync(int millisecondsTimeout, bool useAccurateTimer = false)
+        private async Task WaitSemaphoreInternalAsync(int milliseconds)
         {
             EnsureNotCanceled();
 
+            // Wait max. 100 ms, and check if the TT window is still active.
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            while (true)
+            {
+                // Check if the window is still active and in foreground.
+                GetMainWindowPosition();
+
+                long remaining = milliseconds - sw.ElapsedMilliseconds;
+                if (remaining <= 0)
+                    break;
+
+                if (await waitSemaphore.WaitAsync(Math.Min((int)remaining, 100)))
+                    EnsureNotCanceled();
+            }
+        }
+
+        public async Task WaitAsync(int millisecondsTimeout, bool useAccurateTimer = false)
+        {
             if (useAccurateTimer)
             {
                 /*
@@ -131,8 +150,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 sw.Start();
 
                 int waitTime = millisecondsTimeout - 15;
-                if (waitTime > 0)
-                    await waitSemaphore.WaitAsync(waitTime);
+                await WaitSemaphoreInternalAsync(waitTime);
 
                 // For the remaining time, loop until the complete time has passed.
                 while (true)
@@ -148,8 +166,7 @@ namespace TTMouseclickSimulator.Core.Environment
             }
             else
             {
-                await waitSemaphore.WaitAsync(millisecondsTimeout);
-                EnsureNotCanceled();
+                await WaitSemaphoreInternalAsync(millisecondsTimeout);
             }
         }
 
