@@ -52,7 +52,7 @@ namespace TTMouseclickSimulator.Core.Environment
                     environmentInterface.BringWindowToForeground(hWnd);
 
                     // Wait a bit so that the window can go into foreground.
-                    await WaitAsync(1000);
+                    await WaitSemaphoreInternalAsync(1000, false);
                 }
                 catch (Exception ex) when (!(ex is SimulatorCanceledException))
                 {
@@ -113,24 +113,32 @@ namespace TTMouseclickSimulator.Core.Environment
                 throw new SimulatorCanceledException();
         }
 
-        private async Task WaitSemaphoreInternalAsync(int milliseconds)
+        private async Task WaitSemaphoreInternalAsync(int milliseconds, bool checkWindowForeground = true)
         {
             EnsureNotCanceled();
 
-            // Wait max. 100 ms, and check if the TT window is still active.
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            while (true)
+            if (!checkWindowForeground)
             {
-                // Check if the window is still active and in foreground.
-                GetMainWindowPosition();
-
-                long remaining = milliseconds - sw.ElapsedMilliseconds;
-                if (remaining <= 0)
-                    break;
-
-                if (await waitSemaphore.WaitAsync(Math.Min((int)remaining, 100)))
+                if (await waitSemaphore.WaitAsync(Math.Max(0, milliseconds)))
                     EnsureNotCanceled();
+            }
+            else
+            {
+                // Wait max. 100 ms, and check if the TT window is still active.
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                while (true)
+                {
+                    // Check if the window is still active and in foreground.
+                    GetMainWindowPosition();
+
+                    long remaining = milliseconds - sw.ElapsedMilliseconds;
+                    if (remaining <= 0)
+                        break;
+
+                    if (await waitSemaphore.WaitAsync(Math.Min((int)remaining, 100)))
+                        EnsureNotCanceled();
+                }
             }
         }
 
