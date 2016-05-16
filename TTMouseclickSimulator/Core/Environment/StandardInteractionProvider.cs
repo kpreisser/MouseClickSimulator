@@ -84,7 +84,6 @@ namespace TTMouseclickSimulator.Core.Environment
 
         private async Task CheckRetryForExceptionAsync(Exception ex, bool reinitialize)
         {
-            
             if (simulator.AsyncRetryHandler == null)
             {
                 // Simply rethrow the exception.
@@ -92,6 +91,9 @@ namespace TTMouseclickSimulator.Core.Environment
             }
             else
             {
+                // Need to release active keys etc.
+                CancelActiveInteractions();
+
                 bool result = await simulator.AsyncRetryHandler(ex);
                 if (!result)
                     throw new SimulatorCanceledException();
@@ -245,6 +247,20 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
+        private void CancelActiveInteractions()
+        {
+            // Release mouse buttons and keys that are currently pressed.
+            if (isMouseButtonPressed)
+            {
+                environmentInterface.ReleaseMouseButton();
+            }
+
+            foreach (AbstractWindowsEnvironment.VirtualKeyShort key in keysCurrentlyPressed)
+            {
+                environmentInterface.ReleaseKey(key);
+            }
+        }
+
         ~StandardInteractionProvider()
         {
             Dispose(false);
@@ -281,19 +297,7 @@ namespace TTMouseclickSimulator.Core.Environment
                         currentScreenshot.Dispose();
 
 
-                    // Release mouse buttons and keys that are currently pressed.
-                    // Note that if another task is currently waiting in the WaitAsync() method, it can
-                    // happen that it is continued after this method returns, but the WaitAsync() will
-                    // throw an ActionCanceledException which the action shouldn't catch.
-                    if (isMouseButtonPressed)
-                    {
-                        environmentInterface.ReleaseMouseButton();
-                    }
-
-                    foreach (AbstractWindowsEnvironment.VirtualKeyShort key in keysCurrentlyPressed)
-                    {
-                        environmentInterface.ReleaseKey(key);
-                    }
+                    CancelActiveInteractions();
                 }
             }
         }
