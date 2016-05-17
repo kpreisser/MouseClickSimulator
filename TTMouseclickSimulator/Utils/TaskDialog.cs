@@ -47,8 +47,6 @@ namespace TTMouseclickSimulator.Utils
         private RadioButton resultRadioButton;
         private bool verificationFlagChecked;
 
-        private Action internalNavigatedHandler;
-
 
         /// <summary>
         /// The window handle of the dialog, or <see cref="IntPtr.Zero"/> if the dialog is not active.
@@ -397,16 +395,7 @@ namespace TTMouseclickSimulator.Utils
                         break;
                     case TaskDialogNotifications.Navigated:
                         ApplyButtonInitialization();
-                        if (internalNavigatedHandler != null)
-                        {
-                            internalNavigatedHandler();
-                            internalNavigatedHandler = null;
-                            OnOpened(EventArgs.Empty);
-                        }
-                        else
-                        {
-                            OnNavigated(EventArgs.Empty);
-                        }
+                        OnNavigated(EventArgs.Empty);
                         break;
                     case TaskDialogNotifications.HyperlinkClicked:
                         string link = Marshal.PtrToStringUni(lparam);
@@ -548,24 +537,31 @@ namespace TTMouseclickSimulator.Utils
                 }
                 // Only catch exceptions if the hWnd of the task dialog is not set, otherwise the exception
                 // must have occured in the callback.
-                // TODO: If a exception occurs here when hwndDialog is not 0, it means the TaskDialogIndirect
+                // Note: If a exception occurs here when hwndDialog is not 0, it means the TaskDialogIndirect
                 // run the event loop and called a WndProc e.g. from a window, whose event handler threw an 
                 // exception. In that case we cannot catch and marshal it to a HResult, so the CLR will 
                 // manipulate the managed stack so that it doesn't contain the transition to and from native
-                // code. This means it will look as the stack is on the regular WndProc (not from TaskDialog) whereas
-                // actually it is from the TaskDialogIndirect, which means the TaskDialog still calls our
-                // TaskDialogCallbackProc when the current event handler from WndProc returns, but the GC might
+                // code. However, the TaskDialog still calls our TaskDialogCallbackProc (by dispatching
+                // messages to the WndProc) when the current event handler from WndProc returns, but the GC might
                 // already have collected the delegate to it which will cause a NRE/AccessViolation.
-                // This is OK for now as an unhandled exception should not occur in a event handler anyway.
-                // Note: Theoretically it could also be that the managed code doesn't return to the TaskDialogIndirect
-                // but to the first native/managed transition calling WndProc, and that one will dispatch the messages
-                // to call the TaskDialogCallbackProc.
+
+                // This is OK because the same issue occurs when using a Messagebox with WPF or WinForms:
+                // If do MessageBox.Show() wrapped in a try/catch on a button click, and before calling .Show()
+                // create and start a timer which stops and throws an exception on its Tick event,
+                // the application will crash with an AccessViolationException as soon as you close the MessageBox.
                 catch (Exception ex) when (hwndDialog == IntPtr.Zero &&
                     (ex is DllNotFoundException || ex is EntryPointNotFoundException))
                 {
                     // Show a regular messagebox instead. This should only happen if we debug and for some
                     // reason the VS host process doesn't use our manifest.
-                    MessageBox.Show(Content, Title, MessageBoxButton.OK);
+                    StringBuilder msgContent = new StringBuilder();
+                    if (MainInstruction != null)
+                        msgContent.Append(MainInstruction + "\n\n");
+                    if (Content != null)
+                        msgContent.Append(Content + "\n\n");
+                    if (ExpandedInformation != null)
+                        msgContent.Append(ExpandedInformation + "\n\n");
+                    MessageBox.Show(msgContent.ToString(), Title, MessageBoxButton.OK);
 
                     resultButtonID = (int)TaskDialogResult.Ok;
                     resultRadioButtonID = 0;
@@ -599,8 +595,6 @@ namespace TTMouseclickSimulator.Utils
             }
             finally
             {
-                internalNavigatedHandler = null;
-
                 // Clear the handles and free the memory.
                 currentOwnerHwnd = null;
                 DisposeConfig(ref config);
@@ -807,7 +801,7 @@ namespace TTMouseclickSimulator.Utils
                 Title = caption,
                 CommonButtons = buttons,
                 MainIcon = icon,
-                Flags = TaskDialogFlags.SizeToContent
+                Flags = TaskDialogFlags.SizeToContent | TaskDialogFlags.PositionRelativeToWindow
             };
             dialog.Show(hwndOwner);
 
@@ -993,7 +987,7 @@ namespace TTMouseclickSimulator.Utils
             //CommandButtons = ushort.MaxValue - 99
         }
 
-        
+
         [Flags]
         public enum TaskDialogUpdateElements
         {
