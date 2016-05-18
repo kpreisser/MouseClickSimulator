@@ -605,7 +605,7 @@ namespace TTMouseclickSimulator.Utils
                 currentRadioButtons = null;
 
                 // We need to ensure the callback delegate is not garbage-collected as long as TaskDialogIndirect
-                // doesn't return by calling GC.KeepAlive().
+                // doesn't return, by calling GC.KeepAlive().
                 // 
                 // This is not an exaggeration, as the comment for GC.KeepAlive() says the following:
                 // The JIT is very aggressive about keeping an 
