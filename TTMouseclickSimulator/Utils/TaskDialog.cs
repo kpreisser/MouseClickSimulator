@@ -535,7 +535,7 @@ namespace TTMouseclickSimulator.Utils
                 int resultButtonID, resultRadioButtonID;
                 try
                 {
-                    ret = TaskDialogIndirect(ref config, out resultButtonID, out resultRadioButtonID
+                    ret = TaskDialogIndirect(ref config, out resultButtonID, out resultRadioButtonID,
                         out resultVerificationFlagChecked);
                 }
                 // Only catch exceptions if the hWnd of the task dialog is not set, otherwise the exception
