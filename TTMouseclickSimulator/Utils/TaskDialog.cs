@@ -46,7 +46,7 @@ namespace TTMouseclickSimulator.Utils
         private TaskDialogResult resultCommonButtonID;
         private CustomButton resultCustomButton;
         private RadioButton resultRadioButton;
-        private bool verificationFlagChecked;
+        private bool resultVerificationFlagChecked;
 
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace TTMouseclickSimulator.Utils
 
         public IRadioButton ResultRadioButton => resultRadioButton;
 
-        public bool VerificationFlagChecked => verificationFlagChecked;
+        public bool ResultVerificationFlagChecked => resultVerificationFlagChecked;
 
 
         /// <summary>
@@ -156,9 +156,10 @@ namespace TTMouseclickSimulator.Utils
         /// </summary>
         public void Reset()
         {
+            Flags = default(TaskDialogFlags);
             Title = MainInstruction = Content = Footer = VerificationText =
                 ExpandedInformation = ExpandedControlText = CollapsedControlText = null;
-            MainIcon = FooterIcon = default(TaskDialogIcon);
+            MainIcon = MainUpdateIcon = FooterIcon = default(TaskDialogIcon);
             CommonButtons = default(TaskDialogButtons);
             CustomButtons = null;
             RadioButtons = null;
@@ -534,7 +535,8 @@ namespace TTMouseclickSimulator.Utils
                 int resultButtonID, resultRadioButtonID;
                 try
                 {
-                    ret = TaskDialogIndirect(ref config, out resultButtonID, out resultRadioButtonID, out verificationFlagChecked);
+                    ret = TaskDialogIndirect(ref config, out resultButtonID, out resultRadioButtonID
+                        out resultVerificationFlagChecked);
                 }
                 // Only catch exceptions if the hWnd of the task dialog is not set, otherwise the exception
                 // must have occured in the callback.
