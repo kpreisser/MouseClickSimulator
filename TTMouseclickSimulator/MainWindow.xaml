@@ -10,8 +10,8 @@
         <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,0,0,10" Width="75" Height="21" Click="btnStart_Click" VerticalAlignment="Bottom"/>
         <Button x:Name="btnStop" IsEnabled="False" Content="Stop" HorizontalAlignment="Left" Margin="110,0,0,10" Width="75" Height="21" Click="btnStop_Click" VerticalAlignment="Bottom"/>
         <Label x:Name="lblAppName" Content="AppName" Margin="10,10,10,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="18"/>
-        <Label Content="Current Project:" HorizontalAlignment="Left" Margin="10,74,0,0" VerticalAlignment="Top" FontSize="14"/>
-        <Label x:Name="lblCurrentProject" Content="xxxxx" HorizontalAlignment="Left" Margin="114,74,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
+        <Label Content="Current Project:" HorizontalAlignment="Left" Margin="10,74,0,0" VerticalAlignment="Top" FontSize="13.333"/>
+        <Label x:Name="lblCurrentProject" Content="xxxxx" HorizontalAlignment="Left" Margin="114,74,0,0" VerticalAlignment="Top" FontSize="13.333" FontWeight="Bold"/>
         <Button x:Name="btnLoad" Content="Load XML Project file…" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Width="154" Height="21" Click="btnLoad_Click"/>
         <Grid Margin="10,103,10,36">
             <Grid x:Name="gridProjectControls">
@@ -22,7 +22,7 @@
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" x:Name="txtDescription" TextWrapping="Wrap" Text="TextBlock&#xa;NewLine" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6"/>
 
-                <Label x:Name="lblActionTitle" Grid.Row="2" Content="lblActionTitle" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="SemiBold" Margin="0, 3, 0, 0" FontSize="14"/>
+                <Label x:Name="lblActionTitle" Grid.Row="2" Content="lblActionTitle" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="SemiBold" Margin="0, 3, 0, 0" FontSize="13.333"/>
 
                 <ScrollViewer Grid.Row="2" Margin="0,30,0,0" VerticalScrollBarVisibility="Auto">
                     <Grid x:Name="actionListGrid"/>
