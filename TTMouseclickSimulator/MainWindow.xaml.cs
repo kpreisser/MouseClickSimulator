@@ -86,8 +86,8 @@ namespace TTMouseclickSimulator
 
             // Run the simulator in another task so it is not executed in the GUI thread.
             // However, we then await that new task so we are notified when it is finished.
-            Simulator sim = simulator = new Simulator(currentQuickAction != null ? currentQuickAction.Action : project.Configuration.MainAction,
-                TTRWindowsEnvironment.Instance);
+            Simulator sim = simulator = new Simulator(currentQuickAction != null ? currentQuickAction.Action 
+                : project.Configuration.MainAction, TTRWindowsEnvironment.Instance);
             sim.AsyncRetryHandler = async (ex) => !closeWindowAfterStop && await HandleSimulatorRetryAsync(sim, ex);
 
             Exception runException = null;
@@ -114,7 +114,8 @@ namespace TTMouseclickSimulator
                     MainInstruction = "Simulator stopped!",
                     Content = runException.Message,
                     ExpandedInformation = GetExceptionDetailsText(runException),
-                    Flags = TaskDialog.TaskDialogFlags.SizeToContent | TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
+                    Flags = TaskDialog.TaskDialogFlags.SizeToContent |
+                        TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
                         TaskDialog.TaskDialogFlags.ExpandFooterArea,
                     MainIcon = TaskDialog.TaskDialogIcon.Stop,
                     CommonButtons = TaskDialog.TaskDialogButtons.OK
@@ -140,12 +141,14 @@ namespace TTMouseclickSimulator
                         Content = ex.Message,
                         ExpandedInformation = GetExceptionDetailsText(ex),
                         Flags = TaskDialog.TaskDialogFlags.UseCommandLinks |
-                            TaskDialog.TaskDialogFlags.PositionRelativeToWindow | TaskDialog.TaskDialogFlags.ExpandFooterArea,
+                            TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
+                            TaskDialog.TaskDialogFlags.ExpandFooterArea,
                         MainIcon = TaskDialog.TaskDialogIcon.Warning,
                         CommonButtons = TaskDialog.TaskDialogButtons.Cancel
                     };
 
-                    var buttonTryAgain = dialog.CreateCustomButton("Try again\nThe Simulator will try to run the current action again.");
+                    var buttonTryAgain = dialog.CreateCustomButton("Try again\n" 
+                        + "The Simulator will try to run the current action again.");
                     var buttonStop = dialog.CreateCustomButton("Stop the Simulator");
 
                     dialog.CustomButtons = new TaskDialog.ICustomButton[] { buttonTryAgain, buttonStop };
@@ -215,7 +218,8 @@ namespace TTMouseclickSimulator
                 // Try to load the given project.
                 try
                 {
-                    using (FileStream fs = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (FileStream fs = new FileStream(openFileDialog.FileName, FileMode.Open,
+                        FileAccess.Read, FileShare.Read))
                     {
                         XmlProjectDeserializer deser = new XmlProjectDeserializer();
                         project = deser.Deserialize(fs);
@@ -229,7 +233,8 @@ namespace TTMouseclickSimulator
                         MainInstruction = "Could not load the selected project.",
                         Content = ex.Message,
                         ExpandedInformation = GetExceptionDetailsText(ex),
-                        Flags = TaskDialog.TaskDialogFlags.SizeToContent | TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
+                        Flags = TaskDialog.TaskDialogFlags.SizeToContent |
+                            TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
                             TaskDialog.TaskDialogFlags.ExpandFooterArea,
                         MainIcon = TaskDialog.TaskDialogIcon.SecurityErrorBar,
                         MainUpdateIcon = TaskDialog.TaskDialogIcon.Stop,
@@ -292,7 +297,8 @@ namespace TTMouseclickSimulator
 
                 // Create labels for each action.
                 actionListGrid.Children.Clear();
-                IAction mainAct = currentQuickAction != null ? currentQuickAction.Action : project.Configuration.MainAction;
+                IAction mainAct = currentQuickAction != null ? currentQuickAction.Action 
+                    : project.Configuration.MainAction;
                 if (mainAct != null)
                 {
                     int posCounter = 0;
