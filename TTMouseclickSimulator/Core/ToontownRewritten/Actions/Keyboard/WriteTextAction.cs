@@ -26,6 +26,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
         /// Otherwise, all characters are written immediately.</param>
         public WriteTextAction(string text, int? pauseDuration = null)
         {
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             this.text = text;
             this.pauseDuration = pauseDuration;
         }

@@ -13,7 +13,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             Coordinates c = new Coordinates(1503, 1086);
-            await MouseHelpers.DoSimpleMouseClickAsync(provider, c, 200);
+            await MouseHelpers.DoSimpleMouseClickAsync(provider, c);
         }
 
 

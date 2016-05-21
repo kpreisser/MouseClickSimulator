@@ -12,6 +12,7 @@ using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing;
+using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Gardening;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat;
 
@@ -42,6 +43,8 @@ namespace TTMouseclickSimulator.Project
             actionTypes.Add("Loop", typeof(LoopAction));
 
             actionTypes.Add("DoodlePanel", typeof(DoodlePanelAction));
+
+            actionTypes.Add("PlantFlower", typeof(PlantFlowerAction));
 
             actionTypes.Add("AutomaticFishing", typeof(AutomaticFishingAction));
             actionTypes.Add("StraightFishing", typeof(StraightFishingAction));
