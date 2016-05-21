@@ -266,7 +266,7 @@ namespace TTMouseclickSimulator
                     b.Height = 21;
                     b.HorizontalAlignment = HorizontalAlignment.Left;
                     b.VerticalAlignment = VerticalAlignment.Top;
-                    b.Margin = new Thickness(0, 23 * i, 0, 0);
+                    b.Margin = new Thickness(0, 2 + 23 * i, 0, 0);
                     b.Content = "  " + quickAction.Name + "  ";
                     gridProjectControls.Children.Add(b);
                     Grid.SetRow(b, 1);

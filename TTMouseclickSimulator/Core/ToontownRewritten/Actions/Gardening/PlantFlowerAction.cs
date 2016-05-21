@@ -45,14 +45,14 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Gardening
             foreach (int jellybean in jellybeanCombination)
             {
                 var c = new Coordinates((int)Math.Round(560 + jellybean * 60.5), 514);
-                await MouseHelpers.DoSimpleMouseClickAsync(provider, c);
+                await MouseHelpers.DoSimpleMouseClickAsync(provider, c, VerticalScaleAlignment.Center, 100);
                 await provider.WaitAsync(200);
             }
 
             await provider.WaitAsync(300);
 
             // Click on the "Plant" button.
-            await MouseHelpers.DoSimpleMouseClickAsync(provider, new Coordinates(970, 772));
+            await MouseHelpers.DoSimpleMouseClickAsync(provider, new Coordinates(975, 772));
         }
 
         public override string ToString()
