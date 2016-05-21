@@ -257,7 +257,6 @@ namespace TTMouseclickSimulator
 
                     Button b = quickActionButtons[i] = new Button();
                     b.Height = 21;
-                    //b.Width = 200;
                     b.HorizontalAlignment = HorizontalAlignment.Left;
                     b.VerticalAlignment = VerticalAlignment.Top;
                     b.Margin = new Thickness(0, 22 * i, 0, 0);
