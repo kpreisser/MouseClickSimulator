@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
+  <Title>Gardening – 7 Jellybean Combinations</Title>
+  <Description>
+This project contains QuickActions for planting flowers using combinations of 7 jellybeans.
+
+Before you click on one of the buttons, the toon needs to stand in front of an empty flower spot.
+  </Description>
+
+  
+  <QuickAction title="Stinking Rose">
+    <PlantFlower jellybeanCombination="0, 7, 2, 5, 3, 7, 7"></PlantFlower>
+  </QuickAction>
+  
+  <QuickAction title="Model Carnation">
+    <PlantFlower jellybeanCombination="5, 1, 1, 1, 1, 6, 1"></PlantFlower>
+  </QuickAction>
+  
+  <QuickAction title="Car Petunia">
+    <PlantFlower jellybeanCombination="4, 3, 4, 3, 7, 4, 4"></PlantFlower>
+  </QuickAction>
+  
+  <QuickAction title="Crazy Daisy">
+    <PlantFlower jellybeanCombination="6, 1, 0, 2, 1, 1, 1"></PlantFlower>
+  </QuickAction>
+  
+  <QuickAction title="Indubitab Lily">
+    <PlantFlower jellybeanCombination="7, 3, 7, 4, 7, 4, 4"></PlantFlower>
+  </QuickAction>
+
+</SimulatorProject>
