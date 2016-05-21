@@ -239,6 +239,7 @@ namespace TTMouseclickSimulator.Core.Environment
         {
 
             private bool disposed;
+            private WindowPosition windowPosition;
 
             private readonly Bitmap bmp;
             private BitmapData bmpData;
@@ -247,7 +248,24 @@ namespace TTMouseclickSimulator.Core.Environment
 
             public Size Size => new Size(bmp.Width, bmp.Height); 
 
-            public WindowPosition WindowPosition { get; }
+            public WindowPosition WindowPosition
+            {
+                get
+                {
+                    return windowPosition;
+                }
+                private set
+                {
+                    if (bmp != null && !(value.Size.Width == windowPosition.Size.Width
+                        && value.Size.Height == windowPosition.Size.Height))
+                        throw new ArgumentException("Cannot set a new size for the same screenshot instance.");
+                    windowPosition = value;
+
+                    // Create a new rectangle for the new position
+                    rect = new Rectangle(windowPosition.Coordinates.X, windowPosition.Coordinates.Y,
+                        windowPosition.Size.Width, windowPosition.Size.Height);
+                }
+            }
             private Rectangle rect;
 
             public static ScreenshotContent Create(WindowPosition pos, 
@@ -264,6 +282,9 @@ namespace TTMouseclickSimulator.Core.Environment
 
                 if (existingScreenshot == null)
                     existingScreenshot = new ScreenshotContent(pos);
+                else
+                    // The window could have been moved, so refresh the position.
+                    existingScreenshot.WindowPosition = pos; 
 
                 existingScreenshot.FillScreenshot();
                 return existingScreenshot;
@@ -272,6 +293,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
             private ScreenshotContent(WindowPosition pos)
             {
+                // Set the window position which will create a new rectangle.
                 WindowPosition = pos;
 
                 // Ensure we use Little Endian as byte order.
@@ -279,9 +301,6 @@ namespace TTMouseclickSimulator.Core.Environment
                 if (IPAddress.HostToNetworkOrder((short)1) == 1)
                     throw new InvalidOperationException("This class currently only works "
                         + "on systems using little endian as byte order.");
-
-                rect = new Rectangle(
-                    pos.Coordinates.X, pos.Coordinates.Y, pos.Size.Width, pos.Size.Height);
 
                 bmp = new Bitmap(rect.Width, rect.Height,
                     PixelFormat.Format32bppRgb);
