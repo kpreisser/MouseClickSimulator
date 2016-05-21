@@ -8,24 +8,24 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
   </Description>
 
   
-  <QuickAction title="Laff-o-dil">
-    <PlantFlower jellybeanCombination="1"></PlantFlower>
+  <QuickAction title="Laff-o-dil  (Daffodil)">
+    <PlantFlower jellybeanCombination="1" />
   </QuickAction>
   
-  <QuickAction title="Dandy Pansy">
-    <PlantFlower jellybeanCombination="2"></PlantFlower>
+  <QuickAction title="Dandy Pansy  (Pansy)">
+    <PlantFlower jellybeanCombination="2" />
   </QuickAction>
   
-  <QuickAction title="What-in Carnation">
-    <PlantFlower jellybeanCombination="5"></PlantFlower>
+  <QuickAction title="What-in Carnation  (Carnation)">
+    <PlantFlower jellybeanCombination="5" />
   </QuickAction>
   
-  <QuickAction title="School Daisy">
-    <PlantFlower jellybeanCombination="6"></PlantFlower>
+  <QuickAction title="School Daisy  (Daisy)">
+    <PlantFlower jellybeanCombination="6" />
   </QuickAction>
   
-  <QuickAction title="Lily-of-the-Alley">
-    <PlantFlower jellybeanCombination="7"></PlantFlower>
+  <QuickAction title="Lily-of-the-Alley  (Lily)">
+    <PlantFlower jellybeanCombination="7" />
   </QuickAction>
 
 </SimulatorProject>

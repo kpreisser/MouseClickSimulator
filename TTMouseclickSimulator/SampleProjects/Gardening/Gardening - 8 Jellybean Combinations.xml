@@ -8,24 +8,24 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
   </Description>
 
   
-  <QuickAction title="Istilla Rose">
-    <PlantFlower jellybeanCombination="0, 4, 3, 3, 4, 4, 5, 4"></PlantFlower>
+  <QuickAction title="Istilla Rose  (Rose)">
+    <PlantFlower jellybeanCombination="0, 4, 3, 3, 4, 4, 5, 4" />
   </QuickAction>
   
-  <QuickAction title="Threelip">
-    <PlantFlower jellybeanCombination="3, 6, 6, 3, 6, 2, 3, 6"></PlantFlower>
+  <QuickAction title="Threelip  (Tulip)">
+    <PlantFlower jellybeanCombination="3, 6, 6, 3, 6, 2, 3, 6" />
   </QuickAction>
   
-  <QuickAction title="Platoonia">
-    <PlantFlower jellybeanCombination="4, 5, 5, 4, 0, 2, 6, 6"></PlantFlower>
+  <QuickAction title="Platoonia  (Petunia)">
+    <PlantFlower jellybeanCombination="4, 5, 5, 4, 0, 2, 6, 6" />
   </QuickAction>
   
-  <QuickAction title="Hazy Dazy">
-    <PlantFlower jellybeanCombination="6, 4, 3, 7, 3, 0, 2, 3"></PlantFlower>
+  <QuickAction title="Hazy Dazy  (Daisy)">
+    <PlantFlower jellybeanCombination="6, 4, 3, 7, 3, 0, 2, 3" />
   </QuickAction>
   
-  <QuickAction title="Dilly Lily">
-    <PlantFlower jellybeanCombination="7, 4, 6, 6, 7, 4, 6, 6"></PlantFlower>
+  <QuickAction title="Dilly Lily  (Lily)">
+    <PlantFlower jellybeanCombination="7, 4, 6, 6, 7, 4, 6, 6" />
   </QuickAction>
 
 </SimulatorProject>
