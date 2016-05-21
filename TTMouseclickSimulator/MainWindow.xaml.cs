@@ -284,7 +284,8 @@ namespace TTMouseclickSimulator
 
         private void RefreshProjectControls()
         {
-            lblActionTitle.Content = currentQuickAction != null ? currentQuickAction.Name : actionTitleMainAction;
+            lblActionTitle.Content = currentQuickAction != null ? currentQuickAction.Name 
+                : project?.Configuration.MainAction != null ? actionTitleMainAction : "";
             if (project == null)
             {
                 lblCurrentProject.Content = "(none)";
