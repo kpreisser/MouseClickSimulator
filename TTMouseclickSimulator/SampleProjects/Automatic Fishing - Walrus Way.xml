@@ -47,8 +47,9 @@ Before you click on Start, make sure that
         <PressKey key="Down" duration="2118" />
         <PressKey key="Left" duration="800" />
         <PressKey key="Up" duration="1800" />
+        <!-- Press the down key to compensate for the case when the toon walks over the
+             fishing pier but TT doesn't activate the fishing mode -->
         <PressKey key="Down" duration="2200" />
-        <Pause duration="2000" />
       </Compound>
         
     </Compound>
