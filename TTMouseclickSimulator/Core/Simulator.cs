@@ -10,7 +10,7 @@ namespace TTMouseclickSimulator.Core
 {
     public class Simulator
     {
-        private readonly SimulatorConfiguration config;
+        private readonly IAction mainAction;
         private readonly AbstractWindowsEnvironment environmentInterface;
 
         private readonly StandardInteractionProvider provider;
@@ -32,17 +32,15 @@ namespace TTMouseclickSimulator.Core
         public Func<Exception, Task<bool>> AsyncRetryHandler;
         
 
-        public Simulator(SimulatorConfiguration config, AbstractWindowsEnvironment environmentInterface)
+        public Simulator(IAction mainAction, AbstractWindowsEnvironment environmentInterface)
         {
-            if (config == null)
-                throw new ArgumentNullException(nameof(config));
+            if (mainAction == null)
+                throw new ArgumentNullException(nameof(mainAction));
             if (environmentInterface == null)
                 throw new ArgumentNullException(nameof(environmentInterface));
-            if (config.MainAction == null)
-                throw new ArgumentException("There must be an action specified in the SimulatorConfiguration.");
-            
 
-            this.config = config;
+
+            this.mainAction = mainAction;
             this.environmentInterface = environmentInterface;
 
             provider = new StandardInteractionProvider(this, environmentInterface, out cancelCallback);
@@ -71,7 +69,7 @@ namespace TTMouseclickSimulator.Core
                         try
                         {
                             // Run the action.
-                            await config.MainAction.RunAsync(provider);
+                            await mainAction.RunAsync(provider);
 
                             // Normally the main action would be a CompoundAction that never returns, but
                             // it is possible that the action will return normally.

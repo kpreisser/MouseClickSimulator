@@ -86,21 +86,44 @@ namespace TTMouseclickSimulator.Project
 
         private SimulatorConfiguration ParseConfiguration(XElement configEl)
         {
+            var config = new SimulatorConfiguration();
+            
             // Find the <MainAction>
             var mainActionEl = configEl.Element(ns + "MainAction");
-            if (mainActionEl == null)
-                throw new InvalidDataException("The <MainAction> element is missing.");
-
-            IList<IAction> actionList = ParseActionList(mainActionEl);
-            if (actionList.Count != 1)
+            if (mainActionEl != null)
             {
-                throw new InvalidDataException("<MainAction> must contain exactly one Action element.");
+                IList<IAction> actionList = ParseActionList(mainActionEl);
+                if (actionList.Count != 1)
+                {
+                    throw new InvalidDataException("<MainAction> must contain exactly one Action element.");
+                }
+                config.MainAction = actionList[0];
             }
 
-            return new SimulatorConfiguration()
+            // Parse quick actions.
+            var quickActionElements = configEl.Elements(ns + "QuickAction");
+            int i = 0;
+            foreach (var el in quickActionElements)
             {
-                MainAction = actionList[0]
-            };
+                i++;
+
+                var quickActionName = el.Attribute("title")?.Value ?? $"Quick Action [{i.ToString()}]";
+                IList<IAction> quickActionList = ParseActionList(el);
+                if (quickActionList.Count != 1)
+                {
+                    throw new InvalidDataException("<QuickAction> must contain exactly one Action element.");
+                }
+                config.QuickActions.Add(new SimulatorConfiguration.QuickActionDescriptor()
+                {
+                    Name = quickActionName,
+                    Action = quickActionList[0]
+                });
+            }
+
+            if (config.MainAction == null && config.QuickActions.Count == 0)
+                throw new ArgumentException("There must be a <MainAction> or at least one <QuickAction> element in the <SimulatorProject>.");
+
+            return config;
         }
 
         private IList<IAction> ParseActionList(XElement parent)

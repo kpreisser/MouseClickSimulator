@@ -46,4 +46,15 @@
   
   </MainAction>
 
+  <!-- Quick Actions are additional actions which can be started by pressing a button
+  for this action. -->
+  <QuickAction title="Left &amp; Right">
+    
+    <Compound type="Sequential" loop="false">
+      <PressKey key="Left" duration="600" />
+      <PressKey key="Right" duration="600" />
+    </Compound>
+    
+  </QuickAction>
+
 </SimulatorProject>

@@ -23,9 +23,13 @@ namespace TTMouseclickSimulator
         private const string AppName = "TTR Mouse Click Simulator";
 
         private SimulatorProject project;
+        private SimulatorConfiguration.QuickActionDescriptor currentQuickAction;
+        private Button[] quickActionButtons;
+
         private Simulator simulator;
         // Callbacks that we need to call when we start or stop the simulator.
         private Action simulatorStartAction, simulatorStopAction;
+
         /// <summary>
         /// If true, the window should be closed after the simulator stopped.s
         /// </summary>
@@ -38,6 +42,10 @@ namespace TTMouseclickSimulator
         private const string SampleProjectsFolderName = "SampleProjects";
 
         private readonly Microsoft.Win32.OpenFileDialog openFileDialog;
+
+
+        private const string actionTitleMainAction = "Main Action";
+
 
         public MainWindow()
         {
@@ -62,19 +70,24 @@ namespace TTMouseclickSimulator
 
         private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            await RunSimulator();
+            await RunSimulatorAsync();
         }
 
-        private async Task RunSimulator()
+        private async Task RunSimulatorAsync()
         {
             btnStart.IsEnabled = false;
             btnStop.IsEnabled = true;
             btnLoad.IsEnabled = false;
+            if (quickActionButtons != null)
+                foreach (var bt in quickActionButtons)
+                    bt.IsEnabled = false;
+
 
 
             // Run the simulator in another task so it is not executed in the GUI thread.
             // However, we then await that new task so we are notified when it is finished.
-            Simulator sim = simulator = new Simulator(project.Configuration, TTRWindowsEnvironment.Instance);
+            Simulator sim = simulator = new Simulator(currentQuickAction != null ? currentQuickAction.Action : project.Configuration.MainAction,
+                TTRWindowsEnvironment.Instance);
             sim.AsyncRetryHandler = async (ex) => !closeWindowAfterStop && await HandleSimulatorRetryAsync(sim, ex);
 
             Exception runException = null;
@@ -173,6 +186,15 @@ namespace TTMouseclickSimulator
             btnStart.IsEnabled = true;
             btnStop.IsEnabled = false;
             btnLoad.IsEnabled = true;
+            if (quickActionButtons != null)
+                foreach (var bt in quickActionButtons)
+                    bt.IsEnabled = true;
+
+            if (currentQuickAction != null)
+            {
+                currentQuickAction = null;
+                RefreshProjectControls();
+            }
 
             if (closeWindowAfterStop)
                 Close();
@@ -217,12 +239,46 @@ namespace TTMouseclickSimulator
                     dialog.Show(this);
                 }
 
+                if (quickActionButtons != null)
+                {
+                    foreach (var b in quickActionButtons)
+                        gridProjectControls.Children.Remove(b);
+                    quickActionButtons = null;
+                }
+
                 RefreshProjectControls();
+
+                // For each quick action, create a button.
+                quickActionButtons = new Button[project.Configuration.QuickActions.Count];
+                for (int idx = 0; idx < project.Configuration.QuickActions.Count; idx++)
+                {
+                    int i = idx;
+                    var quickAction = project.Configuration.QuickActions[i];
+
+                    Button b = quickActionButtons[i] = new Button();
+                    b.Height = 21;
+                    //b.Width = 200;
+                    b.HorizontalAlignment = HorizontalAlignment.Left;
+                    b.VerticalAlignment = VerticalAlignment.Top;
+                    b.Margin = new Thickness(0, 22 * i, 0, 0);
+                    b.Content = "  " + quickAction.Name + "  ";
+                    gridProjectControls.Children.Add(b);
+                    Grid.SetRow(b, 1);
+
+                    b.Click += async (_s, _e) =>
+                    {
+                        currentQuickAction = quickAction;
+                        RefreshProjectControls();
+
+                        await RunSimulatorAsync();
+                    };
+                }
             }
         }
 
         private void RefreshProjectControls()
         {
+            lblActionTitle.Content = currentQuickAction != null ? currentQuickAction.Name : actionTitleMainAction;
             if (project == null)
             {
                 lblCurrentProject.Content = "(none)";
@@ -233,15 +289,17 @@ namespace TTMouseclickSimulator
             {
                 lblCurrentProject.Content = project.Title;
                 txtDescription.Text = project.Description;
-                btnStart.IsEnabled = true;
+                btnStart.IsEnabled = project.Configuration.MainAction != null;
 
                 // Create labels for each action.
                 actionListGrid.Children.Clear();
-                IAction mainAct = project.Configuration.MainAction;
-                int posCounter = 0;
-                CreateActionLabels(mainAct, actionListGrid, 0, ref posCounter, 
-                    out simulatorStartAction, out simulatorStopAction);
-                
+                IAction mainAct = currentQuickAction != null ? currentQuickAction.Action : project.Configuration.MainAction;
+                if (mainAct != null)
+                {
+                    int posCounter = 0;
+                    CreateActionLabels(mainAct, actionListGrid, 0, ref posCounter,
+                        out simulatorStartAction, out simulatorStopAction);
+                }
             }
         }
 
