@@ -52,7 +52,7 @@ namespace TTMouseclickSimulator.Core.Environment
                     environmentInterface.BringWindowToForeground(hWnd);
 
                     // Wait a bit so that the window can go into foreground.
-                    await WaitSemaphoreInternalAsync(1000, false);
+                    await WaitSemaphoreInternalAsync(500, false);
                 }
                 catch (Exception ex) when (!(ex is SimulatorCanceledException))
                 {
