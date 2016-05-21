@@ -39,11 +39,11 @@ Before you click on Start, make sure that
         <PressKey key="Up" duration="720" />
         <PressKey key="Left" duration="1020" />
         <PressKey key="Up" duration="1900" />
-        <Pause duration="1500" />
+        <Pause duration="1300" />
           
         <SellFish />
           
-        <Pause duration="1500" />
+        <Pause duration="1300" />
         <PressKey key="Down" duration="2118" />
         <PressKey key="Left" duration="800" />
         <PressKey key="Up" duration="1800" />
