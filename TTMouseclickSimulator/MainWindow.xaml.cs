@@ -141,7 +141,7 @@ namespace TTMouseclickSimulator
                         MainIcon = TaskDialog.TaskDialogIcon.Warning,
                         CommonButtons = TaskDialog.TaskDialogButtons.Cancel
                     };
-                    dialog.Flags = TaskDialog.TaskDialogFlags.UseCommandLinks |
+                    dialog.Flags |= TaskDialog.TaskDialogFlags.UseCommandLinks |
                             TaskDialog.TaskDialogFlags.ExpandFooterArea;
 
                     var buttonTryAgain = dialog.CreateCustomButton("Try again\n" 
