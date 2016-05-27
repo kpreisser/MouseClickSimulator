@@ -72,8 +72,7 @@ namespace TTMouseclickSimulator.Utils
 
         /// <summary>
         /// Flags for this TaskDialog instance. By default,
-        /// <see cref="TaskDialogFlags.PositionRelativeToWindow"/> and
-        /// <see cref="TaskDialogFlags.SizeToContent"/> are set.
+        /// <see cref="TaskDialogFlags.PositionRelativeToWindow"/> is set.
         /// </summary>
         public TaskDialogFlags Flags { get; set; }
 
@@ -164,7 +163,7 @@ namespace TTMouseclickSimulator.Utils
         /// </summary>
         public void Reset()
         {
-            Flags = TaskDialogFlags.PositionRelativeToWindow | TaskDialogFlags.SizeToContent;
+            Flags = TaskDialogFlags.PositionRelativeToWindow;
             Title = MainInstruction = Content = Footer = VerificationText =
                 ExpandedInformation = ExpandedControlText = CollapsedControlText = null;
             MainIcon = MainUpdateIcon = FooterIcon = default(TaskDialogIcon);

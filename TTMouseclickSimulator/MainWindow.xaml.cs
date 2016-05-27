@@ -138,12 +138,11 @@ namespace TTMouseclickSimulator
                         MainInstruction = "Simulator interrupted!",
                         Content = ex.Message,
                         ExpandedInformation = GetExceptionDetailsText(ex),
-                        Flags = TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
-                            TaskDialog.TaskDialogFlags.UseCommandLinks |
-                            TaskDialog.TaskDialogFlags.ExpandFooterArea,
                         MainIcon = TaskDialog.TaskDialogIcon.Warning,
                         CommonButtons = TaskDialog.TaskDialogButtons.Cancel
                     };
+                    dialog.Flags = TaskDialog.TaskDialogFlags.UseCommandLinks |
+                            TaskDialog.TaskDialogFlags.ExpandFooterArea;
 
                     var buttonTryAgain = dialog.CreateCustomButton("Try again\n" 
                         + "The Simulator will try to run the current action again.");
@@ -235,7 +234,8 @@ namespace TTMouseclickSimulator
                         MainUpdateIcon = TaskDialog.TaskDialogIcon.Stop,
                         CommonButtons = TaskDialog.TaskDialogButtons.OK
                     };
-                    dialog.Flags |= TaskDialog.TaskDialogFlags.ExpandFooterArea;
+                    dialog.Flags |=  TaskDialog.TaskDialogFlags.SizeToContent |
+                        TaskDialog.TaskDialogFlags.ExpandFooterArea;
 
                     dialog.Show(this);
                     return;
