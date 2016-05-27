@@ -70,6 +70,11 @@ namespace TTMouseclickSimulator.Utils
 
         public string CollapsedControlText { get; set; }
 
+        /// <summary>
+        /// Flags for this TaskDialog instance. By default,
+        /// <see cref="TaskDialogFlags.PositionRelativeToWindow"/> and
+        /// <see cref="TaskDialogFlags.SizeToContent"/> are set.
+        /// </summary>
         public TaskDialogFlags Flags { get; set; }
 
         public TaskDialogIcon MainIcon { get; set; }
@@ -143,6 +148,9 @@ namespace TTMouseclickSimulator.Utils
             callbackProcDelegate = new TaskDialogCallbackProcDelegate(TaskDialogCallbackProc);
             // Get a function pointer for the delegate.
             ptrCallbackProcDelegate = Marshal.GetFunctionPointerForDelegate(callbackProcDelegate);
+
+            // Set default values
+            Reset();
         }
 
 
@@ -156,7 +164,7 @@ namespace TTMouseclickSimulator.Utils
         /// </summary>
         public void Reset()
         {
-            Flags = default(TaskDialogFlags);
+            Flags = TaskDialogFlags.PositionRelativeToWindow | TaskDialogFlags.SizeToContent;
             Title = MainInstruction = Content = Footer = VerificationText =
                 ExpandedInformation = ExpandedControlText = CollapsedControlText = null;
             MainIcon = MainUpdateIcon = FooterIcon = default(TaskDialogIcon);
@@ -810,8 +818,7 @@ namespace TTMouseclickSimulator.Utils
                 MainInstruction = instruction,
                 Title = caption,
                 CommonButtons = buttons,
-                MainIcon = icon,
-                Flags = TaskDialogFlags.SizeToContent | TaskDialogFlags.PositionRelativeToWindow
+                MainIcon = icon
             };
             dialog.Show(hwndOwner);
 

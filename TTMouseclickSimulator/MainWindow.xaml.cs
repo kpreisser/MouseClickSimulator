@@ -114,12 +114,10 @@ namespace TTMouseclickSimulator
                     MainInstruction = "Simulator stopped!",
                     Content = runException.Message,
                     ExpandedInformation = GetExceptionDetailsText(runException),
-                    Flags = TaskDialog.TaskDialogFlags.SizeToContent |
-                        TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
-                        TaskDialog.TaskDialogFlags.ExpandFooterArea,
                     MainIcon = TaskDialog.TaskDialogIcon.Stop,
                     CommonButtons = TaskDialog.TaskDialogButtons.OK
                 };
+                dialog.Flags |= TaskDialog.TaskDialogFlags.ExpandFooterArea;
                 dialog.Show(this);
             }
 
@@ -140,8 +138,8 @@ namespace TTMouseclickSimulator
                         MainInstruction = "Simulator interrupted!",
                         Content = ex.Message,
                         ExpandedInformation = GetExceptionDetailsText(ex),
-                        Flags = TaskDialog.TaskDialogFlags.UseCommandLinks |
-                            TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
+                        Flags = TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
+                            TaskDialog.TaskDialogFlags.UseCommandLinks |
                             TaskDialog.TaskDialogFlags.ExpandFooterArea,
                         MainIcon = TaskDialog.TaskDialogIcon.Warning,
                         CommonButtons = TaskDialog.TaskDialogButtons.Cancel
@@ -233,13 +231,11 @@ namespace TTMouseclickSimulator
                         MainInstruction = "Could not load the selected project.",
                         Content = ex.Message,
                         ExpandedInformation = GetExceptionDetailsText(ex),
-                        Flags = TaskDialog.TaskDialogFlags.SizeToContent |
-                            TaskDialog.TaskDialogFlags.PositionRelativeToWindow |
-                            TaskDialog.TaskDialogFlags.ExpandFooterArea,
                         MainIcon = TaskDialog.TaskDialogIcon.SecurityErrorBar,
                         MainUpdateIcon = TaskDialog.TaskDialogIcon.Stop,
                         CommonButtons = TaskDialog.TaskDialogButtons.OK
                     };
+                    dialog.Flags |= TaskDialog.TaskDialogFlags.ExpandFooterArea;
 
                     dialog.Show(this);
                     return;
