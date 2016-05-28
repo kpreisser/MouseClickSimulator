@@ -168,8 +168,8 @@ namespace TTMouseclickSimulator.Core.Environment
                     long remaining = millisecondsTimeout - sw.ElapsedMilliseconds;
                     if (remaining <= 0)
                         break;
-                    // 1000 iterations should take about 40 µs on a 3.4 GHz system.
-                    Thread.SpinWait(1000);
+                    // 100 iterations should take about 4 µs on a 3.4 GHz system.
+                    Thread.SpinWait(100);
                 }
             }
             else
