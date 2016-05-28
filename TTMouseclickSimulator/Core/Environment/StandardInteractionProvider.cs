@@ -148,7 +148,7 @@ namespace TTMouseclickSimulator.Core.Environment
             {
                 /*
                 Instead of using a wait method for the complete timeout (which is a bit inaccurate 
-                as it may be up to ~ 15 ms longer than specified), we use the specified timeout - 12 to wait
+                as it may be up to ~ 15 ms longer than specified), we use the specified timeout - 15 to wait
                 and then call Thread.SpinWait() to loop until the complete wait interval has been reached
                 which we measure using a high-resolution timer.
                 This means shortly before this method returns there will be a bit CPU usage but the actual
@@ -168,7 +168,8 @@ namespace TTMouseclickSimulator.Core.Environment
                     long remaining = millisecondsTimeout - sw.ElapsedMilliseconds;
                     if (remaining <= 0)
                         break;
-                    // 100 iterations should take about 4 µs on a 3.4 GHz system.
+
+                    // 100 iterations should take about 4 µs on a 3.4 GHz system
                     Thread.SpinWait(100);
                 }
             }
