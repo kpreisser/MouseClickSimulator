@@ -39,7 +39,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Gardening
         {
             // Click on the "Plant Flower" button.
             await MouseHelpers.DoSimpleMouseClickAsync(provider, new Coordinates(76, 264), VerticalScaleAlignment.Left);
-            await provider.WaitAsync(300);
+            await provider.WaitAsync(200);
 
             // Click on the jellybean fields.
             foreach (int jellybean in jellybeanCombination)
@@ -48,8 +48,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Gardening
                 await MouseHelpers.DoSimpleMouseClickAsync(provider, c, VerticalScaleAlignment.Center, 100);
                 await provider.WaitAsync(200);
             }
-
-            await provider.WaitAsync(300);
 
             // Click on the "Plant" button.
             await MouseHelpers.DoSimpleMouseClickAsync(provider, new Coordinates(975, 772));
