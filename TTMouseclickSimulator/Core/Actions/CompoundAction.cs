@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using TTMouseclickSimulator.Core.Environment;
 
@@ -142,7 +141,7 @@ namespace TTMouseclickSimulator.Core.Actions
                     }
                     catch (Exception ex) when (!(ex is SimulatorCanceledException))
                     {
-                        await provider.CheckRetryForExceptionAsync(ex);
+                        await provider.CheckRetryForExceptionAsync(ExceptionDispatchInfo.Capture(ex));
                         continue;
                     }
                     break;

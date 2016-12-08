@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TTMouseclickSimulator.Core.Environment
 {
@@ -27,11 +23,10 @@ namespace TTMouseclickSimulator.Core.Environment
                 throw new ArgumentException($"Could not find Process '{processname}.exe'.");
 
             return processes[0];
-
         }
 
         /// <summary>
-        /// Finds the main window of the given process and returns its main window handle.
+        /// Finds the main window of the given process and returns its window handle.
         /// </summary>
         /// <param name="processname"></param>
         /// <exception cref="System.Exception"></exception>

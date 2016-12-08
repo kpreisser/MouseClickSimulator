@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TTMouseclickSimulator.Core.Actions;
@@ -38,14 +36,16 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Gardening
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             // Click on the "Plant Flower" button.
-            await MouseHelpers.DoSimpleMouseClickAsync(provider, new Coordinates(76, 264), VerticalScaleAlignment.Left);
+            await MouseHelpers.DoSimpleMouseClickAsync(provider, new Coordinates(76, 264),
+                VerticalScaleAlignment.Left);
             await provider.WaitAsync(300);
 
             // Click on the jellybean fields.
             foreach (int jellybean in jellybeanCombination)
             {
                 var c = new Coordinates((int)Math.Round(560 + jellybean * 60.5), 514);
-                await MouseHelpers.DoSimpleMouseClickAsync(provider, c, VerticalScaleAlignment.Center, 100);
+                await MouseHelpers.DoSimpleMouseClickAsync(provider, c,
+                    VerticalScaleAlignment.Center, 100);
                 await provider.WaitAsync(200);
             }
             await provider.WaitAsync(100);

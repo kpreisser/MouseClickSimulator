@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
-using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.Environment
 {
@@ -18,7 +15,7 @@ namespace TTMouseclickSimulator.Core.Environment
         /// re-throw the exception or throw an <see cref="SimulatorCanceledException"/>.
         /// </summary>
         /// <param name="ex"></param>
-        Task CheckRetryForExceptionAsync(Exception ex);
+        Task CheckRetryForExceptionAsync(ExceptionDispatchInfo ex);
 
         /// <summary>
         /// Checks that the Simulator has not been canceled.

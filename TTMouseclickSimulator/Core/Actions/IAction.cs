@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TTMouseclickSimulator.Core.Environment;
 
@@ -27,16 +24,5 @@ namespace TTMouseclickSimulator.Core.Actions
         /// that its state has changed. This is useful for the GUI.
         /// </summary>
         event Action<string> ActionInformationUpdated;
-    }
-
-    public interface IActionContainer : IAction
-    {
-        IList<IAction> SubActions { get; }
-
-        /// <summary>
-        /// An event that is raised when a subaction has been started
-        /// or stopped.
-        /// </summary>
-        event Action<int?> SubActionStartedOrStopped;
     }
 }

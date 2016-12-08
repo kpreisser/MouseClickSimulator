@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -124,7 +125,7 @@ namespace TTMouseclickSimulator
             HandleSimulatorCanceled();
         }
 
-        private async Task<bool> HandleSimulatorRetryAsync(Simulator sim, Exception ex)
+        private async Task<bool> HandleSimulatorRetryAsync(Simulator sim, ExceptionDispatchInfo ex)
         {
             // Show a TaskDialog.
             bool result = false;
@@ -136,8 +137,8 @@ namespace TTMouseclickSimulator
                     {
                         Title = AppName,
                         MainInstruction = "Simulator interrupted!",
-                        Content = ex.Message,
-                        ExpandedInformation = GetExceptionDetailsText(ex),
+                        Content = ex.SourceException.Message,
+                        ExpandedInformation = GetExceptionDetailsText(ex.SourceException),
                         MainIcon = TaskDialog.TaskDialogIcon.Warning,
                         CommonButtons = TaskDialog.TaskDialogButtons.Cancel
                     };

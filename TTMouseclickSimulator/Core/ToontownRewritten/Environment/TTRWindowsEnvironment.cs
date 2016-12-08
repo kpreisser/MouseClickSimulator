@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Environment;
 
@@ -20,7 +16,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment
         public static TTRWindowsEnvironment Instance { get; } = new TTRWindowsEnvironment();
 
         private TTRWindowsEnvironment()
-        { }
+        {
+        }
 
         public override sealed Process FindProcess()
         {

@@ -68,6 +68,7 @@
     </ApplicationDefinition>
     <Compile Include="Core\Actions\AbstractAction.cs" />
     <Compile Include="Core\Actions\AbstractActionContainer.cs" />
+    <Compile Include="Core\Actions\IActionContainer.cs" />
     <Compile Include="Core\ToontownRewritten\Actions\Gardening\PlantFlowerAction.cs" />
     <Compile Include="Project\SimulatorProject.cs" />
     <Compile Include="Utils\TaskDialog.cs" />

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -56,7 +55,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 }
                 catch (Exception ex) when (!(ex is SimulatorCanceledException))
                 {
-                    await CheckRetryForExceptionAsync(ex, false);
+                    await CheckRetryForExceptionAsync(ExceptionDispatchInfo.Capture(ex), false);
                     continue;
                 }
                 break;
@@ -80,14 +79,15 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
-        public async Task CheckRetryForExceptionAsync(Exception ex) => await CheckRetryForExceptionAsync(ex, true);
+        public async Task CheckRetryForExceptionAsync(ExceptionDispatchInfo ex) =>
+            await CheckRetryForExceptionAsync(ex, true);
 
-        private async Task CheckRetryForExceptionAsync(Exception ex, bool reinitialize)
+        private async Task CheckRetryForExceptionAsync(ExceptionDispatchInfo ex, bool reinitialize)
         {
             if (simulator.AsyncRetryHandler == null)
             {
                 // Simply rethrow the exception.
-                throw ex;
+                ex.Throw();
             }
             else
             {
@@ -318,13 +318,9 @@ namespace TTMouseclickSimulator.Core.Environment
                     waitSemaphore.Dispose();
 
                     // Process can be null if the InteractionProvider was not initialized.
-                    if (process != null)
-                        process.Dispose();
-
-                    if (currentScreenshot != null)
-                        currentScreenshot.Dispose();
-
-
+                    process?.Dispose();
+                    currentScreenshot?.Dispose();
+                    
                     CancelActiveInteractions();
                 }
             }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TTMouseclickSimulator.Core.Environment
+﻿namespace TTMouseclickSimulator.Core.Environment
 {
     
     /// <summary>
@@ -50,7 +44,5 @@ namespace TTMouseclickSimulator.Core.Environment
             this.Width = width;
             this.Height = height;
         }
-
     }
-
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
@@ -20,7 +16,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions
             this.duration = duration;
         }
 
-        public override sealed async Task RunAsync(IInteractionProvider provider) => await provider.WaitAsync(duration);
+        public override sealed async Task RunAsync(IInteractionProvider provider) =>
+            await provider.WaitAsync(duration);
 
 
         public override string ToString() => $"Pause – Duration: {duration}";

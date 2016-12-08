@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
@@ -20,8 +18,6 @@ namespace TTMouseclickSimulator.Core
 
 
         public event Action SimulatorStarted;
-        // TODO: This needs a refactoring so that an action can update its state.
-        //public event Action<IAction, int> ActionStarted;
         public event Action SimulatorStopped;
 
         /// <summary>
@@ -29,7 +25,7 @@ namespace TTMouseclickSimulator.Core
         /// this allows the action to check if it should retry or cancel the simulator (in that case, it should
         /// throw an <see cref="SimulatorCanceledException"/>).
         /// </summary>
-        public Func<Exception, Task<bool>> AsyncRetryHandler;
+        public Func<ExceptionDispatchInfo, Task<bool>> AsyncRetryHandler;
         
 
         public Simulator(IAction mainAction, AbstractWindowsEnvironment environmentInterface)
@@ -76,7 +72,7 @@ namespace TTMouseclickSimulator.Core
                         }
                         catch (Exception ex) when (!(ex is SimulatorCanceledException))
                         {
-                            await provider.CheckRetryForExceptionAsync(ex);
+                            await provider.CheckRetryForExceptionAsync(ExceptionDispatchInfo.Capture(ex));
                             continue;
                         }
                         break;
