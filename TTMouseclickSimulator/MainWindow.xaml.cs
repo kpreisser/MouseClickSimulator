@@ -23,6 +23,15 @@ namespace TTMouseclickSimulator
     {
         private const string AppName = "TTR Mouse Click Simulator";
 
+        private const string actionTitleMainAction = "Main Action";
+
+        /// <summary>
+        /// The file extension for Simulator Project files. Currently we use ".xml".
+        /// </summary>
+        private const string ProjectFileExtension = ".xml";
+        private const string SampleProjectsFolderName = "SampleProjects";
+
+
         private SimulatorProject project;
         private SimulatorConfiguration.QuickActionDescriptor currentQuickAction;
         private Button[] quickActionButtons;
@@ -35,19 +44,10 @@ namespace TTMouseclickSimulator
         /// If true, the window should be closed after the simulator stopped.s
         /// </summary>
         private bool closeWindowAfterStop;
-
-        /// <summary>
-        /// The file extension for Simulator Project files. Currently we use ".xml".
-        /// </summary>
-        private const string ProjectFileExtension = ".xml";
-        private const string SampleProjectsFolderName = "SampleProjects";
-
+        
         private readonly Microsoft.Win32.OpenFileDialog openFileDialog;
 
-
-        private const string actionTitleMainAction = "Main Action";
-
-
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -74,6 +74,20 @@ namespace TTMouseclickSimulator
             await RunSimulatorAsync();
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // If the simulator is currently running, don't close the window but stop the
+            // simulator and wait until it is finished.
+            if (simulator != null)
+            {
+                e.Cancel = true;
+                Hide();
+
+                closeWindowAfterStop = true;
+                simulator.Cancel();
+            }
+        }
+
         private async Task RunSimulatorAsync()
         {
             btnStart.IsEnabled = false;
@@ -82,7 +96,6 @@ namespace TTMouseclickSimulator
             if (quickActionButtons != null)
                 foreach (var bt in quickActionButtons)
                     bt.IsEnabled = false;
-
 
 
             // Run the simulator in another task so it is not executed in the GUI thread.
@@ -358,22 +371,6 @@ namespace TTMouseclickSimulator
                         handleStopActions[currentActiveAction.Value]();
                     }
                 }));
-            }
-        }
-
-        
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            // If the simulator is currently running, don't close the window but stop the
-            // simulator and wait until it is finished.
-            if (simulator != null)
-            {
-                e.Cancel = true;
-                Hide();
-
-                closeWindowAfterStop = true;
-                simulator.Cancel();
             }
         }
     }

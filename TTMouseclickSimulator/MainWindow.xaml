@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TTMouseclickSimulator"
         mc:Ignorable="d"
-        Title="AppName" Height="500" Width="542" TextOptions.TextFormattingMode="Display" Closing="Window_Closing">
+        Title="AppName" Height="500" Width="542" TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" Closing="Window_Closing">
     <Grid>
         <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,0,0,10" Width="75" Height="21" Click="btnStart_Click" VerticalAlignment="Bottom"/>
         <Button x:Name="btnStop" IsEnabled="False" Content="Stop" HorizontalAlignment="Left" Margin="110,0,0,10" Width="75" Height="21" Click="btnStop_Click" VerticalAlignment="Bottom"/>
