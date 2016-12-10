@@ -22,6 +22,11 @@ namespace TTMouseclickSimulator.Core.Environment
             if (processes.Length == 0)
                 throw new ArgumentException($"Could not find Process '{processname}.exe'.");
 
+            // Need to dispose of the other process instances, because we only use the
+            // first one.
+            for (int i = 1; i < processes.Length; i++)
+                processes[i].Dispose();
+
             return processes[0];
         }
 
