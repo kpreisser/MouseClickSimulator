@@ -162,8 +162,8 @@ namespace TTMouseclickSimulator.Core.Environment
             // SystemInformation.PrimaryMonitorSize.
             var primaryScreenSize = System.Windows.Forms.SystemInformation.PrimaryMonitorSize;
             
-            double x = 65536d * screenCoords.X / primaryScreenSize.Width;
-            double y = 65536d * screenCoords.Y / primaryScreenSize.Height;
+            double x = (double)0x10000 * screenCoords.X / primaryScreenSize.Width;
+            double y = (double)0x10000 * screenCoords.Y / primaryScreenSize.Height;
 
             /* For correct conversion when converting the flointing point numbers
                to integers, we need round away from 0, e.g.
