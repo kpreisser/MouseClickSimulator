@@ -102,8 +102,6 @@ namespace TTMouseclickSimulator.Core.Environment
 
 
         [DllImport("user32.dll", SetLastError = true)]
-        internal static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
-        [DllImport("user32.dll", SetLastError = true)]
         internal static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
 
         [StructLayout(LayoutKind.Sequential)]
