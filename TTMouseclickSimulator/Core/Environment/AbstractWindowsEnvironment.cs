@@ -1,8 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Net;
+using System.Windows.Forms;
 
 namespace TTMouseclickSimulator.Core.Environment
 {
@@ -72,7 +74,7 @@ namespace TTMouseclickSimulator.Core.Environment
             // Get the client size.
             NativeMethods.RECT clientRect;
             if (!NativeMethods.GetClientRect(hWnd, out clientRect))
-                throw new System.ComponentModel.Win32Exception();
+                throw new Win32Exception();
 
             // Get the screen coordinates of the point (0, 0) in the client rect.
             NativeMethods.POINT relPos = new NativeMethods.POINT();
@@ -152,7 +154,7 @@ namespace TTMouseclickSimulator.Core.Environment
             NativeMethods.INPUT[] inputs = { input };
 
             if (NativeMethods.SendInput(1, inputs, NativeMethods.INPUT.Size) == 0)
-                throw new System.ComponentModel.Win32Exception();
+                throw new Win32Exception();
         }
 
         private Coordinates GetMouseCoordinatesFromScreenCoordinates(Coordinates screenCoords)
@@ -160,7 +162,7 @@ namespace TTMouseclickSimulator.Core.Environment
             // Note: The mouse coordinates are relative to the primary monitor size and
             // location, not to the virtual screen size, so we use
             // SystemInformation.PrimaryMonitorSize.
-            var primaryScreenSize = System.Windows.Forms.SystemInformation.PrimaryMonitorSize;
+            var primaryScreenSize = SystemInformation.PrimaryMonitorSize;
             
             double x = (double)0x10000 * screenCoords.X / primaryScreenSize.Width;
             double y = (double)0x10000 * screenCoords.Y / primaryScreenSize.Height;
@@ -208,7 +210,7 @@ namespace TTMouseclickSimulator.Core.Environment
             NativeMethods.INPUT[] inputs = { input };
 
             if (NativeMethods.SendInput((uint)inputs.Length, inputs, NativeMethods.INPUT.Size) == 0)
-                throw new System.ComponentModel.Win32Exception();
+                throw new Win32Exception();
         }
 
         public void WriteText(string characters)
@@ -230,7 +232,7 @@ namespace TTMouseclickSimulator.Core.Environment
             }
 
             if (NativeMethods.SendInput((uint)inputs.Length, inputs, NativeMethods.INPUT.Size) == 0)
-                throw new System.ComponentModel.Win32Exception();
+                throw new Win32Exception();
         }
 
 
@@ -430,7 +432,6 @@ namespace TTMouseclickSimulator.Core.Environment
             ///DOWN ARROW key
             ///</summary>
             Down = 0x28,
-
         }
     }
 }
