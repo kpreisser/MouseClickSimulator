@@ -17,33 +17,31 @@ Before you click on Start, make sure that
       <!-- Use the automatic fishing action 19 times,
            plus the straight fishing action.
       -->
-      <Compound type="Sequential" minimumPause="200" maximumPause="400" loop="false">
-        <Loop count="19">
-          <AutomaticFishing scan1="153, 134" scan2="1500, 703" bubbleColorRgb="25, 144, 148"
-                            toleranceRgb="10, 11, 11" />
-        </Loop>
-        <!--
-        The last cast must always be straight; otherwise the toon will rotate in
-        the cast direction and the Simulator would be unable to correctly move the Toon
-        to the fisherman. 
-        -->
-        <StraightFishing />
+      <Loop count="19">
+        <AutomaticFishing scan1="153, 134" scan2="1500, 703" bubbleColorRgb="25, 144, 148"
+                          toleranceRgb="10, 11, 11" />
+      </Loop>
+      <!--
+      The last cast must always be straight; otherwise the toon will rotate in
+      the cast direction and the Simulator would be unable to correctly move the Toon
+      to the fisherman. 
+      -->
+      <StraightFishing />
           
-        <QuitFishing />
-      </Compound>
+      <QuitFishing />
 
-      <Pause duration="2500" />
+      <Pause duration="2200" />
         
       <!-- Now go to the fisherman and sell the fish. -->
-      <Compound type="Sequential" minimumPause="400" maximumPause="700" loop="false">
+      <Compound type="Sequential" minimumPause="50" maximumPause="300" loop="false">
         <PressKey key="Up" duration="720" />
         <PressKey key="Left" duration="1020" />
         <PressKey key="Up" duration="1900" />
-        <Pause duration="1300" />
+        <Pause duration="1000" />
           
         <SellFish />
           
-        <Pause duration="1300" />
+        <Pause duration="1000" />
         <PressKey key="Down" duration="2118" />
         <PressKey key="Left" duration="800" />
         <PressKey key="Up" duration="1800" />
