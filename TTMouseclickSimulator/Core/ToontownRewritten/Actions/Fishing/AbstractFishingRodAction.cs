@@ -24,7 +24,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
         /// <summary>
         /// Coordinates to use when we check for a dialog that indicates that a fish
-        /// has been catched.
+        /// has been caught.
         /// Those coordinates are adapted from the old tt mouse click simulator.
         /// </summary>
         private static readonly Coordinates[] fishResultDialogCoordinates =
@@ -46,7 +46,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             await FinishThrowFishingRodAsync(provider);
 
             OnActionInformationUpdated("Waiting for the fish result dialog…");
-            // Then, wait until we find a window displaying the catched fish
+            // Then, wait until we find a window displaying the caught fish
             // or the specified number of seconds has passed.
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -67,7 +67,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
                     if (CompareColor(fishResultDialogColor, col, 10))
                     {
-                        // OK, we catched a fish, so break from the loop.
+                        // OK, we caught a fish, so break from the loop.
                         found = true;
                         break;
                     }
