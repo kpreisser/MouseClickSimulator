@@ -92,6 +92,34 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             provider.PressMouseButton();
 
             await provider.WaitAsync(300);
+
+
+            // Check if a dialog appeared, which means we don't have any more jelly beans or
+            // the fish bucket is full.
+            var screenshot = provider.GetCurrentWindowScreenshot();
+            var refColor = new ScreenshotColor(255, 255, 190);
+            var pointsToCheck = new Coordinates[]
+            {
+                new Coordinates(530, 766),
+                new Coordinates(530, 490),
+                new Coordinates(896, 690)
+            };
+
+            bool foundDialog = true;
+            foreach (var point in pointsToCheck)
+            {
+                if (!CompareColor(refColor, screenshot.GetPixel(
+                    screenshot.WindowPosition.ScaleCoordinates(point, MouseHelpers.ReferenceWindowSize)), 4))
+                {
+                    foundDialog = false;
+                    break;
+                }
+            }
+            if (foundDialog)
+            {
+                throw new InvalidOperationException(
+                    "Either your fish bucket is full or you don't have any more jellybeans for bait.");
+            }
         }
 
         /// <summary>
