@@ -13,7 +13,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         // as abstract property instead of a field. This avoids it being serialized.
         /// <summary>
         /// The timeout value that should be used when waiting for the fish
-        /// result dialog after finishing throwing the rod.
+        /// result dialog after finishing casting the rod.
         /// </summary>
         protected abstract int WaitingForFishResultDialogTime { get; }
 
@@ -40,10 +40,10 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
-            // Throw the fishing rod
+            // Cast the fishing rod
             OnActionInformationUpdated("Casting…");
-            await StartThrowFishingRodAsync(provider);
-            await FinishThrowFishingRodAsync(provider);
+            await StartCastFishingRodAsync(provider);
+            await FinishCastFishingRodAsync(provider);
 
             OnActionInformationUpdated("Waiting for the fish result dialog…");
             // Then, wait until we find a window displaying the caught fish
@@ -80,7 +80,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         /// </summary>
         /// <param name="provider"></param>
         /// <returns></returns>
-        protected async Task StartThrowFishingRodAsync(IInteractionProvider provider)
+        protected async Task StartCastFishingRodAsync(IInteractionProvider provider)
         {
             Coordinates coords = new Coordinates(800, 846);
             var pos = provider.GetCurrentWindowPosition();
@@ -123,12 +123,12 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         }
 
         /// <summary>
-        /// Detects a fish bubble and then throws the fishing rod by moving the mouse to the
+        /// Detects a fish bubble and then casts the fishing rod by moving the mouse to the
         /// desired position and releaseing the mouse button.
         /// </summary>
         /// <param name="provider"></param>
         /// <returns></returns>
-        protected abstract Task FinishThrowFishingRodAsync(IInteractionProvider provider);
+        protected abstract Task FinishCastFishingRodAsync(IInteractionProvider provider);
 
         
 

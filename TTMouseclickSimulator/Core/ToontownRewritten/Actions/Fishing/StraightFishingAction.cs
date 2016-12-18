@@ -7,9 +7,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
     {
         protected override int WaitingForFishResultDialogTime => 25000;
 
-        protected override sealed async Task FinishThrowFishingRodAsync(IInteractionProvider provider)
+        protected override sealed async Task FinishCastFishingRodAsync(IInteractionProvider provider)
         {
-            // Simply throw the fishing rod straight, without checking for bubbles.
+            // Simply cast the fishing rod straight, without checking for bubbles.
             Coordinates coords = new Coordinates(800, 1009);
             var pos = provider.GetCurrentWindowPosition();
             coords = pos.RelativeToAbsoluteCoordinates(pos.ScaleCoordinates(coords,

@@ -21,7 +21,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         }
         
 
-        protected override sealed async Task FinishThrowFishingRodAsync(IInteractionProvider provider)
+        protected override sealed async Task FinishCastFishingRodAsync(IInteractionProvider provider)
         {
             // Try to find a bubble.
             const string actionInformationScanning = "Scanning for fish bubbles…";
