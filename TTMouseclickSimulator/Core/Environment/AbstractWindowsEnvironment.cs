@@ -72,12 +72,12 @@ namespace TTMouseclickSimulator.Core.Environment
                 throw new Exception("The window is not in foreground any more.");
 
             // Get the client size.
-            NativeMethods.RECT clientRect;
-            if (!NativeMethods.GetClientRect(hWnd, out clientRect))
+            var clientRect = default(NativeMethods.RECT);
+            if (!NativeMethods.GetClientRect(hWnd, ref clientRect))
                 throw new Win32Exception();
 
             // Get the screen coordinates of the point (0, 0) in the client rect.
-            NativeMethods.POINT relPos = new NativeMethods.POINT();
+            var relPos = default(NativeMethods.POINT());
             if (!NativeMethods.ClientToScreen(hWnd, ref relPos))
                 throw new Exception("Could not retrieve window client coordinates");
 
