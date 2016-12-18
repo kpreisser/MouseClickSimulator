@@ -8,20 +8,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
     public abstract class AbstractFishingRodAction : AbstractAction
     {
-
-        // This is determined by the class type, not by the instance so implement it
-        // as abstract property instead of a field. This avoids it being serialized.
-        /// <summary>
-        /// The timeout value that should be used when waiting for the fish
-        /// result dialog after finishing casting the rod.
-        /// </summary>
-        protected abstract int WaitingForFishResultDialogTime { get; }
-
-
-        public AbstractFishingRodAction()
-        { }
-
-
         /// <summary>
         /// Coordinates to use when we check for a dialog that indicates that a fish
         /// has been caught.
@@ -34,9 +20,33 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             new Coordinates(564, 100)
         };
 
-        private static readonly ScreenshotColor fishResultDialogColor =
+        /// <summary>
+        /// Coordinates to use when we check for an error dialog. All of these coordinates must have the
+        /// fish dialog color.
+        /// </summary>
+        private static readonly Coordinates[]  fishErrorDialogCoordinates =
+        {
+            new Coordinates(530, 766),
+            new Coordinates(530, 490),
+            new Coordinates(896, 690)
+        };
+
+        private static readonly ScreenshotColor fishDialogColor =
             new ScreenshotColor(255, 255, 191);
 
+
+        // This is determined by the class type, not by the instance so implement it
+        // as abstract property instead of a field. This avoids it being serialized.
+        /// <summary>
+        /// The timeout value that should be used when waiting for the fish
+        /// result dialog after finishing casting the rod.
+        /// </summary>
+        protected abstract int WaitingForFishResultDialogTime { get; }
+
+
+        public AbstractFishingRodAction()
+        {
+        }
 
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
@@ -45,16 +55,16 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             await StartCastFishingRodAsync(provider);
             await FinishCastFishingRodAsync(provider);
 
-            OnActionInformationUpdated("Waiting for the fish result dialog…");
             // Then, wait until we find a window displaying the caught fish
             // or the specified number of seconds has passed.
+            OnActionInformationUpdated("Waiting for the fish result dialog…");
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
             bool found = false;
             while (!found && sw.ElapsedMilliseconds <= WaitingForFishResultDialogTime)
             {
-                await provider.WaitAsync(1000);
+                await provider.WaitAsync(500);
 
                 // Get a current screenshot.
                 var screenshot = provider.GetCurrentWindowScreenshot();
@@ -65,7 +75,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                         c, MouseHelpers.ReferenceWindowSize);
                     var col = screenshot.GetPixel(cc);
 
-                    if (CompareColor(fishResultDialogColor, col, 10))
+                    if (CompareColor(fishDialogColor, col, 10))
                     {
                         // OK, we caught a fish, so break from the loop.
                         found = true;
@@ -74,6 +84,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 }
             }
         }
+
 
         /// <summary>
         /// Clicks on the fishing rod button.
@@ -93,44 +104,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
             await provider.WaitAsync(300);
 
-
-            // Check if a dialog appeared, which means we don't have any more jelly beans or
-            // the fish bucket is full.
-            var screenshot = provider.GetCurrentWindowScreenshot();
-            var refColor = new ScreenshotColor(255, 255, 190);
-            var pointsToCheck = new Coordinates[]
-            {
-                new Coordinates(530, 766),
-                new Coordinates(530, 490),
-                new Coordinates(896, 690)
-            };
-
-            bool foundDialog = true;
-            foreach (var point in pointsToCheck)
-            {
-                if (!CompareColor(refColor, screenshot.GetPixel(
-                    screenshot.WindowPosition.ScaleCoordinates(point, MouseHelpers.ReferenceWindowSize)), 4))
-                {
-                    foundDialog = false;
-                    break;
-                }
-            }
-            if (foundDialog)
-            {
-                throw new InvalidOperationException(
-                    "Either your fish bucket is full or you don't have any more jellybeans for bait.");
-            }
+            CheckForFishErrorDialog(provider);
         }
-
-        /// <summary>
-        /// Detects a fish bubble and then casts the fishing rod by moving the mouse to the
-        /// desired position and releaseing the mouse button.
-        /// </summary>
-        /// <param name="provider"></param>
-        /// <returns></returns>
-        protected abstract Task FinishCastFishingRodAsync(IInteractionProvider provider);
-
-        
 
         protected bool CompareColor(ScreenshotColor refColor, ScreenshotColor actualColor,
             Tolerance tolerance)
@@ -148,6 +123,38 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
             return true;
         }
+
+        /// <summary>
+        /// Detects a fish bubble and then casts the fishing rod by moving the mouse to the
+        /// desired position and releaseing the mouse button.
+        /// </summary>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        protected abstract Task FinishCastFishingRodAsync(IInteractionProvider provider);
+        
+
+        private void CheckForFishErrorDialog(IInteractionProvider provider)
+        {
+            // Check if a dialog appeared, which means we don't have any more jelly beans or
+            // the fish bucket is full.
+            var screenshot = provider.GetCurrentWindowScreenshot();
+            bool foundDialog = true;
+            foreach (var point in fishErrorDialogCoordinates)
+            {
+                if (!CompareColor(fishDialogColor, screenshot.GetPixel(
+                    screenshot.WindowPosition.ScaleCoordinates(point, MouseHelpers.ReferenceWindowSize)), 4))
+                {
+                    foundDialog = false;
+                    break;
+                }
+            }
+            if (foundDialog)
+            {
+                throw new InvalidOperationException(
+                    "Either your fish bucket is full or you don't have any more jellybeans for bait.");
+            }
+        }
+
 
 
         public class Tolerance
@@ -180,7 +187,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
             public Tolerance(byte tolerance)
                 : this(tolerance, tolerance, tolerance)
-            { }
+            {
+            }
 
             public static implicit operator Tolerance(byte value) => new Tolerance(value);
         }
