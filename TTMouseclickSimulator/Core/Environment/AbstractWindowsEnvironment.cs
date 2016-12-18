@@ -77,7 +77,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 throw new Win32Exception();
 
             // Get the screen coordinates of the point (0, 0) in the client rect.
-            var relPos = default(NativeMethods.POINT());
+            var relPos = default(NativeMethods.POINT);
             if (!NativeMethods.ClientToScreen(hWnd, ref relPos))
                 throw new Exception("Could not retrieve window client coordinates");
 
