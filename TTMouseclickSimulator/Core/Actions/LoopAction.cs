@@ -42,7 +42,7 @@ namespace TTMouseclickSimulator.Core.Actions
                         try
                         {
                             provider.EnsureNotCanceled();
-                            OnActionInformationUpdated($"Iteration {i + 1}/{count}");
+                            OnActionInformationUpdated($"Iteration {i + 1}/{count?.ToString() ?? "∞"}");
                             await action.RunAsync(provider);
                         }
                         catch (Exception ex) when (!(ex is SimulatorCanceledException))
@@ -61,6 +61,6 @@ namespace TTMouseclickSimulator.Core.Actions
         }
 
 
-        public override string ToString() => $"Loop – Count: {count}";
+        public override string ToString() => $"Loop – Count: {count?.ToString() ?? "∞"}";
     }
 }
