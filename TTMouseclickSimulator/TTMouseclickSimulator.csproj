@@ -169,11 +169,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SampleProjects\Automatic Fishing - Punchline Place %28Winter Holidays%29.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="SampleProjects\Automatic Fishing - Lullaby Lane.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
