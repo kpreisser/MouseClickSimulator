@@ -6,9 +6,9 @@ Among automating tasks like saying SpeedChat phrases to train a Doodle, the TTR 
 
 A recent addition for gardening is the the ability to plant flowers using 1 to 8 jellybean combinations, which is implemented using "Quick Actions". By clicking on a button with the flower's name, the Mouse Click Simulator will plant the flower by selecting the correct jellybean combination.
 
-You can watch a video of the <a href="https://www.youtube.com/watch?v=dS-gBcvsjz4" target="_blank">Automatic Fishing Function for Punchline Place</a>.
+You can watch a video of the <a href="https://www.youtube.com/watch?v=uq7VaJkO6-k" target="_blank">Automatic Fishing Function for Tenor Terrace</a> and <a href="https://www.youtube.com/watch?v=dS-gBcvsjz4" target="_blank">Punchline Place</a>.
 
-![simulatorscreenshot](https://cloud.githubusercontent.com/assets/15179430/10716090/24ac7f16-7b2d-11e5-88cc-52511b380df2.png)
+![](https://cloud.githubusercontent.com/assets/13289184/21472305/7912dfb8-cad3-11e6-89de-e85b1fcf7a6c.png)
 
 Note: This Simulator does not inject code into or otherwise manipulate the game. It only interacts with TTR by creating screenshots to analyze the window content (for the fishing action) and simulating mouse clicks/movements and pressing keys.
 
