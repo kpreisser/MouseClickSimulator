@@ -9,13 +9,16 @@ namespace TTMouseclickSimulator.Core.Environment
 {
     internal class StandardInteractionProvider : IInteractionProvider, IDisposable
     {
+        private readonly object syncRoot = new object();
+
         private bool disposed = false;
 
         /// <summary>
         /// Specifies if this InteractionProvider has been canceled. This flag can be set by
-        /// another thread while the simulator is running.
+        /// another thread while the simulator is running, therefore we need to lock on 'syncRoot' to
+        /// access it.
         /// </summary>
-        private volatile bool canceled = false;
+        private bool canceled = false;
 
         private readonly SemaphoreSlim waitSemaphore = new SemaphoreSlim(0);
 
@@ -62,20 +65,22 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
+        /// <summary>
+        /// Handles a callback to cancel the <see cref="StandardInteractionProvider"/>.
+        /// This method can be called concurrently from a different thread while the simulator is running.
+        /// </summary>
         private void HandleCancelCallback()
         {
-            canceled = true;
-            // Release the semaphore (so that a task that is waiting can continue).
-            try
+            // Need to lock to ensure the semaphore is not disposed while we call Release() on it
+            // from another thread.
+            lock (this.syncRoot)
             {
-                waitSemaphore.Release();
-            }
-            catch (ObjectDisposedException)
-            {
-                // Can happen when another thread tries to cancel the simulator while the task
-                // that runs the Simulator.RunAsync() method has already disposed the
-                // StandardInteractionProvider.
-                // In that case we do nothing.
+                if (!this.canceled)
+                {
+                    this.canceled = true;
+                    // Release the semaphore (so that a task that is waiting can continue).
+                    this.waitSemaphore.Release();
+                }
             }
         }
 
@@ -109,8 +114,11 @@ namespace TTMouseclickSimulator.Core.Environment
         /// </summary>
         public void EnsureNotCanceled()
         {
-            if (canceled)
-                throw new SimulatorCanceledException();
+            lock (syncRoot)
+            {
+                if (canceled)
+                    throw new SimulatorCanceledException();
+            }
         }
 
         private async Task WaitSemaphoreInternalAsync(int milliseconds, bool checkWindowForeground = true)
@@ -308,23 +316,31 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             if (disposing)
             {
-                if (!canceled)
-                    HandleCancelCallback();
-
-                if (!disposed)
+                bool doDispose = false;
+                lock (this.syncRoot)
                 {
-                    disposed = true;
+                    if (!this.disposed)
+                    {
+                        this.disposed = true;
+                        doDispose = true;
 
-                    waitSemaphore.Dispose();
+                        // Ensure the provider is canceled.
+                        if (!this.canceled)
+                            HandleCancelCallback();
 
+                        this.waitSemaphore.Dispose();
+                    }
+                }
+
+                if (doDispose)
+                {
                     // Process can be null if the InteractionProvider was not initialized.
-                    process?.Dispose();
-                    currentScreenshot?.Dispose();
-                    
+                    this.process?.Dispose();
+                    this.currentScreenshot?.Dispose();
+
                     CancelActiveInteractions();
                 }
             }
         }
-
     }
 }
