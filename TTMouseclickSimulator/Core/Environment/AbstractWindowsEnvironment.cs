@@ -33,6 +33,7 @@ namespace TTMouseclickSimulator.Core.Environment
                     // Win32Exception e.g. if the process is from another user.
                     GC.KeepAlive(p.HasExited);
                     foundProcess = p;
+                    break;
                 }
                 catch (Win32Exception)
                 {
