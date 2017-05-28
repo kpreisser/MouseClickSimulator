@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Net;
 using System.Windows.Forms;
 
@@ -20,16 +21,33 @@ namespace TTMouseclickSimulator.Core.Environment
         /// <returns></returns>
         protected Process FindProcessByName(string processname)
         {
-            Process[] processes = Process.GetProcessesByName(processname);
-            if (processes.Length == 0)
+            var processes = Process.GetProcessesByName(processname);
+            var foundProcess = null as Process;
+            
+            // Use the first applicable process.
+            foreach (var p in processes)
+            {
+                try
+                {
+                    // Check if we actually have access to this process. This can fail with a
+                    // Win32Exception e.g. if the process is from another user.
+                    GC.KeepAlive(p.HasExited);
+                    foundProcess = p;
+                }
+                catch (Win32Exception)
+                {
+                    // Ignore
+                }
+            }
+
+            if (foundProcess == null)
                 throw new ArgumentException($"Could not find Process '{processname}.exe'.");
 
-            // Need to dispose of the other process instances, because we only use the
-            // first one.
-            for (int i = 1; i < processes.Length; i++)
-                processes[i].Dispose();
+            // Need to dispose of the other process instances.
+            foreach (var otherProcess in processes.Where(p => p != foundProcess))
+                otherProcess.Dispose();
 
-            return processes[0];
+            return foundProcess;
         }
 
         /// <summary>
