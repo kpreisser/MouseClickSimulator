@@ -9,7 +9,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions
 
         public static async Task DoSimpleMouseClickAsync(IInteractionProvider provider,
             Coordinates coords, VerticalScaleAlignment valign = VerticalScaleAlignment.Center,
-            int buttonDownTimeout = 200)
+            int buttonDownTimeout = 150)
         {
             var pos = provider.GetCurrentWindowPosition();
             coords = pos.RelativeToAbsoluteCoordinates(pos.ScaleCoordinates(coords,
