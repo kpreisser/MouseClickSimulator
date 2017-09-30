@@ -28,8 +28,8 @@ namespace TTMouseclickSimulator.Core.Environment
         private Process process;
         private AbstractWindowsEnvironment.ScreenshotContent currentScreenshot;
         private bool isMouseButtonPressed = false;
-        private List<AbstractWindowsEnvironment.VirtualKeyShort> keysCurrentlyPressed 
-            = new List<AbstractWindowsEnvironment.VirtualKeyShort>();
+        private List<AbstractWindowsEnvironment.VirtualKeyShort> keysCurrentlyPressed =
+                new List<AbstractWindowsEnvironment.VirtualKeyShort>();
 
 
         public StandardInteractionProvider(Simulator simulator, AbstractWindowsEnvironment environmentInterface,
@@ -40,6 +40,17 @@ namespace TTMouseclickSimulator.Core.Environment
             cancelCallback = HandleCancelCallback;
         }
 
+        ~StandardInteractionProvider()
+        {
+            Dispose(false);
+        }
+
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         public async Task InitializeAsync()
         {
@@ -47,11 +58,11 @@ namespace TTMouseclickSimulator.Core.Environment
             {
                 try
                 {
-                    process = environmentInterface.FindProcess();
+                    this.process = this.environmentInterface.FindProcess();
 
                     // Bring the destination window to foreground.
-                    IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
-                    environmentInterface.BringWindowToForeground(hWnd);
+                    var hWnd = this.environmentInterface.FindMainWindowHandleOfProcess(this.process);
+                    this.environmentInterface.BringWindowToForeground(hWnd);
 
                     // Wait a bit so that the window can go into foreground.
                     await WaitSemaphoreInternalAsync(500, false);
@@ -84,12 +95,14 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
-        public async Task CheckRetryForExceptionAsync(ExceptionDispatchInfo ex) =>
+        public async Task CheckRetryForExceptionAsync(ExceptionDispatchInfo ex)
+        {
             await CheckRetryForExceptionAsync(ex, true);
+        }
 
         private async Task CheckRetryForExceptionAsync(ExceptionDispatchInfo ex, bool reinitialize)
         {
-            if (simulator.AsyncRetryHandler == null)
+            if (this.simulator.AsyncRetryHandler == null)
             {
                 // Simply rethrow the exception.
                 ex.Throw();
@@ -99,7 +112,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 // Need to release active keys etc.
                 CancelActiveInteractions();
 
-                bool result = await simulator.AsyncRetryHandler(ex);
+                bool result = await this.simulator.AsyncRetryHandler(ex);
                 if (!result)
                     throw new SimulatorCanceledException();
 
@@ -114,9 +127,9 @@ namespace TTMouseclickSimulator.Core.Environment
         /// </summary>
         public void EnsureNotCanceled()
         {
-            lock (syncRoot)
+            lock (this.syncRoot)
             {
-                if (canceled)
+                if (this.canceled)
                     throw new SimulatorCanceledException();
             }
         }
@@ -127,13 +140,13 @@ namespace TTMouseclickSimulator.Core.Environment
 
             if (!checkWindowForeground)
             {
-                if (await waitSemaphore.WaitAsync(Math.Max(0, milliseconds)))
+                if (await this.waitSemaphore.WaitAsync(Math.Max(0, milliseconds)))
                     EnsureNotCanceled();
             }
             else
             {
                 // Wait max. 100 ms, and check if the TT window is still active.
-                Stopwatch sw = new Stopwatch();
+                var sw = new Stopwatch();
                 sw.Start();
                 while (true)
                 {
@@ -144,7 +157,7 @@ namespace TTMouseclickSimulator.Core.Environment
                     if (remaining <= 0)
                         break;
 
-                    if (await waitSemaphore.WaitAsync(Math.Min((int)remaining, 100)))
+                    if (await this.waitSemaphore.WaitAsync(Math.Min((int)remaining, 100)))
                         EnsureNotCanceled();
                 }
             }
@@ -162,7 +175,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 This means shortly before this method returns there will be a bit CPU usage but the actual
                 time which we waited will be more accurate.
                 */
-                Stopwatch sw = new Stopwatch();
+                var sw = new Stopwatch();
                 sw.Start();
 
                 int waitTime = millisecondsTimeout - 15;
@@ -187,8 +200,10 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
-        private WindowPosition GetMainWindowPosition() =>
-            environmentInterface.GetWindowPosition(environmentInterface.FindMainWindowHandleOfProcess(process));
+        private WindowPosition GetMainWindowPosition()
+        {
+            return this.environmentInterface.GetWindowPosition(this.environmentInterface.FindMainWindowHandleOfProcess(this.process));
+        }
         
 
         public WindowPosition GetCurrentWindowPosition()
@@ -202,9 +217,9 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             EnsureNotCanceled();
 
-            IntPtr hWnd = environmentInterface.FindMainWindowHandleOfProcess(process);
-            currentScreenshot = environmentInterface.CreateWindowScreenshot(hWnd, currentScreenshot);
-            return currentScreenshot;
+            var hWnd = this.environmentInterface.FindMainWindowHandleOfProcess(this.process);
+            this.currentScreenshot = this.environmentInterface.CreateWindowScreenshot(hWnd, this.currentScreenshot);
+            return this.currentScreenshot;
         }
 
         public void PressKey(AbstractWindowsEnvironment.VirtualKeyShort key)
@@ -214,10 +229,10 @@ namespace TTMouseclickSimulator.Core.Environment
             // Check if the window is still active and in foreground.
             GetMainWindowPosition();
 
-            if (!keysCurrentlyPressed.Contains(key))
+            if (!this.keysCurrentlyPressed.Contains(key))
             {
-                environmentInterface.PressKey(key);
-                keysCurrentlyPressed.Add(key);
+                this.environmentInterface.PressKey(key);
+                this.keysCurrentlyPressed.Add(key);
             }
         }
 
@@ -225,11 +240,11 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             EnsureNotCanceled();
 
-            int kcpIdx = keysCurrentlyPressed.IndexOf(key);
+            int kcpIdx = this.keysCurrentlyPressed.IndexOf(key);
             if (kcpIdx >= 0)
             {
-                environmentInterface.ReleaseKey(key);
-                keysCurrentlyPressed.RemoveAt(kcpIdx);
+                this.environmentInterface.ReleaseKey(key);
+                this.keysCurrentlyPressed.RemoveAt(kcpIdx);
             }
         }
 
@@ -240,10 +255,13 @@ namespace TTMouseclickSimulator.Core.Environment
             // Check if the window is still active and in foreground.
             GetMainWindowPosition();
 
-            environmentInterface.WriteText(text);
+            this.environmentInterface.WriteText(text);
         }
 
-        public void MoveMouse(Coordinates c) => MoveMouse(c.X, c.Y);
+        public void MoveMouse(Coordinates c)
+        {
+            MoveMouse(c.X, c.Y);
+        }
         
         public void MoveMouse(int x, int y)
         {
@@ -252,7 +270,7 @@ namespace TTMouseclickSimulator.Core.Environment
             // Check if the window is still active and in foreground.
             GetMainWindowPosition();
 
-            environmentInterface.MoveMouse(x, y);
+            this.environmentInterface.MoveMouse(x, y);
         }
 
         public void PressMouseButton()
@@ -262,51 +280,40 @@ namespace TTMouseclickSimulator.Core.Environment
             // Check if the window is still active and in foreground.
             GetMainWindowPosition();
 
-            if (!isMouseButtonPressed)
+            if (!this.isMouseButtonPressed)
             {
-                environmentInterface.PressMouseButton();
-                isMouseButtonPressed = true;
+                this.environmentInterface.PressMouseButton();
+                this.isMouseButtonPressed = true;
             }
         }
-
 
         public void ReleaseMouseButton()
         {
             EnsureNotCanceled();
 
-            if (isMouseButtonPressed)
+            if (this.isMouseButtonPressed)
             {
-                environmentInterface.ReleaseMouseButton();
-                isMouseButtonPressed = false;
+                this.environmentInterface.ReleaseMouseButton();
+                this.isMouseButtonPressed = false;
             }
         }
 
         private void CancelActiveInteractions()
         {
             // Release mouse buttons and keys that are currently pressed.
-            if (isMouseButtonPressed)
+            if (this.isMouseButtonPressed)
             {
-                environmentInterface.ReleaseMouseButton();
-                isMouseButtonPressed = false;
+                this.environmentInterface.ReleaseMouseButton();
+                this.isMouseButtonPressed = false;
             }
 
-            foreach (AbstractWindowsEnvironment.VirtualKeyShort key in keysCurrentlyPressed)
+            foreach (var key in this.keysCurrentlyPressed)
             {
-                environmentInterface.ReleaseKey(key);
+                this.environmentInterface.ReleaseKey(key);
             }
-            keysCurrentlyPressed.Clear();
+            this.keysCurrentlyPressed.Clear();
         }
 
-        ~StandardInteractionProvider()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
 
         /// <summary>
         /// Disposes of this StandardInteractionProvider.
