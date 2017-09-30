@@ -28,18 +28,17 @@ namespace TTMouseclickSimulator.Core
         public Func<ExceptionDispatchInfo, Task<bool>> AsyncRetryHandler;
         
 
-        public Simulator(IAction mainAction, AbstractWindowsEnvironment environmentInterface)
+        public Simulator(IntPtr windowHandle, IAction mainAction, AbstractWindowsEnvironment environmentInterface)
         {
             if (mainAction == null)
                 throw new ArgumentNullException(nameof(mainAction));
             if (environmentInterface == null)
                 throw new ArgumentNullException(nameof(environmentInterface));
 
-
             this.mainAction = mainAction;
             this.environmentInterface = environmentInterface;
 
-            provider = new StandardInteractionProvider(this, environmentInterface, out cancelCallback);
+            provider = new StandardInteractionProvider(this, windowHandle, environmentInterface, out cancelCallback);
         }
 
         /// <summary>

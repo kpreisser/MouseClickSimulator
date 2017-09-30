@@ -12,8 +12,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions
             int buttonDownTimeout = 150)
         {
             var pos = provider.GetCurrentWindowPosition();
-            coords = pos.RelativeToAbsoluteCoordinates(pos.ScaleCoordinates(coords,
-                ReferenceWindowSize, valign));
+            coords = pos.ScaleCoordinates(coords,
+                ReferenceWindowSize, valign);
 
             provider.MoveMouse(coords);
             provider.PressMouseButton();

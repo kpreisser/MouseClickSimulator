@@ -12,8 +12,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             // Simply cast the fishing rod straight, without checking for bubbles.
             Coordinates coords = new Coordinates(800, 1009);
             var pos = provider.GetCurrentWindowPosition();
-            coords = pos.RelativeToAbsoluteCoordinates(pos.ScaleCoordinates(coords,
-                MouseHelpers.ReferenceWindowSize));
+            coords = pos.ScaleCoordinates(coords,
+                MouseHelpers.ReferenceWindowSize);
 
             provider.MoveMouse(coords);
             await provider.WaitAsync(300);

@@ -29,7 +29,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
             const int scanStep = 15;
 
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
 
             Coordinates? oldCoords = null;
@@ -54,9 +54,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                             spotData.Tolerance))
                         {
                             newCoords = new Coordinates(x + 20, y + 20);
-                            Coordinates scaledCoords = screenshot.WindowPosition.RelativeToAbsoluteCoordinates(
-                                screenshot.WindowPosition.ScaleCoordinates(
-                                newCoords.Value, MouseHelpers.ReferenceWindowSize));
+                            var scaledCoords = screenshot.WindowPosition.ScaleCoordinates(
+                                newCoords.Value, MouseHelpers.ReferenceWindowSize);
 
                             OnActionInformationUpdated($"Found bubble at {scaledCoords.X}, {scaledCoords.Y}…");
                             break;
@@ -106,9 +105,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 // we would need to use "Center".
                 // Note: We assume the point to click on is exactly centered. Otherwise
                 // we would need to adjust the X coordinate accordingly.
-                var coords = screenshot.WindowPosition.RelativeToAbsoluteCoordinates(
-                    screenshot.WindowPosition.ScaleCoordinates(newCoords.Value,
-                    MouseHelpers.ReferenceWindowSize, VerticalScaleAlignment.NoAspectRatio));
+                var coords = screenshot.WindowPosition.ScaleCoordinates(newCoords.Value,
+                    MouseHelpers.ReferenceWindowSize, VerticalScaleAlignment.NoAspectRatio);
                 provider.MoveMouse(coords);
 
 

@@ -13,6 +13,13 @@ namespace TTMouseclickSimulator.Core.Environment
            [MarshalAs(UnmanagedType.LPArray), In] INPUT[] pInputs,
            int cbSize);
 
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "PostMessageW", ExactSpelling = true, SetLastError = true)]
+        internal static extern IntPtr PostMessage(
+            IntPtr windowHandle,
+            WindowMessage message,
+            IntPtr wparam,
+            IntPtr lparam);
+
         [StructLayout(LayoutKind.Sequential)]
         internal struct INPUT
         {
@@ -98,6 +105,14 @@ namespace TTMouseclickSimulator.Core.Environment
             SCANCODE = 0x0008,
             UNICODE = 0x0004
         }
+
+        internal enum WindowMessage : int
+        {
+            WM_MOUSEMOVE = 0x0200
+        }
+
+        internal const int MK_LBUTTON = 0x0001;
+        internal const int MK_RBUTTON = 0x0002;
 
 
 

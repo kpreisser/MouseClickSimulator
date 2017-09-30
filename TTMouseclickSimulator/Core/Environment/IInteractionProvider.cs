@@ -52,8 +52,17 @@ namespace TTMouseclickSimulator.Core.Environment
         /// <returns></returns>
         IScreenshotContent GetCurrentWindowScreenshot();
 
+        /// <summary>
+        /// Moves the mouse to the specified window-relative coordinates.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         void MoveMouse(int x, int y);
 
+        /// <summary>
+        /// Moves the mouse to the specified window-relative coordinates.
+        /// </summary>
+        /// <param name="c"></param>
         void MoveMouse(Coordinates c);
 
         void PressMouseButton();

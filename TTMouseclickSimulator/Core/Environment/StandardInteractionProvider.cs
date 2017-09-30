@@ -25,17 +25,23 @@ namespace TTMouseclickSimulator.Core.Environment
         private readonly Simulator simulator;
         private readonly AbstractWindowsEnvironment environmentInterface;
 
-        private Process process;
+        private IntPtr windowHandle;
         private AbstractWindowsEnvironment.ScreenshotContent currentScreenshot;
         private bool isMouseButtonPressed = false;
         private List<AbstractWindowsEnvironment.VirtualKeyShort> keysCurrentlyPressed =
                 new List<AbstractWindowsEnvironment.VirtualKeyShort>();
 
+        private Coordinates lastMouseCoordinates = new Coordinates(0, 0);
 
-        public StandardInteractionProvider(Simulator simulator, AbstractWindowsEnvironment environmentInterface,
-            out Action cancelCallback)
+
+        public StandardInteractionProvider(
+                Simulator simulator,
+                IntPtr windowHandle,
+                AbstractWindowsEnvironment environmentInterface,
+                out Action cancelCallback)
         {
             this.simulator = simulator;
+            this.windowHandle = windowHandle;
             this.environmentInterface = environmentInterface;
             cancelCallback = HandleCancelCallback;
         }
@@ -58,11 +64,8 @@ namespace TTMouseclickSimulator.Core.Environment
             {
                 try
                 {
-                    this.process = this.environmentInterface.FindProcess();
-
                     // Bring the destination window to foreground.
-                    var hWnd = this.environmentInterface.FindMainWindowHandleOfProcess(this.process);
-                    this.environmentInterface.BringWindowToForeground(hWnd);
+                    this.environmentInterface.BringWindowToForeground(this.windowHandle);
 
                     // Wait a bit so that the window can go into foreground.
                     await WaitSemaphoreInternalAsync(500, false);
@@ -202,7 +205,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         private WindowPosition GetMainWindowPosition()
         {
-            return this.environmentInterface.GetWindowPosition(this.environmentInterface.FindMainWindowHandleOfProcess(this.process));
+            return this.environmentInterface.GetWindowPosition(this.windowHandle);
         }
         
 
@@ -217,8 +220,8 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             EnsureNotCanceled();
 
-            var hWnd = this.environmentInterface.FindMainWindowHandleOfProcess(this.process);
-            this.currentScreenshot = this.environmentInterface.CreateWindowScreenshot(hWnd, this.currentScreenshot);
+            this.currentScreenshot = this.environmentInterface.CreateWindowScreenshot(
+                    this.windowHandle, this.currentScreenshot);
             return this.currentScreenshot;
         }
 
@@ -258,19 +261,24 @@ namespace TTMouseclickSimulator.Core.Environment
             this.environmentInterface.WriteText(text);
         }
 
-        public void MoveMouse(Coordinates c)
+        public void MoveMouse(int x, int y)
         {
-            MoveMouse(c.X, c.Y);
+            MoveMouse(new Coordinates(x, y));
         }
         
-        public void MoveMouse(int x, int y)
+        public void MoveMouse(Coordinates c)
         {
             EnsureNotCanceled();
 
             // Check if the window is still active and in foreground.
-            GetMainWindowPosition();
+            var pos = GetMainWindowPosition();
 
-            this.environmentInterface.MoveMouse(x, y);
+            // If it is, set the last mouse coordinates.
+            this.lastMouseCoordinates = c;
+
+            // Convert the relative coordinates to absolute ones, then simulate the click.
+            var absoluteCoords = pos.RelativeToAbsoluteCoordinates(c);
+            this.environmentInterface.MoveMouse(absoluteCoords.X, absoluteCoords.Y);
         }
 
         public void PressMouseButton()
@@ -341,8 +349,6 @@ namespace TTMouseclickSimulator.Core.Environment
 
                 if (doDispose)
                 {
-                    // Process can be null if the InteractionProvider was not initialized.
-                    this.process?.Dispose();
                     this.currentScreenshot?.Dispose();
 
                     CancelActiveInteractions();

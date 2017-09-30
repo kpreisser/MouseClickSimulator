@@ -95,8 +95,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         {
             Coordinates coords = new Coordinates(800, 846);
             var pos = provider.GetCurrentWindowPosition();
-            coords = pos.RelativeToAbsoluteCoordinates(pos.ScaleCoordinates(coords,
-                MouseHelpers.ReferenceWindowSize));
+            coords = pos.ScaleCoordinates(coords,
+                MouseHelpers.ReferenceWindowSize);
 
             // Move the mouse and press the button.
             provider.MoveMouse(coords);
