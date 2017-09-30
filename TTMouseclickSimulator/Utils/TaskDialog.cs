@@ -52,7 +52,7 @@ namespace TTMouseclickSimulator.Utils
         /// <summary>
         /// The window handle of the dialog, or <see cref="IntPtr.Zero"/> if the dialog is not active.
         /// </summary>
-        public IntPtr Handle => hwndDialog;
+        public IntPtr Handle => this.hwndDialog;
 
         public string Title { get; set; }
 
@@ -114,17 +114,17 @@ namespace TTMouseclickSimulator.Utils
         /// If <see cref="ResultCustomButton"/> is null, this field contains the
         /// <see cref="TaskDialogResult"/> of the common buttons that was pressed.
         /// </summary>
-        public TaskDialogResult ResultCommonButtonID => resultCommonButtonID;
+        public TaskDialogResult ResultCommonButtonID => this.resultCommonButtonID;
 
         /// <summary>
         /// If not null, contains the custom button that was pressed. Otherwise, 
         /// <see cref="ResultCommonButtonID"/> contains the common button that was pressed.
         /// </summary>
-        public ICustomButton ResultCustomButton => resultCustomButton;
+        public ICustomButton ResultCustomButton => this.resultCustomButton;
 
-        public IRadioButton ResultRadioButton => resultRadioButton;
+        public IRadioButton ResultRadioButton => this.resultRadioButton;
 
-        public bool ResultVerificationFlagChecked => resultVerificationFlagChecked;
+        public bool ResultVerificationFlagChecked => this.resultVerificationFlagChecked;
 
 
         /// <summary>
@@ -144,9 +144,9 @@ namespace TTMouseclickSimulator.Utils
         public TaskDialog()
         {
             // Create a delegate for the callback.
-            callbackProcDelegate = new TaskDialogCallbackProcDelegate(TaskDialogCallbackProc);
+            this.callbackProcDelegate = new TaskDialogCallbackProcDelegate(TaskDialogCallbackProc);
             // Get a function pointer for the delegate.
-            ptrCallbackProcDelegate = Marshal.GetFunctionPointerForDelegate(callbackProcDelegate);
+            this.ptrCallbackProcDelegate = Marshal.GetFunctionPointerForDelegate(this.callbackProcDelegate);
 
             // Set default values
             Reset();
@@ -163,16 +163,16 @@ namespace TTMouseclickSimulator.Utils
         /// </summary>
         public void Reset()
         {
-            Flags = TaskDialogFlags.PositionRelativeToWindow;
-            Title = MainInstruction = Content = Footer = VerificationText =
-                ExpandedInformation = ExpandedControlText = CollapsedControlText = null;
-            MainIcon = MainUpdateIcon = FooterIcon = default(TaskDialogIcon);
-            CommonButtons = default(TaskDialogButtons);
-            CustomButtons = null;
-            RadioButtons = null;
-            DefaultCommonButton = default(TaskDialogResult);
-            DefaultCustomButton = null;
-            DefaultRadioButton = null;
+            this.Flags = TaskDialogFlags.PositionRelativeToWindow;
+            this.Title = this.MainInstruction = this.Content = this.Footer = this.VerificationText =
+                this.ExpandedInformation = this.ExpandedControlText = this.CollapsedControlText = null;
+            this.MainIcon = this.MainUpdateIcon = this.FooterIcon = default(TaskDialogIcon);
+            this.CommonButtons = default(TaskDialogButtons);
+            this.CustomButtons = null;
+            this.RadioButtons = null;
+            this.DefaultCommonButton = default(TaskDialogResult);
+            this.DefaultCustomButton = null;
+            this.DefaultRadioButton = null;
         }
 
 
@@ -184,39 +184,39 @@ namespace TTMouseclickSimulator.Utils
             // has been created for Navigate(), which need to do the check, then releasing the old buttons, then
             // assigning the new buttons.
 
-            if (DefaultCustomButton != null && ((DefaultCustomButton as CustomButton)?.Creator != this))
+            if (this.DefaultCustomButton != null && ((this.DefaultCustomButton as CustomButton)?.Creator != this))
                 throw new InvalidOperationException("Custom buttons must be created with this TaskDialog instance.");
-            if (DefaultRadioButton != null && ((DefaultRadioButton as RadioButton)?.Creator != this))
+            if (this.DefaultRadioButton != null && ((this.DefaultRadioButton as RadioButton)?.Creator != this))
                 throw new InvalidOperationException("Radio buttons must be created with this TaskDialog instance.");
-            if (DefaultCustomButton != null && !(CustomButtons?.Contains(DefaultCustomButton) == true))
-                throw new InvalidOperationException($"The default custom button must be part of the {nameof(CustomButtons)} array.");
-            if (DefaultRadioButton != null && !(RadioButtons?.Contains(DefaultRadioButton) == true))
-                throw new InvalidOperationException($"The default radio button must be part of the {nameof(CustomButtons)} array.");
-            if ((Flags & TaskDialogFlags.UseCommandLinks) == TaskDialogFlags.UseCommandLinks && CustomButtons == null)
-                throw new InvalidOperationException($"When specifying the {nameof(TaskDialogFlags.UseCommandLinks)} flag, the {nameof(CustomButtons)} array must not be null.");
+            if (this.DefaultCustomButton != null && !(this.CustomButtons?.Contains(this.DefaultCustomButton) == true))
+                throw new InvalidOperationException($"The default custom button must be part of the {nameof(this.CustomButtons)} array.");
+            if (this.DefaultRadioButton != null && !(this.RadioButtons?.Contains(this.DefaultRadioButton) == true))
+                throw new InvalidOperationException($"The default radio button must be part of the {nameof(this.CustomButtons)} array.");
+            if ((this.Flags & TaskDialogFlags.UseCommandLinks) == TaskDialogFlags.UseCommandLinks && this.CustomButtons == null)
+                throw new InvalidOperationException($"When specifying the {nameof(TaskDialogFlags.UseCommandLinks)} flag, the {nameof(this.CustomButtons)} array must not be null.");
 
 
-            for (int i = 0; i < CustomButtons?.Length; i++)
+            for (int i = 0; i < this.CustomButtons?.Length; i++)
             {
-                var bt = CustomButtons[i] as CustomButton;
+                var bt = this.CustomButtons[i] as CustomButton;
                 if (bt?.Creator != this)
                     throw new InvalidOperationException("Custom buttons must be created with this TaskDialog instance.");
                 // Check for duplicates.
                 for (int j = 0; j < i; j++)
                 {
-                    if (CustomButtons[j] == bt)
+                    if (this.CustomButtons[j] == bt)
                         throw new InvalidOperationException("Duplicate custom button found.");
                 }
             }
-            for (int i = 0; i < RadioButtons?.Length; i++)
+            for (int i = 0; i < this.RadioButtons?.Length; i++)
             {
-                var rbt = RadioButtons[i] as RadioButton;
+                var rbt = this.RadioButtons[i] as RadioButton;
                 if (rbt?.Creator != this)
                     throw new InvalidOperationException("Radio buttons must be created with this TaskDialog instance.");
                 // Check for duplicates.
                 for (int j = 0; j < i; j++)
                 {
-                    if (RadioButtons[j] == rbt)
+                    if (this.RadioButtons[j] == rbt)
                         throw new InvalidOperationException("Duplicate radio button found.");
                 }
             }
@@ -231,10 +231,10 @@ namespace TTMouseclickSimulator.Utils
 
             int currentCustomButtonID = CustomButtonStartID;
 
-            if (CustomButtons?.Length > 0)
+            if (this.CustomButtons?.Length > 0)
             {
                 currentCustomButtons = new SortedDictionary<int, CustomButton>();
-                foreach (var button in CustomButtons)
+                foreach (var button in this.CustomButtons)
                 {
                     var bt = (CustomButton)button;
                     int buttonId = currentCustomButtonID++;
@@ -242,10 +242,10 @@ namespace TTMouseclickSimulator.Utils
                     currentCustomButtons.Add(buttonId, bt);
                 }
             }
-            if (RadioButtons?.Length > 0)
+            if (this.RadioButtons?.Length > 0)
             {
                 currentRadioButtons = new SortedDictionary<int, RadioButton>();
-                foreach (var button in RadioButtons)
+                foreach (var button in this.RadioButtons)
                 {
                     var bt = (RadioButton)button;
                     int buttonId = currentCustomButtonID++;
@@ -274,34 +274,34 @@ namespace TTMouseclickSimulator.Utils
             config = new TaskDialogConfig()
             {
                 cbSize = Marshal.SizeOf<TaskDialogConfig>(),
-                hwndParent = currentOwnerHwnd.Value,
-                pszWindowTitle = Title,
-                pszMainInstruction = MainInstruction,
-                pszContent = Content,
-                pszFooter = Footer,
-                dwCommonButtons = CommonButtons,
-                hMainIcon = (IntPtr)MainIcon,
-                dwFlags = Flags,
-                hFooterIcon = (IntPtr)FooterIcon,
-                pszVerificationText = VerificationText,
-                pszExpandedInformation = ExpandedInformation,
-                pszExpandedControlText = ExpandedControlText,
-                pszCollapsedControlText = CollapsedControlText,
-                nDefaultButton = (DefaultCustomButton as CustomButton)?.ButtonID ?? (int)DefaultCommonButton,
-                nDefaultRadioButton = (DefaultRadioButton as RadioButton)?.ButtonID ?? 0,
-                pfCallback = ptrCallbackProcDelegate
+                hwndParent = this.currentOwnerHwnd.Value,
+                pszWindowTitle = this.Title,
+                pszMainInstruction = this.MainInstruction,
+                pszContent = this.Content,
+                pszFooter = this.Footer,
+                dwCommonButtons = this.CommonButtons,
+                hMainIcon = (IntPtr)this.MainIcon,
+                dwFlags = this.Flags,
+                hFooterIcon = (IntPtr)this.FooterIcon,
+                pszVerificationText = this.VerificationText,
+                pszExpandedInformation = this.ExpandedInformation,
+                pszExpandedControlText = this.ExpandedControlText,
+                pszCollapsedControlText = this.CollapsedControlText,
+                nDefaultButton = (this.DefaultCustomButton as CustomButton)?.ButtonID ?? (int)this.DefaultCommonButton,
+                nDefaultRadioButton = (this.DefaultRadioButton as RadioButton)?.ButtonID ?? 0,
+                pfCallback = this.ptrCallbackProcDelegate
             };
 
-            if (currentCustomButtons?.Count > 0)
+            if (this.currentCustomButtons?.Count > 0)
             {
-                TaskDialogButtonStruct[] structs = currentCustomButtons.Values.Select(e =>
+                var structs = this.currentCustomButtons.Values.Select(e =>
                     new TaskDialogButtonStruct(e.ButtonID.Value, e.Text)).ToArray();
                 config.pButtons = AllocateAndMarshalButtons(structs);
                 config.cButtons = structs.Length;
             }
-            if (currentRadioButtons?.Count > 0)
+            if (this.currentRadioButtons?.Count > 0)
             {
-                TaskDialogButtonStruct[] structs = currentRadioButtons.Values.Select(e =>
+                var structs = this.currentRadioButtons.Values.Select(e =>
                     new TaskDialogButtonStruct(e.ButtonID.Value, e.Text)).ToArray();
                 config.pRadioButtons = AllocateAndMarshalButtons(structs);
                 config.cRadioButtons = structs.Length;
@@ -327,10 +327,10 @@ namespace TTMouseclickSimulator.Utils
         private static IntPtr AllocateAndMarshalButtons(TaskDialogButtonStruct[] structs)
         {
             // Allocate memory for the array.
-            IntPtr initialPtr = Marshal.AllocHGlobal(
+            var initialPtr = Marshal.AllocHGlobal(
                 Marshal.SizeOf<TaskDialogButtonStruct>() * structs.Length);
 
-            IntPtr currentPtr = initialPtr;
+            var currentPtr = initialPtr;
             foreach (var button in structs)
             {
                 // Marshal the struct element. This will allocate memory for the strings.
@@ -343,7 +343,7 @@ namespace TTMouseclickSimulator.Utils
 
         private static void FreeButtons(IntPtr pointer, int length)
         {
-            IntPtr currentPtr = pointer;
+            var currentPtr = pointer;
             // We need to destroy each structure. Otherwise we will leak memory from the
             // allocated strings (TaskDialogButton.ButtonText) which have been allocated
             // using Marshal.StructureToPtr().
@@ -359,9 +359,9 @@ namespace TTMouseclickSimulator.Utils
         private void ApplyButtonInitialization()
         {
             // Apply current properties of buttons after the dialog has been created.
-            if (currentCustomButtons != null)
+            if (this.currentCustomButtons != null)
             {
-                foreach (var btn in currentCustomButtons.Values)
+                foreach (var btn in this.currentCustomButtons.Values)
                 {
                     if (!btn.Enabled)
                         btn.Enabled = false;
@@ -369,9 +369,9 @@ namespace TTMouseclickSimulator.Utils
                         btn.ButtonElevationRequiredState = true;
                 }
             }
-            if (currentRadioButtons != null)
+            if (this.currentRadioButtons != null)
             {
-                foreach (var btn in currentRadioButtons.Values)
+                foreach (var btn in this.currentRadioButtons.Values)
                 {
                     if (!btn.Enabled)
                         btn.Enabled = false;
@@ -379,9 +379,9 @@ namespace TTMouseclickSimulator.Utils
             }
 
             // Check if we need to update the icon.
-            if (MainUpdateIcon != default(TaskDialogIcon) && MainIcon != MainUpdateIcon)
+            if (this.MainUpdateIcon != default(TaskDialogIcon) && this.MainIcon != this.MainUpdateIcon)
             {
-                CheckUpdateIcon(TaskDialogUpdateElements.MainIcon, TaskDialogUpdateElements.MainIcon, TaskDialogIconElement.Main, (IntPtr)MainUpdateIcon);
+                CheckUpdateIcon(TaskDialogUpdateElements.MainIcon, TaskDialogUpdateElements.MainIcon, TaskDialogIconElement.Main, (IntPtr)this.MainUpdateIcon);
             }
         }
 
@@ -390,7 +390,7 @@ namespace TTMouseclickSimulator.Utils
         {
             try
             {
-                hwndDialog = hWnd;
+                this.hwndDialog = hWnd;
                 switch (notification)
                 {
                     case TaskDialogNotifications.Created:
@@ -400,7 +400,7 @@ namespace TTMouseclickSimulator.Utils
                     case TaskDialogNotifications.Destroyed:
                         OnClosing(EventArgs.Empty);
                         // Clear the dialog handle.
-                        hwndDialog = IntPtr.Zero;
+                        this.hwndDialog = IntPtr.Zero;
                         break;
                     case TaskDialogNotifications.Navigated:
                         ApplyButtonInitialization();
@@ -414,15 +414,15 @@ namespace TTMouseclickSimulator.Utils
                         // Check if the button is part of the custom buttons.
                         int buttonID = wparam.ToInt32();
                         CustomButton bt;
-                        if (currentCustomButtons != null && currentCustomButtons.TryGetValue(buttonID, out bt))
+                        if (this.currentCustomButtons != null && this.currentCustomButtons.TryGetValue(buttonID, out bt))
                             return bt.ButtonClicked?.Invoke(bt, EventArgs.Empty) ?? true ? HResultOk : HResultFalse;
                         else
-                            return CommonButtonClicked?.Invoke(this, new CommonButtonClickedEventArgs((TaskDialogResult)buttonID)) ?? true ? HResultOk : HResultFalse;
+                            return this.CommonButtonClicked?.Invoke(this, new CommonButtonClickedEventArgs((TaskDialogResult)buttonID)) ?? true ? HResultOk : HResultFalse;
                     case TaskDialogNotifications.RadioButtonClicked:
                         int rbuttonID = wparam.ToInt32();
                         RadioButton rbt;
                         // Note: It should not happen that we don't find the radio button id.
-                        if (currentRadioButtons != null && currentRadioButtons.TryGetValue(rbuttonID, out rbt))
+                        if (this.currentRadioButtons != null && this.currentRadioButtons.TryGetValue(rbuttonID, out rbt))
                             rbt.OnRadioButtonClicked(EventArgs.Empty);
                         break;
                     case TaskDialogNotifications.ExpandButtonClicked:
@@ -451,11 +451,11 @@ namespace TTMouseclickSimulator.Utils
 
         private void SendTaskDialogMessage(TaskDialogMessages message, int wparam, IntPtr lparam)
         {
-            if (hwndDialog == IntPtr.Zero)
+            if (this.hwndDialog == IntPtr.Zero)
                 throw new InvalidOperationException("Can only update the state of a task dialog while it is active.");
 
             SendMessage(
-                hwndDialog,
+                this.hwndDialog,
                 (int)message,
                 (IntPtr)wparam,
                 lparam);
@@ -527,13 +527,13 @@ namespace TTMouseclickSimulator.Utils
         public void Show(IntPtr hwndOwner)
         {
             // Recursive Show() is not possible because we would use the same callback delegate..
-            if (currentOwnerHwnd.HasValue)
+            if (this.currentOwnerHwnd.HasValue)
                 throw new InvalidOperationException("Cannot recursively show the same task dialog instance.");
 
             CheckButtonConfig();
-            PrepareButtonConfig(out currentCustomButtons, out currentRadioButtons);
+            PrepareButtonConfig(out this.currentCustomButtons, out this.currentRadioButtons);
 
-            currentOwnerHwnd = hwndOwner;
+            this.currentOwnerHwnd = hwndOwner;
             TaskDialogConfig config;
             CreateConfig(out config);
             try
@@ -543,7 +543,7 @@ namespace TTMouseclickSimulator.Utils
                 try
                 {
                     ret = TaskDialogIndirect(ref config, out resultButtonID, out resultRadioButtonID,
-                        out resultVerificationFlagChecked);
+                        out this.resultVerificationFlagChecked);
                 }
                 // Only catch exceptions if the hWnd of the task dialog is not set, otherwise the exception
                 // must have occured in the callback.
@@ -559,19 +559,19 @@ namespace TTMouseclickSimulator.Utils
                 // If do MessageBox.Show() wrapped in a try/catch on a button click, and before calling .Show()
                 // create and start a timer which stops and throws an exception on its Tick event,
                 // the application will crash with an AccessViolationException as soon as you close the MessageBox.
-                catch (Exception ex) when (hwndDialog == IntPtr.Zero &&
+                catch (Exception ex) when (this.hwndDialog == IntPtr.Zero &&
                     (ex is DllNotFoundException || ex is EntryPointNotFoundException))
                 {
                     // Show a regular messagebox instead. This should only happen if we debug and for some
                     // reason the VS host process doesn't use our manifest.
-                    StringBuilder msgContent = new StringBuilder();
-                    if (MainInstruction != null)
-                        msgContent.Append(MainInstruction + "\n\n");
-                    if (Content != null)
-                        msgContent.Append(Content + "\n\n");
-                    if (ExpandedInformation != null)
-                        msgContent.Append(ExpandedInformation + "\n\n");
-                    MessageBox.Show(msgContent.ToString(), Title, MessageBoxButton.OK);
+                    var msgContent = new StringBuilder();
+                    if (this.MainInstruction != null)
+                        msgContent.Append(this.MainInstruction + "\n\n");
+                    if (this.Content != null)
+                        msgContent.Append(this.Content + "\n\n");
+                    if (this.ExpandedInformation != null)
+                        msgContent.Append(this.ExpandedInformation + "\n\n");
+                    MessageBox.Show(msgContent.ToString(), this.Title, MessageBoxButton.OK);
 
                     resultButtonID = (int)TaskDialogResult.Ok;
                     resultRadioButtonID = 0;
@@ -587,31 +587,31 @@ namespace TTMouseclickSimulator.Utils
 
                 // Set the result fields
                 CustomButton myResultCustomButton = null;
-                if (currentCustomButtons?.TryGetValue(resultButtonID, out myResultCustomButton) == true)
+                if (this.currentCustomButtons?.TryGetValue(resultButtonID, out myResultCustomButton) == true)
                 {
-                    resultCustomButton = myResultCustomButton;
-                    resultCommonButtonID = 0;
+                    this.resultCustomButton = myResultCustomButton;
+                    this.resultCommonButtonID = 0;
                 }
                 else
                 {
-                    resultCommonButtonID = (TaskDialogResult)resultButtonID;
-                    resultCustomButton = null;
+                    this.resultCommonButtonID = (TaskDialogResult)resultButtonID;
+                    this.resultCustomButton = null;
                 }
 
                 // Note that even if we have radio buttons, it could be that the user didn't select one.
-                if (!(currentRadioButtons?.TryGetValue(resultRadioButtonID, out resultRadioButton) == true))
-                    resultRadioButton = null;
+                if (!(this.currentRadioButtons?.TryGetValue(resultRadioButtonID, out this.resultRadioButton) == true))
+                    this.resultRadioButton = null;
 
             }
             finally
             {
                 // Clear the handles and free the memory.
-                currentOwnerHwnd = null;
+                this.currentOwnerHwnd = null;
                 DisposeConfig(ref config);
 
-                ClearButtonConfig(currentCustomButtons, currentRadioButtons);
-                currentCustomButtons = null;
-                currentRadioButtons = null;
+                ClearButtonConfig(this.currentCustomButtons, this.currentRadioButtons);
+                this.currentCustomButtons = null;
+                this.currentRadioButtons = null;
 
                 // We need to ensure the callback delegate is not garbage-collected as long as TaskDialogIndirect
                 // doesn't return, by calling GC.KeepAlive().
@@ -621,7 +621,7 @@ namespace TTMouseclickSimulator.Utils
                 // object's lifetime to as small a window as possible, to the point
                 // where a 'this' pointer isn't considered live in an instance method
                 // unless you read a value from the instance.
-                GC.KeepAlive(callbackProcDelegate);
+                GC.KeepAlive(this.callbackProcDelegate);
             }
         }
 
@@ -649,14 +649,14 @@ namespace TTMouseclickSimulator.Utils
             CheckButtonConfig();
 
             // OK, create the new button config.
-            ClearButtonConfig(currentCustomButtons, currentRadioButtons);
-            PrepareButtonConfig(out currentCustomButtons, out currentRadioButtons);
+            ClearButtonConfig(this.currentCustomButtons, this.currentRadioButtons);
+            PrepareButtonConfig(out this.currentCustomButtons, out this.currentRadioButtons);
 
             // Create a new config and marshal it.
             TaskDialogConfig config;
             CreateConfig(out config);
 
-            IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf<TaskDialogConfig>());
+            var ptr = Marshal.AllocHGlobal(Marshal.SizeOf<TaskDialogConfig>());
             Marshal.StructureToPtr(config, ptr, false);
             try
             {
@@ -747,12 +747,12 @@ namespace TTMouseclickSimulator.Utils
         /// <param name="updateFlags"></param>
         public void UpdateElements(TaskDialogUpdateElements updateFlags)
         {
-            CheckUpdateElementText(updateFlags, TaskDialogUpdateElements.Content, TaskDialogElements.Content, Content);
-            CheckUpdateElementText(updateFlags, TaskDialogUpdateElements.ExpandedInformation, TaskDialogElements.ExpandedInformation, ExpandedInformation);
-            CheckUpdateElementText(updateFlags, TaskDialogUpdateElements.Footer, TaskDialogElements.Footer, Footer);
-            CheckUpdateElementText(updateFlags, TaskDialogUpdateElements.MainInstruction, TaskDialogElements.MainInstruction, MainInstruction);
-            CheckUpdateIcon(updateFlags, TaskDialogUpdateElements.MainIcon, TaskDialogIconElement.Main, (IntPtr)MainIcon);
-            CheckUpdateIcon(updateFlags, TaskDialogUpdateElements.FooterIcon, TaskDialogIconElement.Footer, (IntPtr)FooterIcon);
+            CheckUpdateElementText(updateFlags, TaskDialogUpdateElements.Content, TaskDialogElements.Content, this.Content);
+            CheckUpdateElementText(updateFlags, TaskDialogUpdateElements.ExpandedInformation, TaskDialogElements.ExpandedInformation, this.ExpandedInformation);
+            CheckUpdateElementText(updateFlags, TaskDialogUpdateElements.Footer, TaskDialogElements.Footer, this.Footer);
+            CheckUpdateElementText(updateFlags, TaskDialogUpdateElements.MainInstruction, TaskDialogElements.MainInstruction, this.MainInstruction);
+            CheckUpdateIcon(updateFlags, TaskDialogUpdateElements.MainIcon, TaskDialogIconElement.Main, (IntPtr)this.MainIcon);
+            CheckUpdateIcon(updateFlags, TaskDialogUpdateElements.FooterIcon, TaskDialogIconElement.Footer, (IntPtr)this.FooterIcon);
         }
 
         private void CheckUpdateElementText(TaskDialogUpdateElements updateFlags, TaskDialogUpdateElements flagToCheck,
@@ -760,7 +760,7 @@ namespace TTMouseclickSimulator.Utils
         {
             if ((updateFlags & flagToCheck) == flagToCheck)
             {
-                IntPtr strPtr = Marshal.StringToHGlobalUni(text);
+                var strPtr = Marshal.StringToHGlobalUni(text);
                 try
                 {
                     // Note: SetElementText will resize the dialog while UpdateElementText will not (which would
@@ -811,7 +811,7 @@ namespace TTMouseclickSimulator.Utils
         public static TaskDialogResult Show(IntPtr hwndOwner, string content, string instruction = null, string caption = null,
             TaskDialogButtons buttons = TaskDialogButtons.OK, TaskDialogIcon icon = 0)
         {
-            TaskDialog dialog = new TaskDialog()
+            var dialog = new TaskDialog()
             {
                 Content = content,
                 MainInstruction = instruction,
@@ -925,8 +925,8 @@ namespace TTMouseclickSimulator.Utils
 
             public TaskDialogButtonStruct(int buttonID, string buttonText)
             {
-                ButtonID = buttonID;
-                ButtonText = buttonText;
+                this.ButtonID = buttonID;
+                this.ButtonText = buttonText;
             }
         }
 
@@ -1077,7 +1077,7 @@ namespace TTMouseclickSimulator.Utils
 
             public HyperlinkClickedEventArgs(string hyperlink)
             {
-                Hyperlink = hyperlink;
+                this.Hyperlink = hyperlink;
             }
         }
 
@@ -1090,7 +1090,7 @@ namespace TTMouseclickSimulator.Utils
 
             public CommonButtonClickedEventArgs(TaskDialogResult buttonID)
             {
-                ButtonID = buttonID;
+                this.ButtonID = buttonID;
             }
         }
 
@@ -1100,7 +1100,7 @@ namespace TTMouseclickSimulator.Utils
 
             public BooleanStatusEventArgs(bool status)
             {
-                Status = status;
+                this.Status = status;
             }
         }
 
@@ -1113,8 +1113,8 @@ namespace TTMouseclickSimulator.Utils
 
             public ButtonBase(TaskDialog creator, string text)
             {
-                Creator = creator;
-                Text = text;
+                this.Creator = creator;
+                this.Text = text;
             }
 
             protected void VerifyState()
@@ -1127,7 +1127,7 @@ namespace TTMouseclickSimulator.Utils
 
             protected bool TryVerifyState()
             {
-                return ButtonID.HasValue;
+                return this.ButtonID.HasValue;
             }
 
             public abstract void Click();
@@ -1139,12 +1139,12 @@ namespace TTMouseclickSimulator.Utils
             {
                 get
                 {
-                    return enabled;
+                    return this.enabled;
                 }
                 set
                 {
                     SetEnabled(value);
-                    enabled = value;
+                    this.enabled = value;
                 }
             }
         }
@@ -1164,29 +1164,29 @@ namespace TTMouseclickSimulator.Utils
             {
                 get
                 {
-                    return buttonElevationRequiredState;
+                    return this.buttonElevationRequiredState;
                 }
 
                 set
                 {
                     // The Task dialog will set this property on th Created/Navigated event.
                     if (TryVerifyState())
-                        Creator.SetButtonElevationRequiredState(ButtonID.Value, value);
-                    buttonElevationRequiredState = value;
+                        this.Creator.SetButtonElevationRequiredState(this.ButtonID.Value, value);
+                    this.buttonElevationRequiredState = value;
                 }
             }
 
             public override void Click()
             {
                 VerifyState();
-                Creator.ClickButton(ButtonID.Value);
+                this.Creator.ClickButton(this.ButtonID.Value);
             }
 
             protected override void SetEnabled(bool enabled)
             {
                 // The Task dialog will set this property on th Created/Navigated event.
                 if (TryVerifyState())
-                    Creator.SetButtonEnabled(ButtonID.Value, enabled);
+                    this.Creator.SetButtonEnabled(this.ButtonID.Value, enabled);
             }
         }
 
@@ -1202,14 +1202,14 @@ namespace TTMouseclickSimulator.Utils
             public override void Click()
             {
                 VerifyState();
-                Creator.ClickRadioButton(ButtonID.Value);
+                this.Creator.ClickRadioButton(this.ButtonID.Value);
             }
 
             protected override void SetEnabled(bool enabled)
             {
                 // The Task dialog will set this property on th Created/Navigated event.
                 if (TryVerifyState())
-                    Creator.SetRadioButtonEnabled(ButtonID.Value, enabled);
+                    this.Creator.SetRadioButtonEnabled(this.ButtonID.Value, enabled);
             }
 
             public void OnRadioButtonClicked(EventArgs e) => RadioButtonClicked?.Invoke(this, e);

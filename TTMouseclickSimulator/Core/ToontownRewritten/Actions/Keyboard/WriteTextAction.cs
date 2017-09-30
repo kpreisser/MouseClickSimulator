@@ -33,14 +33,14 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             // write the text and presses enter.
-            if (!pauseDuration.HasValue)
-                provider.WriteText(text);
+            if (!this.pauseDuration.HasValue)
+                provider.WriteText(this.text);
             else
             {
-                for (int i = 0; i < text.Length; i++)
+                for (int i = 0; i < this.text.Length; i++)
                 {
-                    provider.WriteText(text[i].ToString());
-                    await provider.WaitAsync(pauseDuration.Value);
+                    provider.WriteText(this.text[i].ToString());
+                    await provider.WaitAsync(this.pauseDuration.Value);
                 }
             }
 
@@ -52,7 +52,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
         }
 
 
-        public override string ToString() => $"Write Text – Text: \"{text}\"" 
-            + (pauseDuration.HasValue ? "" : $", Pause Duration: {pauseDuration}");
+        public override string ToString() => $"Write Text – Text: \"{this.text}\"" 
+            + (this.pauseDuration.HasValue ? "" : $", Pause Duration: {this.pauseDuration}");
     }
 }

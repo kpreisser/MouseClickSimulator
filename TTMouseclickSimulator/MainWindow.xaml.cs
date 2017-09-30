@@ -52,19 +52,19 @@ namespace TTMouseclickSimulator
         {
             InitializeComponent();
 
-            lblAppName.Content = AppName;
-            Title = AppName;
+            this.lblAppName.Content = AppName;
+            this.Title = AppName;
 
-            openFileDialog = new Microsoft.Win32.OpenFileDialog();
-            openFileDialog.DefaultExt = ProjectFileExtension;
-            openFileDialog.Filter = "XML Simulator Project|*" + ProjectFileExtension;
+            this.openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            this.openFileDialog.DefaultExt = ProjectFileExtension;
+            this.openFileDialog.Filter = "XML Simulator Project|*" + ProjectFileExtension;
             // Set the initial directory to the executable path or the "SampleProjects" folder if it exists.
             string exeDirectory = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             string sampleProjectsPath = System.IO.Path.Combine(exeDirectory, SampleProjectsFolderName);
             if (Directory.Exists(sampleProjectsPath))
-                openFileDialog.InitialDirectory = sampleProjectsPath;
+                this.openFileDialog.InitialDirectory = sampleProjectsPath;
             else
-                openFileDialog.InitialDirectory = exeDirectory;
+                this.openFileDialog.InitialDirectory = exeDirectory;
 
             RefreshProjectControls();
         }
@@ -78,30 +78,30 @@ namespace TTMouseclickSimulator
         {
             // If the simulator is currently running, don't close the window but stop the
             // simulator and wait until it is finished.
-            if (simulator != null)
+            if (this.simulator != null)
             {
                 e.Cancel = true;
                 Hide();
 
-                closeWindowAfterStop = true;
-                simulator.Cancel();
+                this.closeWindowAfterStop = true;
+                this.simulator.Cancel();
             }
         }
 
         private async Task RunSimulatorAsync()
         {
-            btnStart.IsEnabled = false;
-            btnStop.IsEnabled = true;
-            btnLoad.IsEnabled = false;
-            if (quickActionButtons != null)
-                foreach (var bt in quickActionButtons)
+            this.btnStart.IsEnabled = false;
+            this.btnStop.IsEnabled = true;
+            this.btnLoad.IsEnabled = false;
+            if (this.quickActionButtons != null)
+                foreach (var bt in this.quickActionButtons)
                     bt.IsEnabled = false;
 
 
             // Run the simulator in another task so it is not executed in the GUI thread.
             // However, we then await that new task so we are notified when it is finished.
-            Exception runException = null;
-            simulatorStartAction?.Invoke();
+            var runException = null as Exception;
+            this.simulatorStartAction?.Invoke();
             await Task.Run(async () =>
             {
                 try
@@ -111,9 +111,9 @@ namespace TTMouseclickSimulator
                     var process = environment.FindProcess();
                     var mainWindowHandle = environment.FindMainWindowHandleOfProcess(process);
 
-                    Simulator sim = simulator = new Simulator(mainWindowHandle, currentQuickAction != null ? currentQuickAction.Action :
-                        project.Configuration.MainAction, environment);
-                    sim.AsyncRetryHandler = async (ex) => !closeWindowAfterStop && await HandleSimulatorRetryAsync(sim, ex);
+                    var sim = this.simulator = new Simulator(mainWindowHandle, this.currentQuickAction != null ? this.currentQuickAction.Action :
+                        this.project.Configuration.MainAction, environment);
+                    sim.AsyncRetryHandler = async (ex) => !this.closeWindowAfterStop && await HandleSimulatorRetryAsync(sim, ex);
 
                     await sim.RunAsync();
                 }
@@ -122,12 +122,12 @@ namespace TTMouseclickSimulator
                     runException = ex;   
                 }
             });
-            simulatorStopAction?.Invoke();
+            this.simulatorStopAction?.Invoke();
 
             // Don't show a messagebox if we need to close the window.
-            if (!closeWindowAfterStop && runException != null && !(runException is SimulatorCanceledException))
+            if (!this.closeWindowAfterStop && runException != null && !(runException is SimulatorCanceledException))
             {
-                TaskDialog dialog = new TaskDialog()
+                var dialog = new TaskDialog()
                 {
                     Title = AppName,
                     MainInstruction = "Simulator stopped!",
@@ -147,11 +147,11 @@ namespace TTMouseclickSimulator
         {
             // Show a TaskDialog.
             bool result = false;
-            await Dispatcher.InvokeAsync(new Action(() =>
+            await this.Dispatcher.InvokeAsync(new Action(() =>
             {
-                if (!closeWindowAfterStop)
+                if (!this.closeWindowAfterStop)
                 {
-                    TaskDialog dialog = new TaskDialog()
+                    var dialog = new TaskDialog()
                     {
                         Title = AppName,
                         MainInstruction = "Simulator interrupted!",
@@ -183,7 +183,7 @@ namespace TTMouseclickSimulator
         private static string GetExceptionDetailsText(Exception ex)
         {
             StringBuilder detailsSb = null;
-            Exception innerEx = ex.InnerException;
+            var innerEx = ex.InnerException;
             while (innerEx != null)
             {
                 if (detailsSb == null)
@@ -201,21 +201,21 @@ namespace TTMouseclickSimulator
 
         private void HandleSimulatorCanceled()
         {
-            simulator = null;
-            btnStart.IsEnabled = true;
-            btnStop.IsEnabled = false;
-            btnLoad.IsEnabled = true;
-            if (quickActionButtons != null)
-                foreach (var bt in quickActionButtons)
+            this.simulator = null;
+            this.btnStart.IsEnabled = true;
+            this.btnStop.IsEnabled = false;
+            this.btnLoad.IsEnabled = true;
+            if (this.quickActionButtons != null)
+                foreach (var bt in this.quickActionButtons)
                     bt.IsEnabled = true;
 
-            if (currentQuickAction != null)
+            if (this.currentQuickAction != null)
             {
-                currentQuickAction = null;
+                this.currentQuickAction = null;
                 RefreshProjectControls();
             }
 
-            if (closeWindowAfterStop)
+            if (this.closeWindowAfterStop)
                 Close();
         }
 
@@ -223,27 +223,27 @@ namespace TTMouseclickSimulator
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
-            simulator.Cancel();
-            btnStop.IsEnabled = false;
+            this.simulator.Cancel();
+            this.btnStop.IsEnabled = false;
         }
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
         {
-            if (openFileDialog.ShowDialog(this) == true)
+            if (this.openFileDialog.ShowDialog(this) == true)
             {
                 // Try to load the given project.
                 try
                 {
-                    using (FileStream fs = new FileStream(openFileDialog.FileName, FileMode.Open,
+                    using (var fs = new FileStream(this.openFileDialog.FileName, FileMode.Open,
                         FileAccess.Read, FileShare.Read))
                     {
-                        XmlProjectDeserializer deser = new XmlProjectDeserializer();
-                        project = deser.Deserialize(fs);
+                        var deser = new XmlProjectDeserializer();
+                        this.project = deser.Deserialize(fs);
                     }
                 }
                 catch (Exception ex)
                 {
-                    TaskDialog dialog = new TaskDialog()
+                    var dialog = new TaskDialog()
                     {
                         Title = AppName,
                         MainInstruction = "Could not load the selected project.",
@@ -261,34 +261,34 @@ namespace TTMouseclickSimulator
                 }
 
 
-                if (quickActionButtons != null)
+                if (this.quickActionButtons != null)
                 {
-                    foreach (var b in quickActionButtons)
-                        gridProjectControls.Children.Remove(b);
-                    quickActionButtons = null;
+                    foreach (var b in this.quickActionButtons)
+                        this.gridProjectControls.Children.Remove(b);
+                    this.quickActionButtons = null;
                 }
 
                 RefreshProjectControls();
 
                 // For each quick action, create a button.
-                quickActionButtons = new Button[project.Configuration.QuickActions.Count];
-                for (int idx = 0; idx < project.Configuration.QuickActions.Count; idx++)
+                this.quickActionButtons = new Button[this.project.Configuration.QuickActions.Count];
+                for (int idx = 0; idx < this.project.Configuration.QuickActions.Count; idx++)
                 {
                     int i = idx;
-                    var quickAction = project.Configuration.QuickActions[i];
+                    var quickAction = this.project.Configuration.QuickActions[i];
 
-                    Button b = quickActionButtons[i] = new Button();
+                    var b = this.quickActionButtons[i] = new Button();
                     b.Height = 21;
                     b.HorizontalAlignment = HorizontalAlignment.Left;
                     b.VerticalAlignment = VerticalAlignment.Top;
                     b.Margin = new Thickness(0, 2 + 23 * i, 0, 0);
                     b.Content = "  " + quickAction.Name + "  ";
-                    gridProjectControls.Children.Add(b);
+                    this.gridProjectControls.Children.Add(b);
                     Grid.SetRow(b, 1);
 
                     b.Click += async (_s, _e) =>
                     {
-                        currentQuickAction = quickAction;
+                        this.currentQuickAction = quickAction;
                         RefreshProjectControls();
 
                         await RunSimulatorAsync();
@@ -299,29 +299,29 @@ namespace TTMouseclickSimulator
 
         private void RefreshProjectControls()
         {
-            lblActionTitle.Content = currentQuickAction != null ? currentQuickAction.Name 
-                : project?.Configuration.MainAction != null ? actionTitleMainAction : "";
-            if (project == null)
+            this.lblActionTitle.Content = this.currentQuickAction != null ? this.currentQuickAction.Name 
+                : this.project?.Configuration.MainAction != null ? actionTitleMainAction : "";
+            if (this.project == null)
             {
-                lblCurrentProject.Content = "(none)";
-                txtDescription.Text = string.Empty;
-                btnStart.IsEnabled = false;
+                this.lblCurrentProject.Content = "(none)";
+                this.txtDescription.Text = string.Empty;
+                this.btnStart.IsEnabled = false;
             }
             else 
             {
-                lblCurrentProject.Content = project.Title;
-                txtDescription.Text = project.Description;
-                btnStart.IsEnabled = project.Configuration.MainAction != null;
+                this.lblCurrentProject.Content = this.project.Title;
+                this.txtDescription.Text = this.project.Description;
+                this.btnStart.IsEnabled = this.project.Configuration.MainAction != null;
 
                 // Create labels for each action.
-                actionListGrid.Children.Clear();
-                IAction mainAct = currentQuickAction != null ? currentQuickAction.Action 
-                    : project.Configuration.MainAction;
+                this.actionListGrid.Children.Clear();
+                var mainAct = this.currentQuickAction != null ? this.currentQuickAction.Action 
+                    : this.project.Configuration.MainAction;
                 if (mainAct != null)
                 {
                     int posCounter = 0;
-                    CreateActionLabels(mainAct, actionListGrid, 0, ref posCounter,
-                        out simulatorStartAction, out simulatorStopAction);
+                    CreateActionLabels(mainAct, this.actionListGrid, 0, ref posCounter,
+                        out this.simulatorStartAction, out this.simulatorStopAction);
                 }
             }
         }
@@ -329,7 +329,7 @@ namespace TTMouseclickSimulator
         private void CreateActionLabels(IAction action, Grid grid, int recursiveCount, 
             ref int posCounter, out Action handleStart, out Action handleStop)
         {
-            Label l = new Label();
+            var l = new Label();
             l.Margin = new Thickness(recursiveCount * 10, 18 * posCounter, 0, 0);
             grid.Children.Add(l);
 
@@ -346,17 +346,17 @@ namespace TTMouseclickSimulator
                 l.Content = str;
             };
 
-            action.ActionInformationUpdated += s => Dispatcher.Invoke(new Action(() => l.Content = str + " – " + s));
+            action.ActionInformationUpdated += s => this.Dispatcher.Invoke(new Action(() => l.Content = str + " – " + s));
 
             posCounter++;
 
             if (action is IActionContainer)
             {
                 
-                IActionContainer cont = (IActionContainer)action;
-                IList<IAction> subActions = cont.SubActions;
-                Action[] handleStartActions = new Action[subActions.Count];
-                Action[] handleStopActions = new Action[subActions.Count];
+                var cont = (IActionContainer)action;
+                var subActions = cont.SubActions;
+                var handleStartActions = new Action[subActions.Count];
+                var handleStopActions = new Action[subActions.Count];
                 for (int i = 0; i < subActions.Count; i++)
                 {
                     CreateActionLabels(subActions[i], grid, recursiveCount + 1, ref posCounter,
@@ -364,7 +364,7 @@ namespace TTMouseclickSimulator
                 }
 
                 int? currentActiveAction = null;
-                cont.SubActionStartedOrStopped += (idx) => Dispatcher.Invoke(new Action(() =>
+                cont.SubActionStartedOrStopped += (idx) => this.Dispatcher.Invoke(new Action(() =>
                 {
                     if (idx.HasValue)
                     {

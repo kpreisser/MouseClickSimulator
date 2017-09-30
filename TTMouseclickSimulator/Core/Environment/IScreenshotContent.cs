@@ -29,16 +29,16 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             switch (index) {
                 case 0:
-                    return r;
+                    return this.r;
                 case 1:
-                    return g;
+                    return this.g;
                 case 2:
-                    return b;
+                    return this.b;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
-        public System.Windows.Media.Color ToColor() => System.Windows.Media.Color.FromArgb(255, r, g, b);
+        public System.Windows.Media.Color ToColor() => System.Windows.Media.Color.FromArgb(255, this.r, this.g, this.b);
     }
 }

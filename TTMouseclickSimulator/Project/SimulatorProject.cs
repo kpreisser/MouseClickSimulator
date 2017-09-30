@@ -12,6 +12,6 @@ namespace TTMouseclickSimulator.Project
 
         public SimulatorConfiguration Configuration { get; set; }
 
-        public override string ToString() => Title;
+        public override string ToString() => this.Title;
     }
 }

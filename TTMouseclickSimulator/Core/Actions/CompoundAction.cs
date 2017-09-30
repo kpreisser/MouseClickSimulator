@@ -24,7 +24,7 @@ namespace TTMouseclickSimulator.Core.Actions
 
         private readonly Random rng = new Random();
 
-        public override sealed IList<IAction> SubActions => actionList;
+        public override sealed IList<IAction> SubActions => this.actionList;
 
 
         /// <summary>
@@ -74,21 +74,21 @@ namespace TTMouseclickSimulator.Core.Actions
             int[] randomOrder = null;
 
             Func<int> getNextActionIndex;
-            if (type == CompoundActionType.Sequential)
+            if (this.type == CompoundActionType.Sequential)
                 getNextActionIndex = () => 
-                    (!loop && currentIdx + 1 == actionList.Count) ? -1 
-                    : currentIdx = (currentIdx + 1) % actionList.Count;
-            else if (type == CompoundActionType.RandomIndex)
-                getNextActionIndex = () => rng.Next(actionList.Count);
+                    (!this.loop && currentIdx + 1 == this.actionList.Count) ? -1 
+                    : currentIdx = (currentIdx + 1) % this.actionList.Count;
+            else if (this.type == CompoundActionType.RandomIndex)
+                getNextActionIndex = () => this.rng.Next(this.actionList.Count);
             else
             {
-                randomOrder = new int[actionList.Count];
+                randomOrder = new int[this.actionList.Count];
                 getNextActionIndex = () =>
                 {
-                    if (!loop && currentIdx + 1 == actionList.Count)
+                    if (!this.loop && currentIdx + 1 == this.actionList.Count)
                         return -1;
 
-                    currentIdx = (currentIdx + 1) % actionList.Count;
+                    currentIdx = (currentIdx + 1) % this.actionList.Count;
                     if (currentIdx == 0)
                     {
                         // Generate a new order array.
@@ -96,7 +96,7 @@ namespace TTMouseclickSimulator.Core.Actions
                             randomOrder[i] = i;
                         for (int i = 0; i < randomOrder.Length; i++)
                         {
-                            int rIdx = rng.Next(randomOrder.Length - i);
+                            int rIdx = this.rng.Next(randomOrder.Length - i);
                             int tmp = randomOrder[i];
                             randomOrder[i] = randomOrder[i + rIdx];
                             randomOrder[i + rIdx] = tmp;
@@ -125,7 +125,7 @@ namespace TTMouseclickSimulator.Core.Actions
                         OnSubActionStartedOrStopped(nextIdx);
                         try
                         {
-                            IAction action = actionList[nextIdx];
+                            var action = this.actionList[nextIdx];
                             await action.RunAsync(provider);
                         }
                         finally
@@ -134,7 +134,7 @@ namespace TTMouseclickSimulator.Core.Actions
                         }
 
                         // After running an action, wait.
-                        int waitInterval = rng.Next(minimumPauseDuration, maximumPauseDuration);
+                        int waitInterval = this.rng.Next(this.minimumPauseDuration, this.maximumPauseDuration);
                         OnActionInformationUpdated($"Pausing {waitInterval} ms");
 
                         await provider.WaitAsync(waitInterval);
@@ -150,8 +150,8 @@ namespace TTMouseclickSimulator.Core.Actions
         }
 
 
-        public override string ToString() => $"Compound – Type: {type}, " 
-            + $"MinPause: {minimumPauseDuration}, MaxPause: {maximumPauseDuration}, Loop: {loop}";
+        public override string ToString() => $"Compound – Type: {this.type}, " 
+            + $"MinPause: {this.minimumPauseDuration}, MaxPause: {this.maximumPauseDuration}, Loop: {this.loop}";
 
 
         public enum CompoundActionType : int

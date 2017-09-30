@@ -38,7 +38,7 @@ namespace TTMouseclickSimulator.Core
             this.mainAction = mainAction;
             this.environmentInterface = environmentInterface;
 
-            provider = new StandardInteractionProvider(this, windowHandle, environmentInterface, out cancelCallback);
+            this.provider = new StandardInteractionProvider(this, windowHandle, environmentInterface, out this.cancelCallback);
         }
 
         /// <summary>
@@ -47,31 +47,31 @@ namespace TTMouseclickSimulator.Core
         /// <returns></returns>
         public async Task RunAsync()
         {
-            if (canceled)
+            if (this.canceled)
                 throw new InvalidOperationException("The simulator has already been canceled.");
 
             try
             {
-                using (provider)
+                using (this.provider)
                 {
                     OnSimulatorStarted();
 
                     // InitializeAsync() does not need to be in the try block because it has its own.
-                    await provider.InitializeAsync();
+                    await this.provider.InitializeAsync();
 
                     for (;;)
                     {
                         try
                         {
                             // Run the action.
-                            await mainAction.RunAsync(provider);
+                            await this.mainAction.RunAsync(this.provider);
 
                             // Normally the main action would be a CompoundAction that never returns, but
                             // it is possible that the action will return normally.
                         }
                         catch (Exception ex) when (!(ex is SimulatorCanceledException))
                         {
-                            await provider.CheckRetryForExceptionAsync(ExceptionDispatchInfo.Capture(ex));
+                            await this.provider.CheckRetryForExceptionAsync(ExceptionDispatchInfo.Capture(ex));
                             continue;
                         }
                         break;
@@ -81,7 +81,7 @@ namespace TTMouseclickSimulator.Core
             }
             finally
             {
-                canceled = true;
+                this.canceled = true;
                 OnSimulatorStopped();
             }
         }
@@ -93,8 +93,8 @@ namespace TTMouseclickSimulator.Core
         /// </summary>
         public void Cancel()
         {
-            canceled = true;
-            cancelCallback();
+            this.canceled = true;
+            this.cancelCallback();
         }
 
 

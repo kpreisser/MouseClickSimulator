@@ -17,7 +17,7 @@
         public Size Size { get; set; }
 
         
-        public Coordinates RelativeToAbsoluteCoordinates(Coordinates c) => Coordinates.Add(c);
+        public Coordinates RelativeToAbsoluteCoordinates(Coordinates c) => this.Coordinates.Add(c);
     }
 
     public struct Coordinates
@@ -31,7 +31,7 @@
             this.Y = y;
         }
 
-        public Coordinates Add(Coordinates c) => new Coordinates(X + c.X, Y + c.Y);
+        public Coordinates Add(Coordinates c) => new Coordinates(this.X + c.X, this.Y + c.Y);
     }
 
     public struct Size

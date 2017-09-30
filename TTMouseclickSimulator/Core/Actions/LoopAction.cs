@@ -28,22 +28,22 @@ namespace TTMouseclickSimulator.Core.Actions
             this.count = count;
         }
 
-        public override IList<IAction> SubActions => new List<IAction>() { action };
+        public override IList<IAction> SubActions => new List<IAction>() { this.action };
 
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             OnSubActionStartedOrStopped(0);
             try
             {
-                for (int i = 0; !count.HasValue || i < count.Value; i++)
+                for (int i = 0; !this.count.HasValue || i < this.count.Value; i++)
                 {
                     for (;;)
                     {
                         try
                         {
                             provider.EnsureNotCanceled();
-                            OnActionInformationUpdated($"Iteration {i + 1}/{count?.ToString() ?? "∞"}");
-                            await action.RunAsync(provider);
+                            OnActionInformationUpdated($"Iteration {i + 1}/{this.count?.ToString() ?? "∞"}");
+                            await this.action.RunAsync(provider);
                         }
                         catch (Exception ex) when (!(ex is SimulatorCanceledException))
                         {
@@ -61,6 +61,6 @@ namespace TTMouseclickSimulator.Core.Actions
         }
 
 
-        public override string ToString() => $"Loop – Count: {count?.ToString() ?? "∞"}";
+        public override string ToString() => $"Loop – Count: {this.count?.ToString() ?? "∞"}";
     }
 }

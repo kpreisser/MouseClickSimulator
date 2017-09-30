@@ -58,18 +58,18 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             // Then, wait until we find a window displaying the caught fish
             // or the specified number of seconds has passed.
             OnActionInformationUpdated("Waiting for the fish result dialog…");
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
 
             bool found = false;
-            while (!found && sw.ElapsedMilliseconds <= WaitingForFishResultDialogTime)
+            while (!found && sw.ElapsedMilliseconds <= this.WaitingForFishResultDialogTime)
             {
                 await provider.WaitAsync(500);
 
                 // Get a current screenshot.
                 var screenshot = provider.GetCurrentWindowScreenshot();
 
-                foreach (Coordinates c in fishResultDialogCoordinates)
+                foreach (var c in fishResultDialogCoordinates)
                 {
                     var cc = screenshot.WindowPosition.ScaleCoordinates(
                         c, MouseHelpers.ReferenceWindowSize);
@@ -93,7 +93,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         /// <returns></returns>
         protected async Task StartCastFishingRodAsync(IInteractionProvider provider)
         {
-            Coordinates coords = new Coordinates(800, 846);
+            var coords = new Coordinates(800, 846);
             var pos = provider.GetCurrentWindowPosition();
             coords = pos.ScaleCoordinates(coords,
                 MouseHelpers.ReferenceWindowSize);
@@ -168,11 +168,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 switch (index)
                 {
                     case 0:
-                        return ToleranceR;
+                        return this.ToleranceR;
                     case 1:
-                        return ToleranceG;
+                        return this.ToleranceG;
                     case 2:
-                        return ToleranceB;
+                        return this.ToleranceB;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(index));
                 }
@@ -180,9 +180,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
             public Tolerance(byte toleranceR, byte toleranceG, byte toleranceB)
             {
-                ToleranceR = toleranceR;
-                ToleranceG = toleranceG;
-                ToleranceB = toleranceB;
+                this.ToleranceR = toleranceR;
+                this.ToleranceG = toleranceG;
+                this.ToleranceB = toleranceB;
             }
 
             public Tolerance(byte tolerance)

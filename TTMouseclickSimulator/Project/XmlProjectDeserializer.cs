@@ -92,7 +92,7 @@ namespace TTMouseclickSimulator.Project
             var mainActionEl = configEl.Element(ns + "MainAction");
             if (mainActionEl != null)
             {
-                IList<IAction> actionList = ParseActionList(mainActionEl);
+                var actionList = ParseActionList(mainActionEl);
                 if (actionList.Count != 1)
                 {
                     throw new InvalidDataException("<MainAction> must contain exactly one Action element.");
@@ -108,7 +108,7 @@ namespace TTMouseclickSimulator.Project
                 i++;
 
                 var quickActionName = el.Attribute("title")?.Value ?? $"Quick Action [{i.ToString()}]";
-                IList<IAction> quickActionList = ParseActionList(el);
+                var quickActionList = ParseActionList(el);
                 if (quickActionList.Count != 1)
                 {
                     throw new InvalidDataException("<QuickAction> must contain exactly one Action element.");
@@ -128,7 +128,7 @@ namespace TTMouseclickSimulator.Project
 
         private IList<IAction> ParseActionList(XElement parent)
         {
-            List<IAction> actionList = new List<IAction>();
+            var actionList = new List<IAction>();
             foreach (var child in parent.Elements())
             {
                 if (child.Name.Namespace == ns)
@@ -157,7 +157,7 @@ namespace TTMouseclickSimulator.Project
                         var param = parameters[i];
                         // Check if the element specifies the parameter. If not, use the default
                         // value if available.
-                        XAttribute attr = child.Attribute(param.Name);
+                        var attr = child.Attribute(param.Name);
                         if (typeof(IList<IAction>).IsAssignableFrom(param.ParameterType))
                         {
                             paramSubactionListIdx = i;
@@ -204,9 +204,9 @@ namespace TTMouseclickSimulator.Project
                             else if (param.ParameterType.IsAssignableFrom(typeof(int[]))
                                 || param.ParameterType.IsAssignableFrom(typeof(byte[])))
                             {
-                                string[] valueElements = attrval.Split(new string[] { "," }, 
+                                var valueElements = attrval.Split(new string[] { "," }, 
                                     StringSplitOptions.RemoveEmptyEntries);
-                                Array values = Array.CreateInstance(param.ParameterType.GetElementType(),
+                                var values = Array.CreateInstance(param.ParameterType.GetElementType(),
                                     valueElements.Length);
 
                                 for (int j = 0; j < valueElements.Length; j++)
@@ -227,7 +227,7 @@ namespace TTMouseclickSimulator.Project
                             else if (typeof(Enum).IsAssignableFrom(param.ParameterType))
                             {
                                 // Find the enum entry with the specified name.
-                                Array values = Enum.GetValues(param.ParameterType);
+                                var values = Enum.GetValues(param.ParameterType);
                                 bool found = false;
                                 foreach (Enum val in values)
                                 {
@@ -256,7 +256,7 @@ namespace TTMouseclickSimulator.Project
                     }
 
                     // Parse child actions.
-                    IList<IAction> childActions = ParseActionList(child);
+                    var childActions = ParseActionList(child);
                     if (paramSubactionListIdx != -1)
                     {
                         parameterValues[paramSubactionListIdx] = childActions;
@@ -276,7 +276,7 @@ namespace TTMouseclickSimulator.Project
 
 
                     // Now instanciate the IAction.
-                    IAction instance = (IAction)constr.Invoke(parameterValues);
+                    var instance = (IAction)constr.Invoke(parameterValues);
                     actionList.Add(instance);
                 }
             }

@@ -13,7 +13,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
         public AutomaticFishingAction(int[] scan1, int[] scan2, byte[] bubbleColorRgb, byte[] toleranceRgb)
         {
-           spotData = new FishingSpotData(
+            this.spotData = new FishingSpotData(
                 new Coordinates(scan1[0], scan1[1]),
                 new Coordinates(scan2[0], scan2[1]),
                 new ScreenshotColor(bubbleColorRgb[0], bubbleColorRgb[1], bubbleColorRgb[2]),
@@ -43,15 +43,15 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 // TODO: The fish bubble detection should be changed so that it does not scan
                 // for a specific color, but instead checks that for a point if the color is
                 // darker than the neighbor pixels (in some distance).
-                for (int y = spotData.Scan1.Y; y <= spotData.Scan2.Y && !newCoords.HasValue; y += scanStep)
+                for (int y = this.spotData.Scan1.Y; y <= this.spotData.Scan2.Y && !newCoords.HasValue; y += scanStep)
                 {
-                    for (int x = spotData.Scan1.X; x <= spotData.Scan2.X; x += scanStep)
+                    for (int x = this.spotData.Scan1.X; x <= this.spotData.Scan2.X; x += scanStep)
                     {
                         var c = new Coordinates(x, y);
                         c = screenshot.WindowPosition.ScaleCoordinates(c,
                             MouseHelpers.ReferenceWindowSize);
-                        if (CompareColor(spotData.BubbleColor, screenshot.GetPixel(c),
-                            spotData.Tolerance))
+                        if (CompareColor(this.spotData.BubbleColor, screenshot.GetPixel(c),
+                            this.spotData.Tolerance))
                         {
                             newCoords = new Coordinates(x + 20, y + 20);
                             var scaledCoords = screenshot.WindowPosition.ScaleCoordinates(
@@ -132,6 +132,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
 
         public override string ToString() => $"Automatic Fishing – "
-                + $"Color: [{spotData.BubbleColor.r}, {spotData.BubbleColor.g}, {spotData.BubbleColor.b}]";
+                + $"Color: [{this.spotData.BubbleColor.r}, {this.spotData.BubbleColor.g}, {this.spotData.BubbleColor.b}]";
     }
 }

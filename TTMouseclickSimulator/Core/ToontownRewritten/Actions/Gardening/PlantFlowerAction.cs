@@ -41,7 +41,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Gardening
             await provider.WaitAsync(200);
 
             // Click on the jellybean fields.
-            foreach (int jellybean in jellybeanCombination)
+            foreach (int jellybean in this.jellybeanCombination)
             {
                 var c = new Coordinates((int)Math.Round(560 + jellybean * 60.5), 514);
                 await MouseHelpers.DoSimpleMouseClickAsync(provider, c,
@@ -56,12 +56,12 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Gardening
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < jellybeanCombination.Length; i++)
+            var sb = new StringBuilder();
+            for (int i = 0; i < this.jellybeanCombination.Length; i++)
             {
                 if (i > 0)
                     sb.Append(", ");
-                sb.Append(jellybeanColors[jellybeanCombination[i]]);
+                sb.Append(jellybeanColors[this.jellybeanCombination[i]]);
             }
 
             return $"Plant Flower – JellyBeans: {sb.ToString()}";

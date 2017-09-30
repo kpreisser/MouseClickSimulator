@@ -32,15 +32,15 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             // Click on the Speedchat Icon.
-            Coordinates c = new Coordinates(122, 40);
+            var c = new Coordinates(122, 40);
             await MouseHelpers.DoSimpleMouseClickAsync(provider, c, VerticalScaleAlignment.Left, 100);
 
             int currentYNumber = 0;
-            for (int i = 0; i < menuItems.Length; i++)
+            for (int i = 0; i < this.menuItems.Length; i++)
             {
                 await provider.WaitAsync(300);
 
-                currentYNumber += menuItems[i];
+                currentYNumber += this.menuItems[i];
                 c = new Coordinates(xWidths[i], (40 + currentYNumber * 38));
                 await MouseHelpers.DoSimpleMouseClickAsync(provider, c, VerticalScaleAlignment.Left, 100);
             }
@@ -49,12 +49,12 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < menuItems.Length; i++)
+            var sb = new StringBuilder();
+            for (int i = 0; i < this.menuItems.Length; i++)
             {
                 if (i > 0)
                     sb.Append(", ");
-                sb.Append(menuItems[i]);
+                sb.Append(this.menuItems[i]);
             }
             return $"Speedchat – Items: [{sb.ToString()}]";
         }

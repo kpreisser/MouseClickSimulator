@@ -20,12 +20,12 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction
 
         public override async Task RunAsync(IInteractionProvider provider)
         {
-            Coordinates c = new Coordinates(1397, 206 + (int)button * 49);
+            var c = new Coordinates(1397, 206 + (int)this.button * 49);
             await MouseHelpers.DoSimpleMouseClickAsync(provider, c, VerticalScaleAlignment.Right);
         }
 
 
-        public override string ToString() => $"Doodle Panel – Button: {button}";
+        public override string ToString() => $"Doodle Panel – Button: {this.button}";
         
 
         public enum DoodlePanelButton : int
