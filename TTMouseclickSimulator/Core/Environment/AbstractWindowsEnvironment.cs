@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Net;
 using System.Windows.Forms;
 
@@ -15,14 +15,14 @@ namespace TTMouseclickSimulator.Core.Environment
     public abstract class AbstractWindowsEnvironment
     {
         /// <summary>
-        /// Finds the process with the specified name (without ".exe").
+        /// Finds processes with the specified name (without ".exe").
         /// </summary>
         /// <param name="processname"></param>
         /// <returns></returns>
-        protected Process FindProcessByName(string processname)
+        protected List<Process> FindProcessesByName(string processname)
         {
             var processes = Process.GetProcessesByName(processname);
-            var foundProcess = null as Process;
+            var foundProcesses = new List<Process>();
             
             // Use the first applicable process.
             foreach (var p in processes)
@@ -32,24 +32,23 @@ namespace TTMouseclickSimulator.Core.Environment
                     // Check if we actually have access to this process. This can fail with a
                     // Win32Exception e.g. if the process is from another user.
                     GC.KeepAlive(p.HasExited);
-                    foundProcess = p;
-                    break;
+                    foundProcesses.Add(p);
                 }
-                catch (Win32Exception)
+                catch
                 {
                     // Ignore
+                    // Dispose of the process since we won't use it.
+                    p.Dispose();
                 }
             }
 
-            if (foundProcess == null)
-                throw new ArgumentException($"Could not find Process '{processname}.exe'.");
+            if (foundProcesses.Count == 0)
+                throw new ArgumentException($"Could not find process '{processname}.exe'.");
 
-            // Need to dispose of the other process instances.
-            foreach (var otherProcess in processes.Where(p => p != foundProcess))
-                otherProcess.Dispose();
-
-            return foundProcess;
+            return foundProcesses;
         }
+
+        public abstract List<Process> FindProcesses();
 
         /// <summary>
         /// Finds the main window of the given process and returns its window handle.
@@ -76,18 +75,17 @@ namespace TTMouseclickSimulator.Core.Environment
                 throw new Exception("Could not bring specified window to foreground.");
         }
 
-        public abstract Process FindProcess();
-
         /// <summary>
         /// Determines the position and location of the client rectangle of the specified
         /// window. This method also checks if the specified window is in foreground.
         /// </summary>
         /// <param name="hWnd"></param>
         /// <returns></returns>
-        public WindowPosition GetWindowPosition(IntPtr hWnd)
+        public WindowPosition GetWindowPosition(IntPtr hWnd, out bool isInForeground, bool failIfNotInForeground = true)
         {
             // Check if the specified window is in foreground.
-            if (NativeMethods.GetForegroundWindow() != hWnd)
+            isInForeground = NativeMethods.GetForegroundWindow() == hWnd;
+            if (failIfNotInForeground && !isInForeground)
                 throw new Exception("The window is not in foreground any more.");
 
             // Get the client size.
@@ -111,11 +109,11 @@ namespace TTMouseclickSimulator.Core.Environment
                 Coordinates = new Coordinates(relPos.X, relPos.Y),
                 Size = new Size(clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top)
             };
+
             // Validate the position.
             ValidateWindowPosition(pos);
             return pos;
         }
-
 
         /// <summary>
         /// When overridden in subclasses, throws an exception if the window position is
@@ -127,16 +125,26 @@ namespace TTMouseclickSimulator.Core.Environment
             // Do nothing.
         }
 
-        public ScreenshotContent CreateWindowScreenshot(IntPtr hWnd, ScreenshotContent existingScreenshot = null) =>
-            ScreenshotContent.Create(GetWindowPosition(hWnd), existingScreenshot);
-        
-        
+        public ScreenshotContent CreateWindowScreenshot(IntPtr hWnd, ScreenshotContent existingScreenshot = null)
+        {
+            bool isInForeground;
+            return ScreenshotContent.Create(GetWindowPosition(hWnd, out isInForeground), existingScreenshot);
+        }
 
-        public void MoveMouse(int x, int y) => DoMouseInput(x, y, true, null);
+        public void MoveMouse(int x, int y)
+        {
+            DoMouseInput(x, y, true, null);
+        }
         
-        public void PressMouseButton() => DoMouseInput(0, 0, false, true);
+        public void PressMouseButton()
+        {
+            DoMouseInput(0, 0, false, true);
+        }
         
-        public void ReleaseMouseButton() => DoMouseInput(0, 0, false, false);
+        public void ReleaseMouseButton()
+        {
+            DoMouseInput(0, 0, false, false);
+        }
         
         private void DoMouseInput(int x, int y, bool absoluteCoordinates, bool? mouseDown)
         {
@@ -176,17 +184,6 @@ namespace TTMouseclickSimulator.Core.Environment
                 throw new Win32Exception();
         }
 
-        public void SendWindowMouseMovement(IntPtr hwnd, ushort x, ushort y, bool? mouseDown)
-        {
-            // Post a WM_MOUSEMOVE message.
-            int mouseParams = 0;
-            if (mouseDown == true)
-                mouseParams = NativeMethods.MK_LBUTTON;
-            else if (mouseDown == false)
-                mouseParams = NativeMethods.MK_RBUTTON;
-            NativeMethods.PostMessage(hwnd, NativeMethods.WindowMessage.WM_MOUSEMOVE, (IntPtr)mouseParams, (IntPtr)(y << 16 | x));
-        }
-
         private Coordinates GetMouseCoordinatesFromScreenCoordinates(Coordinates screenCoords)
         {
             // Note: The mouse coordinates are relative to the primary monitor size and
@@ -222,14 +219,22 @@ namespace TTMouseclickSimulator.Core.Environment
         }
 
 
-        public void PressKey(VirtualKeyShort keyCode) => PressOrReleaseKey(keyCode, true);
+        public void PressKey(VirtualKeyShort keyCode)
+        {
+            PressOrReleaseKey(keyCode, true);
+        }
         
-        public void ReleaseKey(VirtualKeyShort keyCode) => PressOrReleaseKey(keyCode, false);
+        public void ReleaseKey(VirtualKeyShort keyCode)
+        {
+            PressOrReleaseKey(keyCode, false);
+        }
         
         private void PressOrReleaseKey(VirtualKeyShort keyCode, bool down)
         {
-            var ki = new NativeMethods.KEYBDINPUT();
-            ki.wVk = keyCode;
+            var ki = new NativeMethods.KEYBDINPUT
+            {
+                wVk = keyCode
+            };
             if (!down)
                 ki.dwFlags = NativeMethods.KEYEVENTF.KEYUP;
 
@@ -248,8 +253,10 @@ namespace TTMouseclickSimulator.Core.Environment
             var inputs = new NativeMethods.INPUT[2 * characters.Length];
             for (int i = 0; i < inputs.Length; i++)
             {
-                var ki = new NativeMethods.KEYBDINPUT();
-                ki.dwFlags = NativeMethods.KEYEVENTF.UNICODE;
+                var ki = new NativeMethods.KEYBDINPUT
+                {
+                    dwFlags = NativeMethods.KEYEVENTF.UNICODE
+                };
                 if (i % 2 == 1)
                     ki.dwFlags |= NativeMethods.KEYEVENTF.KEYUP;
                 ki.wScan = (short)characters[i / 2];
@@ -271,10 +278,32 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             private bool disposed;
             private WindowPosition windowPosition;
+            private Rectangle rect;
 
             private readonly Bitmap bmp;
             private BitmapData bmpData;
             private int* scan0;
+            
+
+            private ScreenshotContent(WindowPosition pos)
+            {
+                // Ensure we use Little Endian as byte order.
+                // TODO: Is there a better way than using IPAddress to check this?
+                if (IPAddress.HostToNetworkOrder((short)1) == 1)
+                    throw new InvalidOperationException("This class currently only works " +
+                            "on systems using little endian as byte order.");
+
+                // Set the window position which will create a new rectangle.
+                this.WindowPosition = pos;
+
+                this.bmp = new Bitmap(this.rect.Width, this.rect.Height,
+                    PixelFormat.Format32bppRgb);
+            }
+            
+            ~ScreenshotContent()
+            {
+                Dispose(false);
+            }
 
 
             public Size Size => new Size(this.bmp.Width, this.bmp.Height); 
@@ -297,10 +326,11 @@ namespace TTMouseclickSimulator.Core.Environment
                         this.windowPosition.Size.Width, this.windowPosition.Size.Height);
                 }
             }
-            private Rectangle rect;
 
-            public static ScreenshotContent Create(WindowPosition pos, 
-                ScreenshotContent existingScreenshot = null)
+
+            public static ScreenshotContent Create(
+                    WindowPosition pos, 
+                    ScreenshotContent existingScreenshot = null)
             {
                 // Try to reuse the existing screenshot's bitmap, if it has the same size.
                 if (existingScreenshot != null && !(existingScreenshot.Size.Width == pos.Size.Width
@@ -321,21 +351,6 @@ namespace TTMouseclickSimulator.Core.Environment
                 return existingScreenshot;
             }
 
-
-            private ScreenshotContent(WindowPosition pos)
-            {
-                // Set the window position which will create a new rectangle.
-                this.WindowPosition = pos;
-
-                // Ensure we use Little Endian as byte order.
-                // TODO: Is there a better way than using IPAddress to check this?
-                if (IPAddress.HostToNetworkOrder((short)1) == 1)
-                    throw new InvalidOperationException("This class currently only works "
-                        + "on systems using little endian as byte order.");
-
-                this.bmp = new Bitmap(this.rect.Width, this.rect.Height,
-                    PixelFormat.Format32bppRgb);
-            }
 
             private void OpenBitmapData()
             {
@@ -374,7 +389,10 @@ namespace TTMouseclickSimulator.Core.Environment
                 OpenBitmapData();
             }
 
-            public ScreenshotColor GetPixel(Coordinates coords) => GetPixel(coords.X, coords.Y);
+            public ScreenshotColor GetPixel(Coordinates coords)
+            {
+                return GetPixel(coords.X, coords.Y);
+            }
             
             public ScreenshotColor GetPixel(int x, int y)
             {
@@ -408,12 +426,6 @@ namespace TTMouseclickSimulator.Core.Environment
                 };
             }
 
-
-            ~ScreenshotContent()
-            {
-                Dispose(false);
-            }
-
             public void Dispose()
             {
                 Dispose(true);
@@ -430,7 +442,6 @@ namespace TTMouseclickSimulator.Core.Environment
                 this.disposed = true;
             }
         }
-
         
 
         public enum VirtualKeyShort : short

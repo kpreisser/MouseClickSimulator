@@ -28,7 +28,7 @@ namespace TTMouseclickSimulator.Core
         public Func<ExceptionDispatchInfo, Task<bool>> AsyncRetryHandler;
         
 
-        public Simulator(IntPtr windowHandle, IAction mainAction, AbstractWindowsEnvironment environmentInterface)
+        public Simulator(IAction mainAction, AbstractWindowsEnvironment environmentInterface)
         {
             if (mainAction == null)
                 throw new ArgumentNullException(nameof(mainAction));
@@ -38,7 +38,7 @@ namespace TTMouseclickSimulator.Core
             this.mainAction = mainAction;
             this.environmentInterface = environmentInterface;
 
-            this.provider = new StandardInteractionProvider(this, windowHandle, environmentInterface, out this.cancelCallback);
+            this.provider = new StandardInteractionProvider(this, environmentInterface, out this.cancelCallback);
         }
 
         /// <summary>

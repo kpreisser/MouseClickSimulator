@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Threading;
 
 using TTMouseclickSimulator.Core;
 using TTMouseclickSimulator.Core.Actions;
@@ -59,8 +58,8 @@ namespace TTMouseclickSimulator
             this.openFileDialog.DefaultExt = ProjectFileExtension;
             this.openFileDialog.Filter = "XML Simulator Project|*" + ProjectFileExtension;
             // Set the initial directory to the executable path or the "SampleProjects" folder if it exists.
-            string exeDirectory = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            string sampleProjectsPath = System.IO.Path.Combine(exeDirectory, SampleProjectsFolderName);
+            string exeDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            string sampleProjectsPath = Path.Combine(exeDirectory, SampleProjectsFolderName);
             if (Directory.Exists(sampleProjectsPath))
                 this.openFileDialog.InitialDirectory = sampleProjectsPath;
             else
@@ -107,13 +106,10 @@ namespace TTMouseclickSimulator
                 try
                 {
                     var environment = TTRWindowsEnvironment.Instance;
-                    // Try to find the process and its window.
-                    var process = environment.FindProcess();
-                    var mainWindowHandle = environment.FindMainWindowHandleOfProcess(process);
 
-                    var sim = this.simulator = new Simulator(mainWindowHandle, this.currentQuickAction != null ? this.currentQuickAction.Action :
+                    var sim = this.simulator = new Simulator(this.currentQuickAction != null ? this.currentQuickAction.Action :
                         this.project.Configuration.MainAction, environment);
-                    sim.AsyncRetryHandler = async (ex) => !this.closeWindowAfterStop && await HandleSimulatorRetryAsync(sim, ex);
+                    sim.AsyncRetryHandler = async ex => !this.closeWindowAfterStop && await HandleSimulatorRetryAsync(sim, ex);
 
                     await sim.RunAsync();
                 }
@@ -163,8 +159,8 @@ namespace TTMouseclickSimulator
                     dialog.Flags |= TaskDialog.TaskDialogFlags.UseCommandLinks |
                             TaskDialog.TaskDialogFlags.ExpandFooterArea;
 
-                    var buttonTryAgain = dialog.CreateCustomButton("Try again\n" 
-                        + "The Simulator will try to run the current action again.");
+                    var buttonTryAgain = dialog.CreateCustomButton("Try again\n"  +
+                            "The Simulator will try to run the current action again.");
                     var buttonStop = dialog.CreateCustomButton("Stop the Simulator");
 
                     dialog.CustomButtons = new TaskDialog.ICustomButton[] { buttonTryAgain, buttonStop };

@@ -24,8 +24,8 @@ namespace TTMouseclickSimulator.Core.Environment
 
         private readonly Simulator simulator;
         private readonly AbstractWindowsEnvironment environmentInterface;
-
         private IntPtr windowHandle;
+
         private AbstractWindowsEnvironment.ScreenshotContent currentScreenshot;
         private bool isMouseButtonPressed = false;
         private List<AbstractWindowsEnvironment.VirtualKeyShort> keysCurrentlyPressed =
@@ -36,12 +36,10 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public StandardInteractionProvider(
                 Simulator simulator,
-                IntPtr windowHandle,
                 AbstractWindowsEnvironment environmentInterface,
                 out Action cancelCallback)
         {
             this.simulator = simulator;
-            this.windowHandle = windowHandle;
             this.environmentInterface = environmentInterface;
             cancelCallback = HandleCancelCallback;
         }
@@ -60,15 +58,65 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public async Task InitializeAsync()
         {
-            for (;;)
+            while (true)
             {
                 try
                 {
-                    // Bring the destination window to foreground.
-                    this.environmentInterface.BringWindowToForeground(this.windowHandle);
+                    while (true)
+                    {
+                        // First, find the game processes. This will always return at least one process,
+                        // or throw.
+                        var processes = this.environmentInterface.FindProcesses();
+                        if (processes.Count == 1)
+                        {
+                            // When there is only one process, we simply bring the window to the
+                            // foreground.
+                            this.windowHandle = this.environmentInterface.FindMainWindowHandleOfProcess(processes[0]);
+                            this.environmentInterface.BringWindowToForeground(this.windowHandle);
 
-                    // Wait a bit so that the window can go into foreground.
-                    await WaitSemaphoreInternalAsync(500, false);
+                            // Wait a bit so that the window can go into foreground.
+                            await WaitSemaphoreInternalAsync(250, false);
+
+                            // If the window isn't in foreground, try again.
+                            bool isInForeground;
+                            this.environmentInterface.GetWindowPosition(this.windowHandle, out isInForeground, false);
+                            if (isInForeground)
+                                break;
+                        }
+                        else
+                        {
+                            // When there are multiple processes, wait until on of the windows goes into foreground.
+                            bool foundWindow = false;
+
+                            foreach (var process in processes)
+                            {
+                                try
+                                {
+                                    var hWnd = this.environmentInterface.FindMainWindowHandleOfProcess(process);
+                                    bool isInForeground;
+                                    this.environmentInterface.GetWindowPosition(hWnd, out isInForeground, false);
+
+                                    if (isInForeground)
+                                    {
+                                        // OK, we found our window to use.
+                                        this.windowHandle = hWnd;
+                                        foundWindow = true;
+                                        break;
+                                    }
+                                }
+                                catch
+                                {
+                                    // Ignore
+                                }
+                            }
+
+                            if (foundWindow)
+                                break;
+
+                            // If non of the windows is in foreground, wait a bit and try again.
+                            await WaitSemaphoreInternalAsync(250, false);
+                        }
+                    }
                 }
                 catch (Exception ex) when (!(ex is SimulatorCanceledException))
                 {
@@ -205,9 +253,9 @@ namespace TTMouseclickSimulator.Core.Environment
 
         private WindowPosition GetMainWindowPosition()
         {
-            return this.environmentInterface.GetWindowPosition(this.windowHandle);
+            bool isInForeground;
+            return this.environmentInterface.GetWindowPosition(this.windowHandle, out isInForeground);
         }
-        
 
         public WindowPosition GetCurrentWindowPosition()
         {
@@ -265,7 +313,7 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             MoveMouse(new Coordinates(x, y));
         }
-        
+
         public void MoveMouse(Coordinates c)
         {
             EnsureNotCanceled();
@@ -321,7 +369,6 @@ namespace TTMouseclickSimulator.Core.Environment
             }
             this.keysCurrentlyPressed.Clear();
         }
-
 
         /// <summary>
         /// Disposes of this StandardInteractionProvider.

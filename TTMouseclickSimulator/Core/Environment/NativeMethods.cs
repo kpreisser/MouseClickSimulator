@@ -13,8 +13,8 @@ namespace TTMouseclickSimulator.Core.Environment
            [MarshalAs(UnmanagedType.LPArray), In] INPUT[] pInputs,
            int cbSize);
 
-        [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "PostMessageW", ExactSpelling = true, SetLastError = true)]
-        internal static extern IntPtr PostMessage(
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "SendMessageW", ExactSpelling = true, SetLastError = true)]
+        internal static extern IntPtr SendMessage(
             IntPtr windowHandle,
             WindowMessage message,
             IntPtr wparam,
@@ -108,7 +108,13 @@ namespace TTMouseclickSimulator.Core.Environment
 
         internal enum WindowMessage : int
         {
-            WM_MOUSEMOVE = 0x0200
+            WM_MOUSEMOVE = 0x0200,
+            WM_LBUTTONDOWN = 0x0201,
+            WM_LBUTTONUP = 0x0202,
+
+            WM_ACTIVATE = 0x0006,
+            WM_MOUSEACTIVATE = 0x0021
+
         }
 
         internal const int MK_LBUTTON = 0x0001;
@@ -143,5 +149,20 @@ namespace TTMouseclickSimulator.Core.Environment
 
         [DllImport("user32.dll")]
         internal static extern bool SetForegroundWindow(IntPtr hWnd);
+
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
+        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32.dll", EntryPoint= "SetWindowLongPtr")]
+        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+        public static IntPtr SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+        {
+            if (IntPtr.Size == 8)
+                return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
+            else
+                return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
+        }
     }
 }
