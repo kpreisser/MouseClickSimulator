@@ -62,6 +62,7 @@ namespace TTMouseclickSimulator.Core.Environment
             {
                 try
                 {
+                    var previousWindowToBringToForeground = IntPtr.Zero;
                     while (true)
                     {
                         // First, find the game processes. This will always return at least one process,
@@ -70,9 +71,13 @@ namespace TTMouseclickSimulator.Core.Environment
                         if (processes.Count == 1)
                         {
                             // When there is only one process, we simply bring the window to the
-                            // foreground.
+                            // foreground (if we didn't do it already).
                             this.windowHandle = this.environmentInterface.FindMainWindowHandleOfProcess(processes[0]);
-                            this.environmentInterface.BringWindowToForeground(this.windowHandle);
+                            if (this.windowHandle != previousWindowToBringToForeground)
+                            {
+                                previousWindowToBringToForeground = this.windowHandle;
+                                this.environmentInterface.BringWindowToForeground(this.windowHandle);
+                            }
 
                             // Wait a bit so that the window can go into foreground.
                             await WaitSemaphoreInternalAsync(250, false);
