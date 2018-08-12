@@ -36,8 +36,8 @@ namespace TTMouseclickSimulator.Core.Environment
                 }
                 catch
                 {
-                    // Ignore
-                    // Dispose of the process since we won't use it.
+                    // We cannot access the process, so dispose of it since we
+                    // won't use it.
                     p.Dispose();
                 }
             }

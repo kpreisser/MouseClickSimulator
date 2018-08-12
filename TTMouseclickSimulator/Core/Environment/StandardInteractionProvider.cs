@@ -69,70 +69,80 @@ namespace TTMouseclickSimulator.Core.Environment
                         // First, find the game processes. This will always return at least one process,
                         // or throw.
                         var processes = this.environmentInterface.FindProcesses();
-                        if (processes.Count == 1)
+                        try
                         {
-                            if (lastInitializingEventParameter != false)
+                            if (processes.Count == 1)
                             {
-                                lastInitializingEventParameter = false;
-                                this.simulator.OnSimulatorInitializing(lastInitializingEventParameter);
-                            }
-
-                            // When there is only one process, we simply bring the window to the
-                            // foreground (if we didn't do it already).
-                            this.windowHandle = this.environmentInterface.FindMainWindowHandleOfProcess(processes[0]);
-                            if (this.windowHandle != previousWindowToBringToForeground)
-                            {
-                                previousWindowToBringToForeground = this.windowHandle;
-                                this.environmentInterface.BringWindowToForeground(this.windowHandle);
-                            }
-
-                            // Wait a bit so that the window can go into foreground.
-                            await WaitSemaphoreInternalAsync(250, false);
-
-                            // If the window isn't in foreground, try again.
-                            bool isInForeground;
-                            this.environmentInterface.GetWindowPosition(this.windowHandle, out isInForeground, false);
-                            if (isInForeground)
-                                break;
-                        }
-                        else
-                        {
-                            if (lastInitializingEventParameter != true)
-                            {
-                                lastInitializingEventParameter = true;
-                                this.simulator.OnSimulatorInitializing(lastInitializingEventParameter);
-                            }
-
-                            // When there are multiple processes, wait until on of the windows goes into foreground.
-                            bool foundWindow = false;
-
-                            foreach (var process in processes)
-                            {
-                                try
+                                if (lastInitializingEventParameter != false)
                                 {
-                                    var hWnd = this.environmentInterface.FindMainWindowHandleOfProcess(process);
-                                    bool isInForeground;
-                                    this.environmentInterface.GetWindowPosition(hWnd, out isInForeground, false);
+                                    lastInitializingEventParameter = false;
+                                    this.simulator.OnSimulatorInitializing(lastInitializingEventParameter);
+                                }
 
-                                    if (isInForeground)
+                                // When there is only one process, we simply bring the window to the
+                                // foreground (if we didn't do it already).
+                                this.windowHandle = this.environmentInterface.FindMainWindowHandleOfProcess(processes[0]);
+                                if (this.windowHandle != previousWindowToBringToForeground)
+                                {
+                                    previousWindowToBringToForeground = this.windowHandle;
+                                    this.environmentInterface.BringWindowToForeground(this.windowHandle);
+                                }
+
+                                // Wait a bit so that the window can go into foreground.
+                                await WaitSemaphoreInternalAsync(250, false);
+
+                                // If the window isn't in foreground, try again.
+                                bool isInForeground;
+                                this.environmentInterface.GetWindowPosition(this.windowHandle, out isInForeground, false);
+                                if (isInForeground)
+                                    break;
+                            }
+                            else
+                            {
+                                if (lastInitializingEventParameter != true)
+                                {
+                                    lastInitializingEventParameter = true;
+                                    this.simulator.OnSimulatorInitializing(lastInitializingEventParameter);
+                                }
+
+                                // When there are multiple processes, wait until on of the windows goes into foreground.
+                                bool foundWindow = false;
+
+                                foreach (var process in processes)
+                                {
+                                    try
                                     {
-                                        // OK, we found our window to use.
-                                        this.windowHandle = hWnd;
-                                        foundWindow = true;
-                                        break;
+                                        var hWnd = this.environmentInterface.FindMainWindowHandleOfProcess(process);
+
+                                        bool isInForeground;
+                                        this.environmentInterface.GetWindowPosition(hWnd, out isInForeground, false);
+
+                                        if (isInForeground)
+                                        {
+                                            // OK, we found our window to use.
+                                            this.windowHandle = hWnd;
+                                            foundWindow = true;
+                                            break;
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        // Ignore
                                     }
                                 }
-                                catch
-                                {
-                                    // Ignore
-                                }
+
+                                if (foundWindow)
+                                    break;
+
+                                // If non of the windows is in foreground, wait a bit and try again.
+                                await WaitSemaphoreInternalAsync(250, false);
                             }
-
-                            if (foundWindow)
-                                break;
-
-                            // If non of the windows is in foreground, wait a bit and try again.
-                            await WaitSemaphoreInternalAsync(250, false);
+                        }
+                        finally
+                        {
+                            // Dispose of the processes after using them.
+                            foreach (var process in processes)
+                                process.Dispose();
                         }
                     }
 
