@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+
 using TTMouseclickSimulator.Core.Actions;
 
 namespace TTMouseclickSimulator.Core
@@ -12,8 +13,7 @@ namespace TTMouseclickSimulator.Core
 
         public List<QuickActionDescriptor> QuickActions { get; } = new List<QuickActionDescriptor>(2);
 
-
-
+        
         public class QuickActionDescriptor
         {
             public string Name { get; set; }

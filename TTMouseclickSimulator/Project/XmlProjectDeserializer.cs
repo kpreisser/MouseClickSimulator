@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
+
 using TTMouseclickSimulator.Core;
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.ToontownRewritten.Actions;
@@ -17,9 +18,8 @@ namespace TTMouseclickSimulator.Project
     /// <summary>
     /// Deserializes a SimulatorProject from an XML file.
     /// </summary>
-    public class XmlProjectDeserializer
+    public static class XmlProjectDeserializer
     {
-
         /// <summary>
         /// The namespace to be used for the XML elements.
         /// </summary>
@@ -33,6 +33,7 @@ namespace TTMouseclickSimulator.Project
         /// </summary>
         private static readonly IDictionary<string, Type> actionTypes;
         
+
         static XmlProjectDeserializer()
         {
             actionTypes = new SortedDictionary<string, Type>();
@@ -57,9 +58,12 @@ namespace TTMouseclickSimulator.Project
         }
 
 
-        public SimulatorProject Deserialize(Stream s) => ParseDocument(XDocument.Load(s));
+        public static SimulatorProject Deserialize(Stream s)
+        {
+            return ParseDocument(XDocument.Load(s));
+        }
 
-        private SimulatorProject ParseDocument(XDocument doc)
+        private static SimulatorProject ParseDocument(XDocument doc)
         {
             string title, description;
             var root = doc.Root;
@@ -84,7 +88,7 @@ namespace TTMouseclickSimulator.Project
             };
         }
 
-        private SimulatorConfiguration ParseConfiguration(XElement configEl)
+        private static SimulatorConfiguration ParseConfiguration(XElement configEl)
         {
             var config = new SimulatorConfiguration();
             
@@ -126,7 +130,7 @@ namespace TTMouseclickSimulator.Project
             return config;
         }
 
-        private IList<IAction> ParseActionList(XElement parent)
+        private static IList<IAction> ParseActionList(XElement parent)
         {
             var actionList = new List<IAction>();
             foreach (var child in parent.Elements())

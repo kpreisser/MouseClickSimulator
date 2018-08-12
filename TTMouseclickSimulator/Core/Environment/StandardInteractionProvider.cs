@@ -63,6 +63,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 try
                 {
                     var previousWindowToBringToForeground = IntPtr.Zero;
+                    bool? lastInitializingEventParameter = null;
                     while (true)
                     {
                         // First, find the game processes. This will always return at least one process,
@@ -70,6 +71,12 @@ namespace TTMouseclickSimulator.Core.Environment
                         var processes = this.environmentInterface.FindProcesses();
                         if (processes.Count == 1)
                         {
+                            if (lastInitializingEventParameter != false)
+                            {
+                                lastInitializingEventParameter = false;
+                                this.simulator.OnSimulatorInitializing(lastInitializingEventParameter);
+                            }
+
                             // When there is only one process, we simply bring the window to the
                             // foreground (if we didn't do it already).
                             this.windowHandle = this.environmentInterface.FindMainWindowHandleOfProcess(processes[0]);
@@ -90,6 +97,12 @@ namespace TTMouseclickSimulator.Core.Environment
                         }
                         else
                         {
+                            if (lastInitializingEventParameter != true)
+                            {
+                                lastInitializingEventParameter = true;
+                                this.simulator.OnSimulatorInitializing(lastInitializingEventParameter);
+                            }
+
                             // When there are multiple processes, wait until on of the windows goes into foreground.
                             bool foundWindow = false;
 
@@ -122,11 +135,22 @@ namespace TTMouseclickSimulator.Core.Environment
                             await WaitSemaphoreInternalAsync(250, false);
                         }
                     }
+
+                    this.simulator.OnSimulatorInitializing(null);
                 }
-                catch (Exception ex) when (!(ex is SimulatorCanceledException))
+                catch (Exception ex)
                 {
-                    await CheckRetryForExceptionAsync(ExceptionDispatchInfo.Capture(ex), false);
-                    continue;
+                    this.simulator.OnSimulatorInitializing(null);
+
+                    if (!(ex is SimulatorCanceledException))
+                    {
+                        await CheckRetryForExceptionAsync(ex, false);
+                        continue;
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
                 break;
             }
@@ -151,17 +175,17 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
-        public async Task CheckRetryForExceptionAsync(ExceptionDispatchInfo ex)
+        public async Task CheckRetryForExceptionAsync(Exception ex)
         {
             await CheckRetryForExceptionAsync(ex, true);
         }
 
-        private async Task CheckRetryForExceptionAsync(ExceptionDispatchInfo ex, bool reinitialize)
+        private async Task CheckRetryForExceptionAsync(Exception ex, bool reinitialize)
         {
             if (this.simulator.AsyncRetryHandler == null)
             {
                 // Simply rethrow the exception.
-                ex.Throw();
+                ExceptionDispatchInfo.Capture(ex).Throw();
             }
             else
             {

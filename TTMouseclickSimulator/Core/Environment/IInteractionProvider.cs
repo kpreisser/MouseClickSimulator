@@ -15,7 +15,7 @@ namespace TTMouseclickSimulator.Core.Environment
         /// re-throw the exception or throw an <see cref="SimulatorCanceledException"/>.
         /// </summary>
         /// <param name="ex"></param>
-        Task CheckRetryForExceptionAsync(ExceptionDispatchInfo ex);
+        Task CheckRetryForExceptionAsync(Exception ex);
 
         /// <summary>
         /// Checks that the Simulator has not been canceled.
@@ -70,6 +70,7 @@ namespace TTMouseclickSimulator.Core.Environment
         void ReleaseMouseButton();
 
         void PressKey(AbstractWindowsEnvironment.VirtualKeyShort key);
+
         void ReleaseKey(AbstractWindowsEnvironment.VirtualKeyShort key);
 
         /// <summary>
@@ -85,9 +86,9 @@ namespace TTMouseclickSimulator.Core.Environment
     /// </summary>
     public class SimulatorCanceledException : Exception
     {
-        public SimulatorCanceledException() : 
-            base("The Simulator has been canceled.")
-        { }
-    }
-    
+        public SimulatorCanceledException()
+            : base("The Simulator has been canceled.")
+        {
+        }
+    }    
 }

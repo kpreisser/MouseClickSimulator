@@ -1,4 +1,5 @@
 ﻿using System;
+
 using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten
@@ -20,8 +21,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten
         /// aspect ratio.</param>
         /// <param name="valign"></param>
         /// <returns></returns>
-        public static Coordinates ScaleCoordinates(this WindowPosition pos, Coordinates coords, 
-            Size referenceSize, VerticalScaleAlignment valign = VerticalScaleAlignment.Center)
+        public static Coordinates ScaleCoordinates(
+                this WindowPosition pos,
+                Coordinates coords, 
+                Size referenceSize,
+                VerticalScaleAlignment valign = VerticalScaleAlignment.Center)
         {
             double aspectWidth = pos.Size.Height / 3d * 4d;
             double widthDifference = pos.Size.Width - aspectWidth;

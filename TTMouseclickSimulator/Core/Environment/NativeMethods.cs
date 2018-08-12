@@ -25,10 +25,8 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             internal uint type;
             internal InputUnion U;
-            internal static int Size
-            {
-                get { return Marshal.SizeOf<INPUT>(); }
-            }
+
+            internal static int Size => Marshal.SizeOf<INPUT>();
         }
 
         internal const uint INPUT_MOUSE = 0;
@@ -58,7 +56,6 @@ namespace TTMouseclickSimulator.Core.Environment
             internal UIntPtr dwExtraInfo;
         }
 
-
         [StructLayout(LayoutKind.Sequential)]
         internal struct KEYBDINPUT
         {
@@ -68,7 +65,6 @@ namespace TTMouseclickSimulator.Core.Environment
             internal int time;
             internal UIntPtr dwExtraInfo;
         }
-
 
         [StructLayout(LayoutKind.Sequential)]
         internal struct HARDWAREINPUT
@@ -121,7 +117,6 @@ namespace TTMouseclickSimulator.Core.Environment
         internal const int MK_RBUTTON = 0x0002;
 
 
-
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern bool GetClientRect(IntPtr hWnd, ref RECT lpRect);
 
@@ -130,7 +125,6 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             public int Left, Top, Right, Bottom;
         }
-
 
         [DllImport("user32.dll")]
         internal static extern bool ClientToScreen(IntPtr hWnd, ref POINT lpPoint);
@@ -142,14 +136,11 @@ namespace TTMouseclickSimulator.Core.Environment
             public int Y;
         }
 
-
         [DllImport("user32.dll")]
         internal static extern IntPtr GetForegroundWindow();
 
-
         [DllImport("user32.dll")]
         internal static extern bool SetForegroundWindow(IntPtr hWnd);
-
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
         private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);

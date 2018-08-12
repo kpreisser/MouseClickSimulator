@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+
 using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.Actions
@@ -13,16 +14,16 @@ namespace TTMouseclickSimulator.Core.Actions
     public interface IAction
     {
         /// <summary>
-        /// Asynchonously runs the action using the specified IInteractionProvider.
-        /// </summary>
-        /// <param name="waitable"></param>
-        /// <returns></returns>
-        Task RunAsync(IInteractionProvider provider);
-
-        /// <summary>
         /// An event that is rised when the action wants to let subscribers know
         /// that its state has changed. This is useful for the GUI.
         /// </summary>
         event Action<string> ActionInformationUpdated;
+
+        /// <summary>
+        /// Asynchonously runs the action using the specified IInteractionProvider.
+        /// </summary>
+        /// <param name="waitable"></param>
+        /// <returns></returns>
+        Task RunAsync(IInteractionProvider provider);        
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
+
 using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.Actions
@@ -14,7 +14,6 @@ namespace TTMouseclickSimulator.Core.Actions
         public const int PauseIntervalMinimum = 0;
         public const int PauseIntervalMaximum = 60000;
 
-
         private readonly IList<IAction> actionList;
         private readonly CompoundActionType type;
 
@@ -24,9 +23,7 @@ namespace TTMouseclickSimulator.Core.Actions
 
         private readonly Random rng = new Random();
 
-        public override sealed IList<IAction> SubActions => this.actionList;
-
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -39,9 +36,12 @@ namespace TTMouseclickSimulator.Core.Actions
         /// <param name="loop">If false, the action will return after a complete run. Otherwise
         /// it will loop endlessly. Note that using false is not possible when specifying
         /// CompoundActionType.RandomIndex as type.</param>
-        public CompoundAction(IList<IAction> actionList,
-            CompoundActionType type = CompoundActionType.Sequential, 
-            int minimumPause = 0, int maximumPause = 0, bool loop = true)
+        public CompoundAction(
+                IList<IAction> actionList,
+                CompoundActionType type = CompoundActionType.Sequential, 
+                int minimumPause = 0,
+                int maximumPause = 0,
+                bool loop = true)
         {
 
             if (actionList == null || actionList.Count == 0)
@@ -67,11 +67,14 @@ namespace TTMouseclickSimulator.Core.Actions
         }
 
 
+        public override sealed IList<IAction> SubActions => this.actionList;
+
+        
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             // Run the actions.
             int currentIdx = -1;
-            int[] randomOrder = null;
+            var randomOrder = null as int[];
 
             Func<int> getNextActionIndex;
             if (this.type == CompoundActionType.Sequential)
@@ -115,7 +118,7 @@ namespace TTMouseclickSimulator.Core.Actions
 
                 OnActionInformationUpdated($"Running action {nextIdx + 1}");
 
-                for (;;)
+                while (true)
                 {
                     try
                     {
@@ -125,8 +128,7 @@ namespace TTMouseclickSimulator.Core.Actions
                         OnSubActionStartedOrStopped(nextIdx);
                         try
                         {
-                            var action = this.actionList[nextIdx];
-                            await action.RunAsync(provider);
+                            await this.actionList[nextIdx].RunAsync(provider);
                         }
                         finally
                         {
@@ -141,7 +143,7 @@ namespace TTMouseclickSimulator.Core.Actions
                     }
                     catch (Exception ex) when (!(ex is SimulatorCanceledException))
                     {
-                        await provider.CheckRetryForExceptionAsync(ExceptionDispatchInfo.Capture(ex));
+                        await provider.CheckRetryForExceptionAsync(ex);
                         continue;
                     }
                     break;
@@ -149,9 +151,11 @@ namespace TTMouseclickSimulator.Core.Actions
             }
         }
 
-
-        public override string ToString() => $"Compound – Type: {this.type}, " 
-            + $"MinPause: {this.minimumPauseDuration}, MaxPause: {this.maximumPauseDuration}, Loop: {this.loop}";
+        public override string ToString()
+        {
+            return $"Compound – Type: {this.type}, " +
+                    $"MinPause: {this.minimumPauseDuration}, MaxPause: {this.maximumPauseDuration}, Loop: {this.loop}";
+        }
 
 
         public enum CompoundActionType : int

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
+
 using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.Actions
@@ -12,10 +13,12 @@ namespace TTMouseclickSimulator.Core.Actions
     public class LoopAction : AbstractActionContainer
     {
         private readonly IAction action;
+
         /// <summary>
         /// Specifies how often the action is run. null means infinite.
         /// </summary>
         private readonly int? count;
+
 
         public LoopAction(IAction action, int? count = null)
         {
@@ -28,7 +31,9 @@ namespace TTMouseclickSimulator.Core.Actions
             this.count = count;
         }
 
+
         public override IList<IAction> SubActions => new List<IAction>() { this.action };
+
 
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
@@ -37,7 +42,7 @@ namespace TTMouseclickSimulator.Core.Actions
             {
                 for (int i = 0; !this.count.HasValue || i < this.count.Value; i++)
                 {
-                    for (;;)
+                    while (true)
                     {
                         try
                         {
@@ -47,7 +52,7 @@ namespace TTMouseclickSimulator.Core.Actions
                         }
                         catch (Exception ex) when (!(ex is SimulatorCanceledException))
                         {
-                            await provider.CheckRetryForExceptionAsync(ExceptionDispatchInfo.Capture(ex));
+                            await provider.CheckRetryForExceptionAsync(ex);
                             continue;
                         }
                         break;
@@ -60,7 +65,9 @@ namespace TTMouseclickSimulator.Core.Actions
             }
         }
 
-
-        public override string ToString() => $"Loop – Count: {this.count?.ToString() ?? "∞"}";
+        public override string ToString()
+        {
+            return $"Loop – Count: {this.count?.ToString() ?? "∞"}";
+        }
     }
 }

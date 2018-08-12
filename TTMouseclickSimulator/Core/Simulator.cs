@@ -16,16 +16,16 @@ namespace TTMouseclickSimulator.Core
 
         private volatile bool canceled = false;
 
-
         public event Action SimulatorStarted;
         public event Action SimulatorStopped;
+        public event Action<bool?> SimulatorInitializing;
 
         /// <summary>
         /// When an exception (which is not a <see cref="SimulatorCanceledException"/>) occurs while an action runs,
         /// this allows the action to check if it should retry or cancel the simulator (in that case, it should
         /// throw an <see cref="SimulatorCanceledException"/>).
         /// </summary>
-        public Func<ExceptionDispatchInfo, Task<bool>> AsyncRetryHandler;
+        public Func<Exception, Task<bool>> AsyncRetryHandler;
         
 
         public Simulator(IAction mainAction, AbstractWindowsEnvironment environmentInterface)
@@ -59,7 +59,7 @@ namespace TTMouseclickSimulator.Core
                     // InitializeAsync() does not need to be in the try block because it has its own.
                     await this.provider.InitializeAsync();
 
-                    for (;;)
+                    while (true)
                     {
                         try
                         {
@@ -71,13 +71,12 @@ namespace TTMouseclickSimulator.Core
                         }
                         catch (Exception ex) when (!(ex is SimulatorCanceledException))
                         {
-                            await this.provider.CheckRetryForExceptionAsync(ExceptionDispatchInfo.Capture(ex));
+                            await this.provider.CheckRetryForExceptionAsync(ex);
                             continue;
                         }
                         break;
                     }
                 }
-
             }
             finally
             {
@@ -97,9 +96,19 @@ namespace TTMouseclickSimulator.Core
             this.cancelCallback();
         }
 
+        protected void OnSimulatorStarted()
+        {
+            SimulatorStarted?.Invoke();
+        }
 
-        protected void OnSimulatorStarted() => SimulatorStarted?.Invoke();
+        protected void OnSimulatorStopped()
+        {
+            SimulatorStopped?.Invoke();
+        }
 
-        protected void OnSimulatorStopped() => SimulatorStopped?.Invoke();
+        internal protected void OnSimulatorInitializing(bool? multipleWindowsAvailable)
+        {
+            SimulatorInitializing?.Invoke(multipleWindowsAvailable);
+        }
     }
 }

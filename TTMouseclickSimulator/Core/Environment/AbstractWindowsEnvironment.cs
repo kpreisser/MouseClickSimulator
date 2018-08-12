@@ -218,7 +218,6 @@ namespace TTMouseclickSimulator.Core.Environment
             return new Coordinates(resX, resY);
         }
 
-
         public void PressKey(VirtualKeyShort keyCode)
         {
             PressOrReleaseKey(keyCode, true);
@@ -271,7 +270,6 @@ namespace TTMouseclickSimulator.Core.Environment
             if (NativeMethods.SendInput((uint)inputs.Length, inputs, NativeMethods.INPUT.Size) == 0)
                 throw new Win32Exception();
         }
-
 
 
         public unsafe class ScreenshotContent : IScreenshotContent
@@ -350,7 +348,6 @@ namespace TTMouseclickSimulator.Core.Environment
                 existingScreenshot.FillScreenshot();
                 return existingScreenshot;
             }
-
 
             private void OpenBitmapData()
             {

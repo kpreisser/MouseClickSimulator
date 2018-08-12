@@ -109,7 +109,26 @@ namespace TTMouseclickSimulator
 
                     var sim = this.simulator = new Simulator(this.currentQuickAction != null ? this.currentQuickAction.Action :
                         this.project.Configuration.MainAction, environment);
+
                     sim.AsyncRetryHandler = async ex => !this.closeWindowAfterStop && await HandleSimulatorRetryAsync(sim, ex);
+
+                    sim.SimulatorInitializing += multipleWindowsAvailable => this.Dispatcher.Invoke(new Action(() =>
+                    {
+                        if (multipleWindowsAvailable != null)
+                        {
+                            // Initialization has started, so show the overlay message.
+                            this.overlayMessageBorder.Visibility = Visibility.Visible;
+
+                            this.overlayMessageTextBlock.Text = multipleWindowsAvailable.Value ?
+                                    "Multiple Toontown windows detected. Please activate the window that the Simulator should use." :
+                                    "Waiting for the window to be activated...";
+                        }
+                        else
+                        {
+                            // Initialization has finished.
+                            this.overlayMessageBorder.Visibility = Visibility.Hidden;
+                        }
+                    }));
 
                     await sim.RunAsync();
                 }
@@ -139,7 +158,7 @@ namespace TTMouseclickSimulator
             HandleSimulatorCanceled();
         }
 
-        private async Task<bool> HandleSimulatorRetryAsync(Simulator sim, ExceptionDispatchInfo ex)
+        private async Task<bool> HandleSimulatorRetryAsync(Simulator sim, Exception ex)
         {
             // Show a TaskDialog.
             bool result = false;
@@ -151,8 +170,8 @@ namespace TTMouseclickSimulator
                     {
                         Title = AppName,
                         MainInstruction = "Simulator interrupted!",
-                        Content = ex.SourceException.Message,
-                        ExpandedInformation = GetExceptionDetailsText(ex.SourceException),
+                        Content = ex.Message,
+                        ExpandedInformation = GetExceptionDetailsText(ex),
                         MainIcon = TaskDialog.TaskDialogIcon.Warning,
                         CommonButtons = TaskDialog.TaskDialogButtons.Cancel
                     };
@@ -231,10 +250,9 @@ namespace TTMouseclickSimulator
                 try
                 {
                     using (var fs = new FileStream(this.openFileDialog.FileName, FileMode.Open,
-                        FileAccess.Read, FileShare.Read))
+                            FileAccess.Read, FileShare.Read))
                     {
-                        var deser = new XmlProjectDeserializer();
-                        this.project = deser.Deserialize(fs);
+                        this.project = XmlProjectDeserializer.Deserialize(fs);
                     }
                 }
                 catch (Exception ex)

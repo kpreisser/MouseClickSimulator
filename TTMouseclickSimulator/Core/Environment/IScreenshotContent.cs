@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Media;
 
 namespace TTMouseclickSimulator.Core.Environment
 {
@@ -39,6 +40,9 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
-        public System.Windows.Media.Color ToColor() => System.Windows.Media.Color.FromArgb(255, this.r, this.g, this.b);
+        public Color ToColor()
+        {
+            return Color.FromArgb(255, this.r, this.g, this.b);
+        }
     }
 }

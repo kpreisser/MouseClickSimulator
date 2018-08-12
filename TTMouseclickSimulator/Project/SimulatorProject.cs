@@ -8,10 +8,15 @@ namespace TTMouseclickSimulator.Project
     public class SimulatorProject
     {
         public string Title { get; set; }
+
         public string Description { get; set; }
 
         public SimulatorConfiguration Configuration { get; set; }
 
-        public override string ToString() => this.Title;
+
+        public override string ToString()
+        {
+            return this.Title;
+        }
     }
 }

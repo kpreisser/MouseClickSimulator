@@ -1,6 +1,5 @@
 ﻿namespace TTMouseclickSimulator.Core.Environment
-{
-    
+{    
     /// <summary>
     /// Specifies parameters of the destination window in pixels.
     /// Note that the window border is excluded.
@@ -17,7 +16,10 @@
         public Size Size { get; set; }
 
         
-        public Coordinates RelativeToAbsoluteCoordinates(Coordinates c) => this.Coordinates.Add(c);
+        public Coordinates RelativeToAbsoluteCoordinates(Coordinates c)
+        {
+            return this.Coordinates.Add(c);
+        }
     }
 
     public struct Coordinates
@@ -31,7 +33,10 @@
             this.Y = y;
         }
 
-        public Coordinates Add(Coordinates c) => new Coordinates(this.X + c.X, this.Y + c.Y);
+        public Coordinates Add(Coordinates c)
+        {
+            return new Coordinates(this.X + c.X, this.Y + c.Y);
+        }
     }
 
     public struct Size

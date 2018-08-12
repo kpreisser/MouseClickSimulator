@@ -19,6 +19,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment
 
         public static TTRWindowsEnvironment Instance { get; } = new TTRWindowsEnvironment();
 
+
         public override sealed List<Process> FindProcesses()
         {
             try
