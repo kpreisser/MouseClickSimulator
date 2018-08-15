@@ -7,34 +7,48 @@ Before you click on Start, make sure that
 • your fish bucket is empty,
 • you have enough JellyBeans for 20 casts,
 • your toon is standing on the board nearest to the bucket
-Note: Having a doodle can cause the simulator to fail.
+Note: Doodles may cause the simulator to fail.
   </Description>
 
   <MainAction>
       
     <Compound type="Sequential">
         
-      <!-- Use the automatic fishing action for estate 19 times,
-           plus the straight fishing action.
+      <!-- 
+	  		Use the automatic fishing action for estate 20 times,
+       		and ensure Toon remains fishing instead of going to bed.
       -->
-      <Loop count="19"> 
-        <!-- Note: For Halloween, the bubbleColorRgb value is "10, 76, 76"
-              and toleranceRgb is "8, 8, 8".  -->
+      <Loop count="5"> 
         <AutomaticFishing scan1="248, 239" scan2="1492, 660" bubbleColorRgb="49, 128, 120"
                           toleranceRgb="5, 10, 8" />
-      </Loop> 
-      <!--
-      The last cast must always be straight; otherwise the toon will rotate in
-      the cast direction and the Simulator would be unable to correctly move the Toon
-      to the fisherman. 
-      -->
-     <StraightFishing />
-          
-      <QuitFishing />
-
-      <Pause duration="2200" />
+      </Loop>
+	    <PressKey key="Down" duration="300" />
+		<PressKey key="Up" duration="300" />
+		<Pause duration="2200" />
+      <Loop count="5"> 
+        <AutomaticFishing scan1="248, 239" scan2="1492, 660" bubbleColorRgb="49, 128, 120"
+                          toleranceRgb="5, 10, 8" />
+      </Loop>
+	    <PressKey key="Down" duration="300" />
+		<PressKey key="Up" duration="300" />
+		<Pause duration="2200" />
+      <Loop count="5"> 
+        <AutomaticFishing scan1="248, 239" scan2="1492, 660" bubbleColorRgb="49, 128, 120"
+                          toleranceRgb="5, 10, 8" />
+      </Loop>
+	    <PressKey key="Down" duration="300" />
+		<PressKey key="Up" duration="300" />
+		<Pause duration="2200" />
+      <Loop count="5"> 
+        <AutomaticFishing scan1="248, 239" scan2="1492, 660" bubbleColorRgb="49, 128, 120"
+                          toleranceRgb="5, 10, 8" />
+      </Loop>
+	    <PressKey key="Down" duration="300" />
+		<PressKey key="Up" duration="300" />
+		<QuitFishing />
+        <Pause duration="2200" />
         
-      <!-- Now go to the fisherman and sell the fish. -->
+      <!-- Allign Toon with board. -->
       <Compound type="Sequential" minimumPause="50" maximumPause="300" loop="false">
 	    <PressKey key="Down" duration="300" />
 		<PressKey key="Up" duration="1000" />
@@ -42,6 +56,7 @@ Note: Having a doodle can cause the simulator to fail.
 		<QuitFishing />
 		<Pause duration="2200" />
 		
+      <!-- Now go to the fisherman and sell the fish. -->
         <PressKey key="Left" duration="1200" />
         <PressKey key="Up" duration="1800" />
         <Pause duration="1500" />
