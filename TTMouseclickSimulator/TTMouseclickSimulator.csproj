@@ -226,7 +226,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SampleProjects\Automatic Fishing - Punchline Place - Winter Theme.xml">
+    <None Include="SampleProjects\Automatic Fishing - Punchline Place %28Winter Theme%29.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
