@@ -1,6 +1,6 @@
 # Mouse Click Simulator for TT Rewritten
 
-This is a new implementation of the [**TT Mouse Click Simulator**](https://old.preisser-it.de/tt-mausklick/) that is intended to work with TT Rewritten. It is implemented in C# and runs on Windows on .NET Framework 4.6 or higher.
+This is a new implementation of the [**TT Mouse Click Simulator**](https://old.preisser-it.de/tt-mausklick/) that is intended to work with Toontown Rewritten. It is implemented in C# and runs on Windows on .NET Framework 4.6 or higher.
 
 The TTR Mouse Click Simulator is able to automatically fish in specific locations like Punchling Place, TTC. To accomplish this, it scans the screen to detect fish bubbles, calculates how far the rod must be cast to catch the fish, and moves the Toon to the fisherman to sell the fish.
 
@@ -12,7 +12,7 @@ You can watch a video of the <a href="https://www.youtube.com/watch?v=uq7VaJkO6-
 
 Note: This Simulator does not inject code into or otherwise manipulate the game. It only interacts with TTR by creating screenshots to analyze the window content (for the fishing action) and simulating mouse clicks/movements and pressing keys.
 
-### WARNING
+## WARNING
 Use this program at your own risk!
 Toontown Rewritten states in their Terms of Use that you should not use automation software, so you might risk a ban if you use this program.
 
