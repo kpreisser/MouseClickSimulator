@@ -2,7 +2,7 @@
 
 This is a new implementation of the [**TT Mouse Click Simulator**](https://old.preisser-it.de/tt-mausklick/) that is intended to work with TT Rewritten. It is implemented in C# and runs on Windows on .NET Framework 4.6 or higher.
 
-Among automating tasks like saying SpeedChat phrases to train a Doodle, the TTR Mouse Click Simulator is able to automatically fish in specific locations like Punchling Place, TTC. To accomplish this, it scans the screen to detect fish bubbles, calculates how far the rod must be casted to catch the fish, and moves the Toon to the fisherman to sell the fish.
+The TTR Mouse Click Simulator is able to automatically fish in specific locations like Punchling Place, TTC. To accomplish this, it scans the screen to detect fish bubbles, calculates how far the rod must be cast to catch the fish, and moves the Toon to the fisherman to sell the fish.
 
 A recent addition for gardening is the the ability to plant flowers using 1 to 8 jellybean combinations, which is implemented using "Quick Actions". By clicking on a button with the flower's name, the Mouse Click Simulator will plant the flower by selecting the correct jellybean combination.
 
