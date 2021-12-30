@@ -30,7 +30,7 @@ Before you click on Start, make sure that
           
       <QuitFishing />
 
-      <Pause duration="2200" />
+      <Pause duration="1200" />
         
       <!-- Now go to the fisherman and sell the fish. -->
       <Compound type="Sequential" minimumPause="50" maximumPause="300" loop="false">
@@ -39,7 +39,7 @@ Before you click on Start, make sure that
         <Pause duration="1000" />
           
         <SellFish />
-          
+
         <Pause duration="1000" />
         <PressKey key="Down" duration="5000" />
         <Pause duration="2000" />

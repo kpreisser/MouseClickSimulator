@@ -10,6 +10,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         {
             var c = new Coordinates(1503, 1086);
             await MouseHelpers.DoSimpleMouseClickAsync(provider, c);
+
+            // Wait a bit and click again, to avoid the case when the button
+            // would be disabled for a short time (due to catching a fish).
+            await provider.WaitAsync(1000);
+            await MouseHelpers.DoSimpleMouseClickAsync(provider, c);
         }
 
 
