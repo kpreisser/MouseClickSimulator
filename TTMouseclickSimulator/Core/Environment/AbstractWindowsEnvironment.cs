@@ -83,6 +83,11 @@ namespace TTMouseclickSimulator.Core.Environment
         /// <returns></returns>
         public WindowPosition GetWindowPosition(IntPtr hWnd, out bool isInForeground, bool failIfNotInForeground = true)
         {
+            // Note: To always correctly get the window position, the application must be
+            // per-monitor (V1 or V2) DPI aware. Otherwise, we would get altered
+            // location/size values when the target window is on a monitor that uses a
+            // different DPI factor than the one for which the app is scaled.
+
             // Check if the specified window is in foreground.
             isInForeground = NativeMethods.GetForegroundWindow() == hWnd;
             if (failIfNotInForeground && !isInForeground)
@@ -211,12 +216,6 @@ namespace TTMouseclickSimulator.Core.Environment
              * Also, to place the cursor on the leftmost pixel on the second monitor we would use
              * -65536 as mouse coordinates resulting in a screen x-coordinate of -1280 (whereas
              * -65535 would result in -1279).
-             *
-             * Additionally, the application's DPI awareness mode must be per monitor (V1 or V2)
-             * in order for the mouse coordinates to work correctly with multiple monitors using
-             * different DPI settings (otherwise, the OS would scale them when they are located on
-             * a different monitor (with a different DPI size) than the one whose DPI factor is
-             * used for the app).
              */
             int resX = checked((int)(x >= 0 ? Math.Ceiling(x) : Math.Floor(x)));
             int resY = checked((int)(y >= 0 ? Math.Ceiling(y) : Math.Floor(y)));
