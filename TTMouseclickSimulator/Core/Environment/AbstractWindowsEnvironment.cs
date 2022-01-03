@@ -212,8 +212,8 @@ namespace TTMouseclickSimulator.Core.Environment
                -65536 as mouse coordinates resulting in a screen x-coordinate of -1280 (whereas
                -65535 would result in -1279).
             */
-            int resX = (int)(x >= 0 ? Math.Ceiling(x) : Math.Floor(x));
-            int resY = (int)(y >= 0 ? Math.Ceiling(y) : Math.Floor(y));
+            int resX = checked((int)(x >= 0 ? Math.Ceiling(x) : Math.Floor(x)));
+            int resY = checked((int)(y >= 0 ? Math.Ceiling(y) : Math.Floor(y)));
 
             return new Coordinates(resX, resY);
         }
