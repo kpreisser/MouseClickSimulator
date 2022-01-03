@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace TTMouseclickSimulator
 {
-    /// <summary>
-    /// Interaktionslogik für "App.xaml"
-    /// </summary>
     public partial class App : Application
     {
+        static App()
+        {
+            // Enable automatic per-monitor DPI scaling. This can be removed once we
+            // target .NET Framework 4.6.2 or higher.
+            AppContext.SetSwitch("Switch.System.Windows.DoNotScaleForDpiChanges", false);
+        }
     }
 }
