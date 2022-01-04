@@ -131,10 +131,14 @@ namespace TTMouseclickSimulator.Core.Environment
             // Do nothing.
         }
 
-        public void CreateWindowScreenshot(IntPtr hWnd, ref ScreenshotContent existingScreenshot)
+        public void CreateWindowScreenshot(
+            IntPtr hWnd,
+            ref ScreenshotContent existingScreenshot,
+            bool fromScreen = false)
         {
             bool isInForeground;
             ScreenshotContent.Create(
+                fromScreen ? IntPtr.Zero : hWnd,
                 this.GetWindowPosition(hWnd, out isInForeground),
                 ref existingScreenshot);
         }
@@ -355,6 +359,7 @@ namespace TTMouseclickSimulator.Core.Environment
             }
 
             public static void Create(
+                    IntPtr windowHandle,
                     WindowPosition pos,
                     ref ScreenshotContent existingScreenshot)
             {
@@ -378,7 +383,7 @@ namespace TTMouseclickSimulator.Core.Environment
                     existingScreenshot.WindowPosition = pos;
                 }
 
-                existingScreenshot.FillScreenshot();
+                existingScreenshot.FillScreenshot(windowHandle);
             }
 
             private void OpenBitmapData()
@@ -407,17 +412,61 @@ namespace TTMouseclickSimulator.Core.Environment
                 }
             }
 
-            private void FillScreenshot()
+            private void FillScreenshot(IntPtr windowHandle)
             {
                 this.CloseBitmapData();
 
                 using (var g = Graphics.FromImage(this.bmp))
                 {
-                    g.CopyFromScreen(
-                        this.rect.Location,
-                        new Point(0, 0),
-                        this.rect.Size,
-                        CopyPixelOperation.SourceCopy);
+                    if (windowHandle == IntPtr.Zero)
+                    {
+                        // Create the screenshot from the screen.
+                        g.CopyFromScreen(
+                            this.rect.Location,
+                            new Point(0, 0),
+                            this.rect.Size,
+                            CopyPixelOperation.SourceCopy);
+                    }
+                    else
+                    {
+                        // Create the screenshot directly from the window's device context.
+                        var windowClientDc = NativeMethods.GetDC(windowHandle);
+                        if (windowClientDc == IntPtr.Zero)
+                        {
+                            throw new InvalidOperationException(
+                                "Could not get window device context for creating a screenshot.");
+                        }
+
+                        try
+                        {
+                            var graphicsDc = g.GetHdc();
+
+                            try
+                            {
+                                bool result = NativeMethods.BitBlt(
+                                    graphicsDc,
+                                    0,
+                                    0,
+                                    this.rect.Size.Width,
+                                    this.rect.Size.Height,
+                                    windowClientDc,
+                                    0,
+                                    0,
+                                    (uint)CopyPixelOperation.SourceCopy);
+
+                                if (!result)
+                                    throw new Win32Exception();
+                            }
+                            finally
+                            {
+                                g.ReleaseHdc();
+                            }
+                        }
+                        finally
+                        {
+                            NativeMethods.ReleaseDC(windowHandle, windowClientDc);
+                        }
+                    }
                 }
 
                 this.OpenBitmapData();

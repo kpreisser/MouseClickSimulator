@@ -33,6 +33,24 @@ namespace TTMouseclickSimulator.Core.Environment
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", ExactSpelling = true)]
         private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
+        [DllImport("user32.dll", EntryPoint = "GetDC", ExactSpelling = true)]
+        public static extern IntPtr GetDC(IntPtr hWnd);
+
+        [DllImport("user32.dll", EntryPoint = "ReleaseDC", ExactSpelling = true)]
+        public static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+        [DllImport("gdi32.dll", EntryPoint = "BitBlt", ExactSpelling = true, SetLastError = true)]
+        public static extern BOOL BitBlt(
+            IntPtr hdc,
+            int x,
+            int y,
+            int cx,
+            int cy,
+            IntPtr hdcSrc,
+            int x1,
+            int y1,
+            uint rop);
+
         public static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
         {
             if (IntPtr.Size == 8)
