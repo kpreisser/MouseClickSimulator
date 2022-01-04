@@ -30,6 +30,8 @@ namespace TTMouseclickSimulator.Core.Environment
         private bool isMouseButtonPressed = false;
         private List<AbstractWindowsEnvironment.VirtualKeyShort> keysCurrentlyPressed =
                 new List<AbstractWindowsEnvironment.VirtualKeyShort>();
+        
+        private Coordinates? lastSetMouseCoordinates;
 
         public StandardInteractionProvider(
                 Simulator simulator,
@@ -49,6 +51,8 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public async Task InitializeAsync()
         {
+            this.lastSetMouseCoordinates = null;
+
             while (true)
             {
                 try
@@ -355,9 +359,29 @@ namespace TTMouseclickSimulator.Core.Environment
             // Check if the window is still active and in foreground.
             var pos = this.GetMainWindowPosition();
 
+            // Verify that the user did not move the mouse since we last set the
+            // mouse position.
+            this.DenyIfUserMovedMouse();
+
             // Convert the relative coordinates to absolute ones, then simulate the click.
             var absoluteCoords = pos.RelativeToAbsoluteCoordinates(c);
             this.environmentInterface.MoveMouse(absoluteCoords.X, absoluteCoords.Y);
+            this.lastSetMouseCoordinates = absoluteCoords;
+        }
+
+        private void DenyIfUserMovedMouse()
+        {
+            if (this.lastSetMouseCoordinates != null)
+            {
+                var currentMousePos = this.environmentInterface.GetCurrentMousePosition();
+
+                const int maxMovement = 5;
+                if (Math.Abs(currentMousePos.X - this.lastSetMouseCoordinates.Value.X) > maxMovement ||
+                    Math.Abs(currentMousePos.Y - this.lastSetMouseCoordinates.Value.Y) > maxMovement)
+                {
+                    throw new InvalidOperationException("Mouse movement detected. Did you want to stop the simulator?");
+                }
+            }
         }
 
         public void PressMouseButton()
@@ -366,6 +390,10 @@ namespace TTMouseclickSimulator.Core.Environment
 
             // Check if the window is still active and in foreground.
             this.GetMainWindowPosition();
+
+            // Verify that the user did not move the mouse since we last set the
+            // mouse position.
+            this.DenyIfUserMovedMouse();
 
             if (!this.isMouseButtonPressed)
             {

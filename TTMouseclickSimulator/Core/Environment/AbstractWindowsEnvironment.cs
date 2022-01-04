@@ -227,6 +227,12 @@ namespace TTMouseclickSimulator.Core.Environment
             return new Coordinates(resX, resY);
         }
 
+        public Coordinates GetCurrentMousePosition()
+        {
+            var cursorPosition = Cursor.Position;
+            return new Coordinates(cursorPosition.X, cursorPosition.Y);
+        }
+
         public void PressKey(VirtualKeyShort keyCode)
         {
             this.PressOrReleaseKey(keyCode, true);
