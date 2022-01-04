@@ -1,38 +1,74 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace TTMouseclickSimulator.Core.Environment
 {
-    internal class NativeMethods
+    internal static class NativeMethods
     {
         /// <summary>
         /// Synthesizes keystrokes, mouse motions, and button clicks.
         /// </summary>
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern uint SendInput(uint nInputs,
-           [MarshalAs(UnmanagedType.LPArray), In] INPUT[] pInputs,
-           int cbSize);
+        [DllImport("user32.dll", EntryPoint = "SendInput", ExactSpelling = true, SetLastError = true)]
+        private static unsafe extern uint SendInputNative(
+            uint nInputs,
+            INPUT* pInputs,
+            int cbSize);
 
-        [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "SendMessageW", ExactSpelling = true, SetLastError = true)]
-        internal static extern IntPtr SendMessage(
-            IntPtr windowHandle,
-            WindowMessage message,
-            IntPtr wparam,
-            IntPtr lparam);
+        [DllImport("user32.dll", EntryPoint = "GetClientRect", ExactSpelling = true, SetLastError = true)]
+        public static unsafe extern BOOL GetClientRect(IntPtr hWnd, RECT* lpRect);
+
+        [DllImport("user32.dll", EntryPoint = "ClientToScreen", ExactSpelling = true)]
+        public static unsafe extern BOOL ClientToScreen(IntPtr hWnd, POINT* lpPoint);
+
+        [DllImport("user32.dll", EntryPoint = "GetForegroundWindow", ExactSpelling = true)]
+        public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll", EntryPoint = "SetForegroundWindow", ExactSpelling = true)]
+        public static extern BOOL SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong", ExactSpelling = true)]
+        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", ExactSpelling = true)]
+        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+        public static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+        {
+            if (IntPtr.Size == 8)
+                return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
+            else
+                return (IntPtr)SetWindowLong32(hWnd, nIndex, (int)dwNewLong);
+        }
+
+        public static unsafe void SendInput(INPUT input)
+        {
+            if (SendInputNative(1, &input, sizeof(INPUT)) == 0)
+                throw new Win32Exception();
+        }
+
+        public static unsafe void SendInputs(INPUT[] inputs)
+        {
+            fixed (INPUT* inputsPtr = inputs)
+            {
+                if (SendInputNative((uint)inputs.Length, inputsPtr, sizeof(INPUT)) == 0)
+                    throw new Win32Exception();
+            }
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         internal struct INPUT
         {
-            internal uint type;
-            internal InputUnion U;
-
-            internal static int Size => Marshal.SizeOf<INPUT>();
+            internal InputType type;
+            internal InputUnion InputUnion;
         }
 
-        internal const uint INPUT_MOUSE = 0;
-        internal const uint INPUT_KEYBOARD = 1;
-        internal const uint INPUT_HARDWARE = 2;
-
+        internal enum InputType : uint
+        {
+            INPUT_MOUSE = 0,
+            INPUT_KEYBOARD = 1,
+            INPUT_HARDWARE = 2
+        }
 
         [StructLayout(LayoutKind.Explicit)]
         internal struct InputUnion
@@ -50,7 +86,7 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             internal int dx;
             internal int dy;
-            internal int mouseData;
+            internal uint mouseData;
             internal MOUSEEVENTF dwFlags;
             internal uint time;
             internal UIntPtr dwExtraInfo;
@@ -60,18 +96,18 @@ namespace TTMouseclickSimulator.Core.Environment
         internal struct KEYBDINPUT
         {
             internal AbstractWindowsEnvironment.VirtualKeyShort wVk;
-            internal short wScan;
+            internal ushort wScan;
             internal KEYEVENTF dwFlags;
-            internal int time;
+            internal uint time;
             internal UIntPtr dwExtraInfo;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         internal struct HARDWAREINPUT
         {
-            internal int uMsg;
-            internal short wParamL;
-            internal short wParamH;
+            internal uint uMsg;
+            internal ushort wParamL;
+            internal ushort wParamH;
         }
 
         [Flags]
@@ -102,58 +138,38 @@ namespace TTMouseclickSimulator.Core.Environment
             UNICODE = 0x0004
         }
 
-        internal enum WindowMessage : int
-        {
-            WM_MOUSEMOVE = 0x0200,
-            WM_LBUTTONDOWN = 0x0201,
-            WM_LBUTTONUP = 0x0202,
-
-            WM_ACTIVATE = 0x0006,
-            WM_MOUSEACTIVATE = 0x0021
-
-        }
-
-        internal const int MK_LBUTTON = 0x0001;
-        internal const int MK_RBUTTON = 0x0002;
-
-
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern bool GetClientRect(IntPtr hWnd, ref RECT lpRect);
-
         [StructLayout(LayoutKind.Sequential)]
         internal struct RECT
         {
-            public int Left, Top, Right, Bottom;
+            public int left;
+            public int top;
+            public int right;
+            public int bottom;
         }
-
-        [DllImport("user32.dll")]
-        internal static extern bool ClientToScreen(IntPtr hWnd, ref POINT lpPoint);
 
         [StructLayout(LayoutKind.Sequential)]
         internal struct POINT
         {
-            public int X;
-            public int Y;
+            public int x;
+            public int y;
         }
 
-        [DllImport("user32.dll")]
-        internal static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll")]
-        internal static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
-        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        [DllImport("user32.dll", EntryPoint= "SetWindowLongPtr")]
-        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-
-        public static IntPtr SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+        public struct BOOL
         {
-            if (IntPtr.Size == 8)
-                return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
-            else
-                return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
+            public int Value;
+
+            public static implicit operator bool(BOOL @bool)
+            {
+                return @bool.Value != 0;
+            }
+
+            public static implicit operator BOOL(bool @bool)
+            {
+                return new BOOL()
+                {
+                    Value = @bool ? 1 : 0
+                };
+            }
         }
     }
 }

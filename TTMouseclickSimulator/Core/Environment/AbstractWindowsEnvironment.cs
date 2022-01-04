@@ -23,7 +23,7 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             var processes = Process.GetProcessesByName(processname);
             var foundProcesses = new List<Process>();
-            
+
             // Use the first applicable process.
             foreach (var p in processes)
             {
@@ -81,7 +81,10 @@ namespace TTMouseclickSimulator.Core.Environment
         /// </summary>
         /// <param name="hWnd"></param>
         /// <returns></returns>
-        public WindowPosition GetWindowPosition(IntPtr hWnd, out bool isInForeground, bool failIfNotInForeground = true)
+        public unsafe WindowPosition GetWindowPosition(
+            IntPtr hWnd,
+            out bool isInForeground,
+            bool failIfNotInForeground = true)
         {
             // Note: To always correctly get the window position, the application must be
             // per-monitor (V1 or V2) DPI aware. Otherwise, we would get altered
@@ -95,28 +98,26 @@ namespace TTMouseclickSimulator.Core.Environment
 
             // Get the client size.
             var clientRect = default(NativeMethods.RECT);
-            if (!NativeMethods.GetClientRect(hWnd, ref clientRect))
+            if (!NativeMethods.GetClientRect(hWnd, &clientRect))
                 throw new Win32Exception();
 
             // Get the screen coordinates of the point (0, 0) in the client rect.
             var relPos = default(NativeMethods.POINT);
-            if (!NativeMethods.ClientToScreen(hWnd, ref relPos))
+            if (!NativeMethods.ClientToScreen(hWnd, &relPos))
                 throw new Exception("Could not retrieve window client coordinates");
 
             // Check if the window is minimized.
-            if (clientRect.Bottom - clientRect.Top == 0 && clientRect.Right - clientRect.Left == 0
-                && relPos.X == -32000 && relPos.Y == -32000)
+            if (clientRect.right == 0 && clientRect.bottom == 0 && relPos.x == -32000 && relPos.y == -32000)
                 throw new Exception("The window has been minimized.");
-
 
             var pos = new WindowPosition()
             {
-                Coordinates = new Coordinates(relPos.X, relPos.Y),
-                Size = new Size(clientRect.Right - clientRect.Left, clientRect.Bottom - clientRect.Top)
+                Coordinates = new Coordinates(relPos.x, relPos.y),
+                Size = new Size(clientRect.right, clientRect.bottom)
             };
 
             // Validate the position.
-            ValidateWindowPosition(pos);
+            this.ValidateWindowPosition(pos);
             return pos;
         }
 
@@ -130,43 +131,44 @@ namespace TTMouseclickSimulator.Core.Environment
             // Do nothing.
         }
 
-        public ScreenshotContent CreateWindowScreenshot(IntPtr hWnd, ScreenshotContent existingScreenshot = null)
+        public void CreateWindowScreenshot(IntPtr hWnd, ref ScreenshotContent existingScreenshot)
         {
             bool isInForeground;
-            return ScreenshotContent.Create(GetWindowPosition(hWnd, out isInForeground), existingScreenshot);
+            ScreenshotContent.Create(
+                this.GetWindowPosition(hWnd, out isInForeground),
+                ref existingScreenshot);
         }
 
         public void MoveMouse(int x, int y)
         {
-            DoMouseInput(x, y, true, null);
+            this.DoMouseInput(x, y, true, null);
         }
-        
+
         public void PressMouseButton()
         {
-            DoMouseInput(0, 0, false, true);
+            this.DoMouseInput(0, 0, false, true);
         }
-        
+
         public void ReleaseMouseButton()
         {
-            DoMouseInput(0, 0, false, false);
+            this.DoMouseInput(0, 0, false, false);
         }
-        
-        private void DoMouseInput(int x, int y, bool absoluteCoordinates, bool? mouseDown)
-        {
-            // TODO: Maybe we should instead send WM_MOUSEMOVE, WM_LBUTTONDOWN etc.
-            // messages directly to the destination window so that we don't need to
-            // position the mouse cursor which makes it harder e.g. to
-            // click on the "Stop" button of the simulator.
 
+        private unsafe void DoMouseInput(int x, int y, bool absoluteCoordinates, bool? mouseDown)
+        {
             // Convert the screen coordinates into mouse coordinates.
             var cs = new Coordinates(x, y);
-            cs = GetMouseCoordinatesFromScreenCoordinates(cs);
+            cs = this.GetMouseCoordinatesFromScreenCoordinates(cs);
 
-            var mi = new NativeMethods.MOUSEINPUT();
-            mi.dx = cs.X;
-            mi.dy = cs.Y;
+            var mi = new NativeMethods.MOUSEINPUT()
+            {
+                dx = cs.X,
+                dy = cs.Y
+            };
+
             if (absoluteCoordinates)
                 mi.dwFlags |= NativeMethods.MOUSEEVENTF.ABSOLUTE;
+
             if (!(!absoluteCoordinates && x == 0 && y == 0))
             {
                 // A movement occured.
@@ -175,18 +177,20 @@ namespace TTMouseclickSimulator.Core.Environment
 
             if (mouseDown.HasValue)
             {
-                mi.dwFlags |= mouseDown.Value ? NativeMethods.MOUSEEVENTF.LEFTDOWN 
-                    : NativeMethods.MOUSEEVENTF.LEFTUP;
+                mi.dwFlags |= mouseDown.Value ?
+                    NativeMethods.MOUSEEVENTF.LEFTDOWN :
+                    NativeMethods.MOUSEEVENTF.LEFTUP;
             }
-            
-            var input = new NativeMethods.INPUT();
-            input.type = NativeMethods.INPUT_MOUSE;
-            input.U.mi = mi;
 
-            NativeMethods.INPUT[] inputs = { input };
+            var input = new NativeMethods.INPUT
+            {
+                type = NativeMethods.InputType.INPUT_MOUSE,
+                InputUnion = {
+                    mi = mi
+                }
+            };
 
-            if (NativeMethods.SendInput(1, inputs, NativeMethods.INPUT.Size) == 0)
-                throw new Win32Exception();
+            NativeMethods.SendInput(input);
         }
 
         private Coordinates GetMouseCoordinatesFromScreenCoordinates(Coordinates screenCoords)
@@ -195,7 +199,7 @@ namespace TTMouseclickSimulator.Core.Environment
             // location, not to the virtual screen size, so we use
             // SystemInformation.PrimaryMonitorSize.
             var primaryScreenSize = SystemInformation.PrimaryMonitorSize;
-            
+
             double x = (double)0x10000 * screenCoords.X / primaryScreenSize.Width;
             double y = (double)0x10000 * screenCoords.Y / primaryScreenSize.Height;
 
@@ -225,55 +229,64 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void PressKey(VirtualKeyShort keyCode)
         {
-            PressOrReleaseKey(keyCode, true);
+            this.PressOrReleaseKey(keyCode, true);
         }
-        
+
         public void ReleaseKey(VirtualKeyShort keyCode)
         {
-            PressOrReleaseKey(keyCode, false);
+            this.PressOrReleaseKey(keyCode, false);
         }
-        
-        private void PressOrReleaseKey(VirtualKeyShort keyCode, bool down)
+
+        private unsafe void PressOrReleaseKey(VirtualKeyShort keyCode, bool down)
         {
             var ki = new NativeMethods.KEYBDINPUT
             {
                 wVk = keyCode
             };
+
             if (!down)
                 ki.dwFlags = NativeMethods.KEYEVENTF.KEYUP;
 
-            var input = new NativeMethods.INPUT();
-            input.type = NativeMethods.INPUT_KEYBOARD;
-            input.U.ki = ki;
+            var input = new NativeMethods.INPUT
+            {
+                type = NativeMethods.InputType.INPUT_KEYBOARD,
+                InputUnion =
+                {
+                    ki = ki
+                }
+            };
 
-            NativeMethods.INPUT[] inputs = { input };
-
-            if (NativeMethods.SendInput((uint)inputs.Length, inputs, NativeMethods.INPUT.Size) == 0)
-                throw new Win32Exception();
+            NativeMethods.SendInput(input);
         }
 
-        public void WriteText(string characters)
+        public unsafe void WriteText(string characters)
         {
             var inputs = new NativeMethods.INPUT[2 * characters.Length];
+
             for (int i = 0; i < inputs.Length; i++)
             {
                 var ki = new NativeMethods.KEYBDINPUT
                 {
-                    dwFlags = NativeMethods.KEYEVENTF.UNICODE
+                    dwFlags = NativeMethods.KEYEVENTF.UNICODE,
+                    wScan = characters[i / 2]
                 };
+
                 if (i % 2 == 1)
                     ki.dwFlags |= NativeMethods.KEYEVENTF.KEYUP;
-                ki.wScan = (short)characters[i / 2];
 
-                var input = new NativeMethods.INPUT();
-                input.type = NativeMethods.INPUT_KEYBOARD;
-                input.U.ki = ki;
+                var input = new NativeMethods.INPUT
+                {
+                    type = NativeMethods.InputType.INPUT_KEYBOARD,
+                    InputUnion =
+                    {
+                        ki = ki
+                    }
+                };
 
                 inputs[i] = input;
             }
 
-            if (NativeMethods.SendInput((uint)inputs.Length, inputs, NativeMethods.INPUT.Size) == 0)
-                throw new Win32Exception();
+            NativeMethods.SendInputs(inputs);
         }
 
 
@@ -286,30 +299,28 @@ namespace TTMouseclickSimulator.Core.Environment
             private readonly Bitmap bmp;
             private BitmapData bmpData;
             private int* scan0;
-            
 
             private ScreenshotContent(WindowPosition pos)
             {
-                // Ensure we use Little Endian as byte order.
-                // TODO: Is there a better way than using IPAddress to check this?
-                if (IPAddress.HostToNetworkOrder((short)1) == 1)
-                    throw new InvalidOperationException("This class currently only works " +
-                            "on systems using little endian as byte order.");
+                // Ensure we use little endian as byte order (however, on Windows,
+                // the endianness is always little endian).
+                if (!BitConverter.IsLittleEndian)
+                {
+                    throw new InvalidOperationException(
+                        "This class currently only works " +
+                        "on systems using little endian as byte order.");
+                }
 
                 // Set the window position which will create a new rectangle.
                 this.WindowPosition = pos;
 
-                this.bmp = new Bitmap(this.rect.Width, this.rect.Height,
+                this.bmp = new Bitmap(
+                    this.rect.Width,
+                    this.rect.Height,
                     PixelFormat.Format32bppRgb);
             }
-            
-            ~ScreenshotContent()
-            {
-                Dispose(false);
-            }
 
-
-            public Size Size => new Size(this.bmp.Width, this.bmp.Height); 
+            public Size Size => new Size(this.bmp.Width, this.bmp.Height);
 
             public WindowPosition WindowPosition
             {
@@ -317,27 +328,34 @@ namespace TTMouseclickSimulator.Core.Environment
                 {
                     return this.windowPosition;
                 }
+
                 private set
                 {
-                    if (this.bmp != null && !(value.Size.Width == this.windowPosition.Size.Width
-                        && value.Size.Height == this.windowPosition.Size.Height))
+                    if (this.bmp != null && !(value.Size.Width == this.windowPosition.Size.Width &&
+                        value.Size.Height == this.windowPosition.Size.Height))
+                    {
                         throw new ArgumentException("Cannot set a new size for the same screenshot instance.");
+                    }
+
                     this.windowPosition = value;
 
                     // Create a new rectangle for the new position
-                    this.rect = new Rectangle(this.windowPosition.Coordinates.X, this.windowPosition.Coordinates.Y,
-                        this.windowPosition.Size.Width, this.windowPosition.Size.Height);
+                    this.rect = new Rectangle(
+                        this.windowPosition.Coordinates.X,
+                        this.windowPosition.Coordinates.Y,
+                        this.windowPosition.Size.Width,
+                        this.windowPosition.Size.Height);
                 }
             }
 
-
-            public static ScreenshotContent Create(
-                    WindowPosition pos, 
-                    ScreenshotContent existingScreenshot = null)
+            public static void Create(
+                    WindowPosition pos,
+                    ref ScreenshotContent existingScreenshot)
             {
                 // Try to reuse the existing screenshot's bitmap, if it has the same size.
-                if (existingScreenshot != null && !(existingScreenshot.Size.Width == pos.Size.Width
-                    && existingScreenshot.Size.Height == pos.Size.Height))
+                if (existingScreenshot != null &&
+                    !(existingScreenshot.Size.Width == pos.Size.Width &&
+                    existingScreenshot.Size.Height == pos.Size.Height))
                 {
                     // We cannot use the existing screenshot, so dispose of it.
                     existingScreenshot.Dispose();
@@ -345,21 +363,26 @@ namespace TTMouseclickSimulator.Core.Environment
                 }
 
                 if (existingScreenshot == null)
+                {
                     existingScreenshot = new ScreenshotContent(pos);
+                }
                 else
+                {
                     // The window could have been moved, so refresh the position.
-                    existingScreenshot.WindowPosition = pos; 
+                    existingScreenshot.WindowPosition = pos;
+                }
 
                 existingScreenshot.FillScreenshot();
-                return existingScreenshot;
             }
 
             private void OpenBitmapData()
             {
                 if (this.bmpData == null)
                 {
-                    this.bmpData = this.bmp.LockBits(new Rectangle(0, 0, this.bmp.Width, this.bmp.Height),
-                        ImageLockMode.ReadOnly, this.bmp.PixelFormat);
+                    this.bmpData = this.bmp.LockBits(
+                        new Rectangle(0, 0, this.bmp.Width, this.bmp.Height),
+                        ImageLockMode.ReadOnly,
+                        this.bmp.PixelFormat);
 
                     // Use unsafe mode for fast access to the bitmapdata. We use a int* 
                     // pointer for faster access as the image format is 32-bit (althouth if
@@ -380,22 +403,25 @@ namespace TTMouseclickSimulator.Core.Environment
 
             private void FillScreenshot()
             {
-                CloseBitmapData();
+                this.CloseBitmapData();
 
                 using (var g = Graphics.FromImage(this.bmp))
                 {
-                    g.CopyFromScreen(this.rect.Location, new Point(0, 0),
-                        this.rect.Size, CopyPixelOperation.SourceCopy);
+                    g.CopyFromScreen(
+                        this.rect.Location,
+                        new Point(0, 0),
+                        this.rect.Size,
+                        CopyPixelOperation.SourceCopy);
                 }
 
-                OpenBitmapData();
+                this.OpenBitmapData();
             }
 
             public ScreenshotColor GetPixel(Coordinates coords)
             {
-                return GetPixel(coords.X, coords.Y);
+                return this.GetPixel(coords.X, coords.Y);
             }
-            
+
             public ScreenshotColor GetPixel(int x, int y)
             {
                 // Only do these checks in Debug mode so we get optimal performance
@@ -410,14 +436,15 @@ namespace TTMouseclickSimulator.Core.Environment
 
                 // This method assumes a 32-bit pixel format.
                 if (this.bmpData.PixelFormat != PixelFormat.Format32bppRgb)
-                    throw new InvalidOperationException("This method only works with a " 
-                        + "pixel format of Format32bppRgb.");
+                    throw new InvalidOperationException(
+                        "This method only works with a " +
+                        "pixel format of Format32bppRgb.");
 #endif
 
                 // Go to the line and the column. We use a int pointer to do a single
                 // 32-Bit read instead of separate 8-Bit reads. We assume the runtime can
                 // then hold the color variable in a register.
-                var ptr = this.scan0 + (y * this.bmpData.Width + x);
+                int* ptr = this.scan0 + (y * this.bmpData.Width + x);
                 int color = *ptr;
 
                 return new ScreenshotColor()
@@ -430,7 +457,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
             public void Dispose()
             {
-                Dispose(true);
+                this.Dispose(true);
                 GC.SuppressFinalize(this);
             }
 
@@ -438,15 +465,16 @@ namespace TTMouseclickSimulator.Core.Environment
             {
                 if (!this.disposed && disposing)
                 {
-                    CloseBitmapData();
+                    this.CloseBitmapData();
                     this.bmp.Dispose();
                 }
+
                 this.disposed = true;
             }
         }
-        
 
-        public enum VirtualKeyShort : short
+
+        public enum VirtualKeyShort : ushort
         {
             ///<summary>
             ///ENTER key

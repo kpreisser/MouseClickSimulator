@@ -31,9 +31,6 @@ namespace TTMouseclickSimulator.Core.Environment
         private List<AbstractWindowsEnvironment.VirtualKeyShort> keysCurrentlyPressed =
                 new List<AbstractWindowsEnvironment.VirtualKeyShort>();
 
-        private Coordinates lastMouseCoordinates = new Coordinates(0, 0);
-
-
         public StandardInteractionProvider(
                 Simulator simulator,
                 AbstractWindowsEnvironment environmentInterface,
@@ -41,18 +38,12 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             this.simulator = simulator;
             this.environmentInterface = environmentInterface;
-            cancelCallback = HandleCancelCallback;
+            cancelCallback = this.HandleCancelCallback;
         }
-
-        ~StandardInteractionProvider()
-        {
-            Dispose(false);
-        }
-
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -89,7 +80,7 @@ namespace TTMouseclickSimulator.Core.Environment
                                 }
 
                                 // Wait a bit so that the window can go into foreground.
-                                await WaitSemaphoreInternalAsync(250, false);
+                                await this.WaitSemaphoreInternalAsync(250, false);
 
                                 // If the window isn't in foreground, try again.
                                 bool isInForeground;
@@ -135,7 +126,7 @@ namespace TTMouseclickSimulator.Core.Environment
                                     break;
 
                                 // If non of the windows is in foreground, wait a bit and try again.
-                                await WaitSemaphoreInternalAsync(250, false);
+                                await this.WaitSemaphoreInternalAsync(250, false);
                             }
                         }
                         finally
@@ -154,7 +145,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
                     if (!(ex is SimulatorCanceledException))
                     {
-                        await CheckRetryForExceptionAsync(ex, false);
+                        await this.CheckRetryForExceptionAsync(ex, false);
                         continue;
                     }
                     else
@@ -162,6 +153,7 @@ namespace TTMouseclickSimulator.Core.Environment
                         throw;
                     }
                 }
+
                 break;
             }
         }
@@ -179,6 +171,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 if (!this.canceled)
                 {
                     this.canceled = true;
+
                     // Release the semaphore (so that a task that is waiting can continue).
                     this.waitSemaphore.Release();
                 }
@@ -187,7 +180,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public async Task CheckRetryForExceptionAsync(Exception ex)
         {
-            await CheckRetryForExceptionAsync(ex, true);
+            await this.CheckRetryForExceptionAsync(ex, true);
         }
 
         private async Task CheckRetryForExceptionAsync(Exception ex, bool reinitialize)
@@ -200,7 +193,7 @@ namespace TTMouseclickSimulator.Core.Environment
             else
             {
                 // Need to release active keys etc.
-                CancelActiveInteractions();
+                this.CancelActiveInteractions();
 
                 bool result = await this.simulator.AsyncRetryHandler(ex);
                 if (!result)
@@ -208,7 +201,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
                 // When trying again, we need to re-initialize.
                 if (reinitialize)
-                    await InitializeAsync();
+                    await this.InitializeAsync();
             }
         }
 
@@ -226,12 +219,12 @@ namespace TTMouseclickSimulator.Core.Environment
 
         private async Task WaitSemaphoreInternalAsync(int milliseconds, bool checkWindowForeground = true)
         {
-            EnsureNotCanceled();
+            this.EnsureNotCanceled();
 
             if (!checkWindowForeground)
             {
                 if (await this.waitSemaphore.WaitAsync(Math.Max(0, milliseconds)))
-                    EnsureNotCanceled();
+                    this.EnsureNotCanceled();
             }
             else
             {
@@ -241,14 +234,14 @@ namespace TTMouseclickSimulator.Core.Environment
                 while (true)
                 {
                     // Check if the window is still active and in foreground.
-                    GetMainWindowPosition();
+                    this.GetMainWindowPosition();
 
                     long remaining = milliseconds - sw.ElapsedMilliseconds;
                     if (remaining <= 0)
                         break;
 
                     if (await this.waitSemaphore.WaitAsync(Math.Min((int)remaining, 100)))
-                        EnsureNotCanceled();
+                        this.EnsureNotCanceled();
                 }
             }
         }
@@ -269,12 +262,12 @@ namespace TTMouseclickSimulator.Core.Environment
                 sw.Start();
 
                 int waitTime = millisecondsTimeout - 15;
-                await WaitSemaphoreInternalAsync(waitTime);
+                await this.WaitSemaphoreInternalAsync(waitTime);
 
                 // For the remaining time, loop until the complete time has passed.
                 while (true)
                 {
-                    EnsureNotCanceled();
+                    this.EnsureNotCanceled();
 
                     long remaining = millisecondsTimeout - sw.ElapsedMilliseconds;
                     if (remaining <= 0)
@@ -286,7 +279,7 @@ namespace TTMouseclickSimulator.Core.Environment
             }
             else
             {
-                await WaitSemaphoreInternalAsync(millisecondsTimeout);
+                await this.WaitSemaphoreInternalAsync(millisecondsTimeout);
             }
         }
 
@@ -298,26 +291,28 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public WindowPosition GetCurrentWindowPosition()
         {
-            EnsureNotCanceled();
+            this.EnsureNotCanceled();
 
-            return GetMainWindowPosition();
+            return this.GetMainWindowPosition();
         }
 
         public IScreenshotContent GetCurrentWindowScreenshot()
         {
-            EnsureNotCanceled();
+            this.EnsureNotCanceled();
 
-            this.currentScreenshot = this.environmentInterface.CreateWindowScreenshot(
-                    this.windowHandle, this.currentScreenshot);
+            this.environmentInterface.CreateWindowScreenshot(
+                this.windowHandle,
+                ref this.currentScreenshot);
+
             return this.currentScreenshot;
         }
 
         public void PressKey(AbstractWindowsEnvironment.VirtualKeyShort key)
         {
-            EnsureNotCanceled();
+            this.EnsureNotCanceled();
 
             // Check if the window is still active and in foreground.
-            GetMainWindowPosition();
+            this.GetMainWindowPosition();
 
             if (!this.keysCurrentlyPressed.Contains(key))
             {
@@ -328,7 +323,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void ReleaseKey(AbstractWindowsEnvironment.VirtualKeyShort key)
         {
-            EnsureNotCanceled();
+            this.EnsureNotCanceled();
 
             int kcpIdx = this.keysCurrentlyPressed.IndexOf(key);
             if (kcpIdx >= 0)
@@ -340,28 +335,25 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void WriteText(string text)
         {
-            EnsureNotCanceled();
+            this.EnsureNotCanceled();
 
             // Check if the window is still active and in foreground.
-            GetMainWindowPosition();
+            this.GetMainWindowPosition();
 
             this.environmentInterface.WriteText(text);
         }
 
         public void MoveMouse(int x, int y)
         {
-            MoveMouse(new Coordinates(x, y));
+            this.MoveMouse(new Coordinates(x, y));
         }
 
         public void MoveMouse(Coordinates c)
         {
-            EnsureNotCanceled();
+            this.EnsureNotCanceled();
 
             // Check if the window is still active and in foreground.
-            var pos = GetMainWindowPosition();
-
-            // If it is, set the last mouse coordinates.
-            this.lastMouseCoordinates = c;
+            var pos = this.GetMainWindowPosition();
 
             // Convert the relative coordinates to absolute ones, then simulate the click.
             var absoluteCoords = pos.RelativeToAbsoluteCoordinates(c);
@@ -370,10 +362,10 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void PressMouseButton()
         {
-            EnsureNotCanceled();
+            this.EnsureNotCanceled();
 
             // Check if the window is still active and in foreground.
-            GetMainWindowPosition();
+            this.GetMainWindowPosition();
 
             if (!this.isMouseButtonPressed)
             {
@@ -384,7 +376,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void ReleaseMouseButton()
         {
-            EnsureNotCanceled();
+            this.EnsureNotCanceled();
 
             if (this.isMouseButtonPressed)
             {
@@ -406,6 +398,7 @@ namespace TTMouseclickSimulator.Core.Environment
             {
                 this.environmentInterface.ReleaseKey(key);
             }
+
             this.keysCurrentlyPressed.Clear();
         }
 
@@ -418,6 +411,7 @@ namespace TTMouseclickSimulator.Core.Environment
             if (disposing)
             {
                 bool doDispose = false;
+
                 lock (this.syncRoot)
                 {
                     if (!this.disposed)
@@ -427,7 +421,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
                         // Ensure the provider is canceled.
                         if (!this.canceled)
-                            HandleCancelCallback();
+                            this.HandleCancelCallback();
 
                         this.waitSemaphore.Dispose();
                     }
@@ -437,7 +431,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 {
                     this.currentScreenshot?.Dispose();
 
-                    CancelActiveInteractions();
+                    this.CancelActiveInteractions();
                 }
             }
         }
