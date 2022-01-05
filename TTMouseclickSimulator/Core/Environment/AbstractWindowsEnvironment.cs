@@ -19,7 +19,7 @@ namespace TTMouseclickSimulator.Core.Environment
         /// </summary>
         /// <param name="processname"></param>
         /// <returns></returns>
-        protected List<Process> FindProcessesByName(string processname)
+        protected static List<Process> FindProcessesByName(string processname)
         {
             var processes = Process.GetProcessesByName(processname);
             var foundProcesses = new List<Process>();
@@ -41,9 +41,6 @@ namespace TTMouseclickSimulator.Core.Environment
                     p.Dispose();
                 }
             }
-
-            if (foundProcesses.Count == 0)
-                throw new ArgumentException($"Could not find process '{processname}.exe'.");
 
             return foundProcesses;
         }
