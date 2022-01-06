@@ -19,7 +19,6 @@ namespace TTMouseclickSimulator.Core.Actions
         /// </summary>
         private readonly int? count;
 
-
         public LoopAction(IAction action, int? count = null)
         {
             if (action == null)
@@ -31,13 +30,11 @@ namespace TTMouseclickSimulator.Core.Actions
             this.count = count;
         }
 
-
         public override IList<IAction> SubActions => new List<IAction>() { this.action };
-
 
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
-            OnSubActionStartedOrStopped(0);
+            this.OnSubActionStartedOrStopped(0);
             try
             {
                 for (int i = 0; !this.count.HasValue || i < this.count.Value; i++)
@@ -47,7 +44,7 @@ namespace TTMouseclickSimulator.Core.Actions
                         try
                         {
                             provider.EnsureNotCanceled();
-                            OnActionInformationUpdated($"Iteration {i + 1}/{this.count?.ToString() ?? "∞"}");
+                            this.OnActionInformationUpdated($"Iteration {i + 1}/{this.count?.ToString() ?? "∞"}");
                             await this.action.RunAsync(provider);
                         }
                         catch (Exception ex) when (!(ex is SimulatorCanceledException))
@@ -55,13 +52,14 @@ namespace TTMouseclickSimulator.Core.Actions
                             await provider.CheckRetryForExceptionAsync(ex);
                             continue;
                         }
+
                         break;
                     }
                 }
             }
             finally
             {
-                OnSubActionStartedOrStopped(null);
+                this.OnSubActionStartedOrStopped(null);
             }
         }
 

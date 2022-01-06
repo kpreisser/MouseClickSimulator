@@ -23,7 +23,6 @@ namespace TTMouseclickSimulator.Core.Actions
 
         private readonly Random rng = new Random();
 
-        
         /// <summary>
         /// 
         /// </summary>
@@ -37,13 +36,12 @@ namespace TTMouseclickSimulator.Core.Actions
         /// it will loop endlessly. Note that using false is not possible when specifying
         /// CompoundActionType.RandomIndex as type.</param>
         public CompoundAction(
-                IList<IAction> actionList,
-                CompoundActionType type = CompoundActionType.Sequential, 
-                int minimumPause = 0,
-                int maximumPause = 0,
-                bool loop = true)
+            IList<IAction> actionList,
+            CompoundActionType type = CompoundActionType.Sequential,
+            int minimumPause = 0,
+            int maximumPause = 0,
+            bool loop = true)
         {
-
             if (actionList == null || actionList.Count == 0)
                 throw new ArgumentException("There must be at least one IAction to start the simulator.");
             if (minimumPause < PauseIntervalMinimum
@@ -66,23 +64,25 @@ namespace TTMouseclickSimulator.Core.Actions
             this.loop = loop;
         }
 
-
         public override sealed IList<IAction> SubActions => this.actionList;
 
-        
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             // Run the actions.
             int currentIdx = -1;
-            var randomOrder = null as int[];
+            var randomOrder = default(int[]);
 
             Func<int> getNextActionIndex;
             if (this.type == CompoundActionType.Sequential)
-                getNextActionIndex = () => 
-                    (!this.loop && currentIdx + 1 == this.actionList.Count) ? -1 
+            {
+                getNextActionIndex = () =>
+                    (!this.loop && currentIdx + 1 == this.actionList.Count) ? -1
                     : currentIdx = (currentIdx + 1) % this.actionList.Count;
+            }
             else if (this.type == CompoundActionType.RandomIndex)
+            {
                 getNextActionIndex = () => this.rng.Next(this.actionList.Count);
+            }
             else
             {
                 randomOrder = new int[this.actionList.Count];
@@ -97,6 +97,7 @@ namespace TTMouseclickSimulator.Core.Actions
                         // Generate a new order array.
                         for (int i = 0; i < randomOrder.Length; i++)
                             randomOrder[i] = i;
+
                         for (int i = 0; i < randomOrder.Length; i++)
                         {
                             int rIdx = this.rng.Next(randomOrder.Length - i);
@@ -116,7 +117,7 @@ namespace TTMouseclickSimulator.Core.Actions
                 if (nextIdx == -1)
                     break;
 
-                OnActionInformationUpdated($"Running action {nextIdx + 1}");
+                this.OnActionInformationUpdated($"Running action {nextIdx + 1}");
 
                 while (true)
                 {
@@ -125,19 +126,19 @@ namespace TTMouseclickSimulator.Core.Actions
                         // Check if the simulator has already been canceled.
                         provider.EnsureNotCanceled();
 
-                        OnSubActionStartedOrStopped(nextIdx);
+                        this.OnSubActionStartedOrStopped(nextIdx);
                         try
                         {
                             await this.actionList[nextIdx].RunAsync(provider);
                         }
                         finally
                         {
-                            OnSubActionStartedOrStopped(null);
+                            this.OnSubActionStartedOrStopped(null);
                         }
 
                         // After running an action, wait.
                         int waitInterval = this.rng.Next(this.minimumPauseDuration, this.maximumPauseDuration);
-                        OnActionInformationUpdated($"Pausing {waitInterval} ms");
+                        this.OnActionInformationUpdated($"Pausing {waitInterval} ms");
 
                         await provider.WaitAsync(waitInterval);
                     }
@@ -146,6 +147,7 @@ namespace TTMouseclickSimulator.Core.Actions
                         await provider.CheckRetryForExceptionAsync(ex);
                         continue;
                     }
+
                     break;
                 }
             }

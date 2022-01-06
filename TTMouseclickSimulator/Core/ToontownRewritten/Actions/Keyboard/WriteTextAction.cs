@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
@@ -10,9 +11,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
     /// </summary>
     public class WriteTextAction : AbstractAction
     {
-
-        private string text;
-        private int? pauseDuration;
+        private readonly string text;
+        private readonly int? pauseDuration;
 
         /// <summary>
         /// 
@@ -34,7 +34,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
         {
             // write the text and presses enter.
             if (!this.pauseDuration.HasValue)
+            {
                 provider.WriteText(this.text);
+            }
             else
             {
                 for (int i = 0; i < this.text.Length; i++)
@@ -46,13 +48,12 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
 
             // A CR LF (\r\n) in the above string would not have the desired effect;
             // instead we need to press the enter key.
-            provider.PressKey(AbstractWindowsEnvironment.VirtualKeyShort.Enter);
+            provider.PressKey(AbstractWindowsEnvironment.VirtualKey.Enter);
             await provider.WaitAsync(100);
-            provider.ReleaseKey(AbstractWindowsEnvironment.VirtualKeyShort.Enter);
+            provider.ReleaseKey(AbstractWindowsEnvironment.VirtualKey.Enter);
         }
 
-
-        public override string ToString() => $"Write Text – Text: \"{this.text}\"" 
+        public override string ToString() => $"Write Text – Text: \"{this.text}\""
             + (this.pauseDuration.HasValue ? "" : $", Pause Duration: {this.pauseDuration}");
     }
 }

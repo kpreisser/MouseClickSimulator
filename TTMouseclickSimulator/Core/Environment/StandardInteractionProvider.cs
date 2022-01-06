@@ -11,6 +11,8 @@ namespace TTMouseclickSimulator.Core.Environment
     {
         private readonly object syncRoot = new object();
 
+        private readonly bool backgroundMode;
+
         private bool disposed = false;
 
         /// <summary>
@@ -28,18 +30,21 @@ namespace TTMouseclickSimulator.Core.Environment
 
         private AbstractWindowsEnvironment.ScreenshotContent currentScreenshot;
         private bool isMouseButtonPressed = false;
-        private List<AbstractWindowsEnvironment.VirtualKeyShort> keysCurrentlyPressed =
-                new List<AbstractWindowsEnvironment.VirtualKeyShort>();
-        
+        private List<AbstractWindowsEnvironment.VirtualKey> keysCurrentlyPressed =
+                new List<AbstractWindowsEnvironment.VirtualKey>();
+
+        // Window-relative (when using backgroundMode) or absolute mouse coordinates
         private Coordinates? lastSetMouseCoordinates;
 
         public StandardInteractionProvider(
                 Simulator simulator,
                 AbstractWindowsEnvironment environmentInterface,
+                bool backgroundMode,
                 out Action cancelCallback)
         {
             this.simulator = simulator;
             this.environmentInterface = environmentInterface;
+            this.backgroundMode = backgroundMode;
             cancelCallback = this.HandleCancelCallback;
         }
 
@@ -74,23 +79,33 @@ namespace TTMouseclickSimulator.Core.Environment
                                     this.simulator.OnSimulatorInitializing(lastInitializingEventParameter);
                                 }
 
-                                // When there is only one process, we simply bring the window to the
-                                // foreground (if we didn't do it already).
+                                // When there is only one process, we simply bring the window to
+                                // the foreground (if we didn't do it already).
                                 this.windowHandle = this.environmentInterface.FindMainWindowHandleOfProcess(processes[0]);
-                                if (this.windowHandle != previousWindowToBringToForeground)
+
+                                if (!this.backgroundMode)
                                 {
-                                    previousWindowToBringToForeground = this.windowHandle;
-                                    this.environmentInterface.BringWindowToForeground(this.windowHandle);
+                                    if (this.windowHandle != previousWindowToBringToForeground)
+                                    {
+                                        previousWindowToBringToForeground = this.windowHandle;
+                                        this.environmentInterface.BringWindowToForeground(this.windowHandle);
+                                    }
+
+                                    // Wait a bit so that the window can go into foreground.
+                                    await this.WaitSemaphoreInternalAsync(250, false);
+
+                                    // If the window isn't in foreground, try again.
+                                    bool isInForeground;
+                                    this.environmentInterface.GetWindowPosition(this.windowHandle, out isInForeground, false);
+                                    if (isInForeground)
+                                        break;
                                 }
-
-                                // Wait a bit so that the window can go into foreground.
-                                await this.WaitSemaphoreInternalAsync(250, false);
-
-                                // If the window isn't in foreground, try again.
-                                bool isInForeground;
-                                this.environmentInterface.GetWindowPosition(this.windowHandle, out isInForeground, false);
-                                if (isInForeground)
+                                else
+                                {
+                                    // In background mode, we don't need to bring the window
+                                    // into foreground.
                                     break;
+                                }
                             }
                             else
                             {
@@ -100,7 +115,8 @@ namespace TTMouseclickSimulator.Core.Environment
                                     this.simulator.OnSimulatorInitializing(lastInitializingEventParameter);
                                 }
 
-                                // When there are multiple processes, wait until on of the windows goes into foreground.
+                                // When there are multiple processes, wait until on of the windows
+                                // goes into foreground.
                                 bool foundWindow = false;
 
                                 foreach (var process in processes)
@@ -160,6 +176,30 @@ namespace TTMouseclickSimulator.Core.Environment
 
                 break;
             }
+
+            if (this.backgroundMode)
+            {
+                // When starting in background mode, wait a second before doing anything, to
+                // handle the case when the user clicks into the window to activate it
+                // (when more than one processes were detected).
+                await this.WaitAsync(900);
+
+                // Then, simulate a click to (0, 0). This seems currently to be necessary so
+                // that the first WM_LBUTTONDOWN that we send to the window works correctly
+                // if the window is currently inactive (otherwise, the first message would
+                // have the effect that the mouse button is pressed but is then immediately
+                // released; probably due to a WM_MOUSELEAVE message being sent by Windows).
+                this.MoveMouse(0, 0);
+                this.PressMouseButton();
+                await this.WaitAsync(50);
+                this.ReleaseMouseButton();
+                await this.WaitAsync(50);
+            }
+            else
+            {
+                // Also wait a short time when not using background mode.
+                await this.WaitAsync(500);
+            }
         }
 
         /// <summary>
@@ -182,9 +222,9 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
-        public async Task CheckRetryForExceptionAsync(Exception ex)
+        public Task CheckRetryForExceptionAsync(Exception ex)
         {
-            await this.CheckRetryForExceptionAsync(ex, true);
+            return this.CheckRetryForExceptionAsync(ex, true);
         }
 
         private async Task CheckRetryForExceptionAsync(Exception ex, bool reinitialize)
@@ -221,11 +261,11 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
-        private async Task WaitSemaphoreInternalAsync(int milliseconds, bool checkWindowForeground = true)
+        private async Task WaitSemaphoreInternalAsync(int milliseconds, bool checkWindow = true)
         {
             this.EnsureNotCanceled();
 
-            if (!checkWindowForeground)
+            if (!checkWindow)
             {
                 if (await this.waitSemaphore.WaitAsync(Math.Max(0, milliseconds)))
                     this.EnsureNotCanceled();
@@ -237,8 +277,9 @@ namespace TTMouseclickSimulator.Core.Environment
                 sw.Start();
                 while (true)
                 {
-                    // Check if the window is still active and in foreground.
-                    this.GetMainWindowPosition();
+                    // Check if the window is still active (and, if not using background mode,
+                    // in foreground).
+                    this.GetMainWindowPosition(failIfMinimized: !this.backgroundMode);
 
                     long remaining = milliseconds - sw.ElapsedMilliseconds;
                     if (remaining <= 0)
@@ -255,17 +296,18 @@ namespace TTMouseclickSimulator.Core.Environment
             if (useAccurateTimer)
             {
                 /*
-                Instead of using a wait method for the complete timeout (which is a bit inaccurate 
-                as it may be up to ~ 15 ms longer than specified), we use the specified timeout - 15 to wait
-                and then call Thread.SpinWait() to loop until the complete wait interval has been reached
-                which we measure using a high-resolution timer.
-                This means shortly before this method returns there will be a bit CPU usage but the actual
-                time which we waited will be more accurate.
-                */
+                 * Instead of using a wait method for the complete timeout (which is a bit
+                 * inaccurate depending on the OS timer resolution, we use the specified
+                 * timeout - 5 to wait and then call Thread.SpinWait() to loop until the
+                 * complete wait interval has been reached which we measure using a
+                 * high-resolution timer.
+                 * This means shortly before this method returns there will be a bit CPU
+                 * usage but the actual time which we waited will be more accurate.
+                 */
                 var sw = new Stopwatch();
                 sw.Start();
 
-                int waitTime = millisecondsTimeout - 15;
+                int waitTime = millisecondsTimeout - 5;
                 await this.WaitSemaphoreInternalAsync(waitTime);
 
                 // For the remaining time, loop until the complete time has passed.
@@ -287,10 +329,16 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
-        private WindowPosition GetMainWindowPosition()
+        private WindowPosition GetMainWindowPosition(bool failIfMinimized = true)
         {
+            // Fail if the window is no longer in foreground (active) and we are not
+            // using background mode.
             bool isInForeground;
-            return this.environmentInterface.GetWindowPosition(this.windowHandle, out isInForeground);
+            return this.environmentInterface.GetWindowPosition(
+                this.windowHandle,
+                out isInForeground,
+                !this.backgroundMode,
+                failIfMinimized);
         }
 
         public WindowPosition GetCurrentWindowPosition()
@@ -306,33 +354,42 @@ namespace TTMouseclickSimulator.Core.Environment
 
             this.environmentInterface.CreateWindowScreenshot(
                 this.windowHandle,
-                ref this.currentScreenshot);
+                ref this.currentScreenshot,
+                !this.backgroundMode);
 
             return this.currentScreenshot;
         }
 
-        public void PressKey(AbstractWindowsEnvironment.VirtualKeyShort key)
+        public void PressKey(AbstractWindowsEnvironment.VirtualKey key)
         {
             this.EnsureNotCanceled();
 
             // Check if the window is still active and in foreground.
-            this.GetMainWindowPosition();
+            this.GetMainWindowPosition(failIfMinimized: !this.backgroundMode);
 
             if (!this.keysCurrentlyPressed.Contains(key))
             {
-                this.environmentInterface.PressKey(key);
+                if (!this.backgroundMode)
+                    this.environmentInterface.PressKey(key);
+                else
+                    this.environmentInterface.PressWindowKey(this.windowHandle, key);
+
                 this.keysCurrentlyPressed.Add(key);
             }
         }
 
-        public void ReleaseKey(AbstractWindowsEnvironment.VirtualKeyShort key)
+        public void ReleaseKey(AbstractWindowsEnvironment.VirtualKey key)
         {
             this.EnsureNotCanceled();
 
             int kcpIdx = this.keysCurrentlyPressed.IndexOf(key);
             if (kcpIdx >= 0)
             {
-                this.environmentInterface.ReleaseKey(key);
+                if (!this.backgroundMode)
+                    this.environmentInterface.ReleaseKey(key);
+                else
+                    this.environmentInterface.ReleaseWindowKey(this.windowHandle, key);
+
                 this.keysCurrentlyPressed.RemoveAt(kcpIdx);
             }
         }
@@ -342,9 +399,12 @@ namespace TTMouseclickSimulator.Core.Environment
             this.EnsureNotCanceled();
 
             // Check if the window is still active and in foreground.
-            this.GetMainWindowPosition();
+            this.GetMainWindowPosition(failIfMinimized: !this.backgroundMode);
 
-            this.environmentInterface.WriteText(text);
+            if (!this.backgroundMode)
+                this.environmentInterface.WriteText(text);
+            else
+                this.environmentInterface.WriteWindowText(this.windowHandle, text);
         }
 
         public void MoveMouse(int x, int y)
@@ -356,26 +416,54 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             this.EnsureNotCanceled();
 
-            // Check if the window is still active and in foreground.
-            var pos = this.GetMainWindowPosition();
+            if (!this.backgroundMode)
+            {
+                // Check if the window is still active and in foreground.
+                var pos = this.GetMainWindowPosition();
 
-            // Convert the relative coordinates to absolute ones, then simulate the click.
-            var absoluteCoords = pos.RelativeToAbsoluteCoordinates(c);
-            this.environmentInterface.MoveMouse(absoluteCoords.X, absoluteCoords.Y);
-            this.lastSetMouseCoordinates = absoluteCoords;
+                // Convert the relative coordinates to absolute ones, then simulate the click.
+                var absoluteCoords = pos.RelativeToAbsoluteCoordinates(c);
+                this.environmentInterface.MoveMouse(absoluteCoords.X, absoluteCoords.Y);
+                this.lastSetMouseCoordinates = absoluteCoords;
+            }
+            else
+            {
+                this.environmentInterface.MoveWindowMouse(
+                    this.windowHandle,
+                    c.X,
+                    c.Y,
+                    this.isMouseButtonPressed);
+
+                this.lastSetMouseCoordinates = c;
+            }
         }
 
         public void PressMouseButton()
         {
             this.EnsureNotCanceled();
 
-            // Check if the window is still active and in foreground.
-            this.GetMainWindowPosition();
-
-            if (!this.isMouseButtonPressed)
+            if (!this.backgroundMode)
             {
-                this.environmentInterface.PressMouseButton();
-                this.isMouseButtonPressed = true;
+                // Check if the window is still active and in foreground.
+                this.GetMainWindowPosition();
+
+                if (!this.isMouseButtonPressed)
+                {
+                    this.environmentInterface.PressMouseButton();
+                    this.isMouseButtonPressed = true;
+                }
+            }
+            else
+            {
+                if (!this.isMouseButtonPressed)
+                {
+                    this.environmentInterface.PressWindowMouseButton(
+                        this.windowHandle,
+                        this.lastSetMouseCoordinates.Value.X,
+                        this.lastSetMouseCoordinates.Value.Y);
+
+                    this.isMouseButtonPressed = true;
+                }
             }
         }
 
@@ -385,7 +473,18 @@ namespace TTMouseclickSimulator.Core.Environment
 
             if (this.isMouseButtonPressed)
             {
-                this.environmentInterface.ReleaseMouseButton();
+                if (!this.backgroundMode)
+                {
+                    this.environmentInterface.ReleaseMouseButton();
+                }
+                else
+                {
+                    this.environmentInterface.ReleaseWindowMouseButton(
+                       this.windowHandle,
+                       this.lastSetMouseCoordinates.Value.X,
+                       this.lastSetMouseCoordinates.Value.Y);
+                }
+
                 this.isMouseButtonPressed = false;
             }
         }
@@ -395,13 +494,27 @@ namespace TTMouseclickSimulator.Core.Environment
             // Release mouse buttons and keys that are currently pressed.
             if (this.isMouseButtonPressed)
             {
-                this.environmentInterface.ReleaseMouseButton();
+                if (!this.backgroundMode)
+                {
+                    this.environmentInterface.ReleaseMouseButton();
+                }
+                else
+                {
+                    this.environmentInterface.ReleaseWindowMouseButton(
+                       this.windowHandle,
+                       this.lastSetMouseCoordinates.Value.X,
+                       this.lastSetMouseCoordinates.Value.Y);
+                }
+
                 this.isMouseButtonPressed = false;
             }
 
             foreach (var key in this.keysCurrentlyPressed)
             {
-                this.environmentInterface.ReleaseKey(key);
+                if (!this.backgroundMode)
+                    this.environmentInterface.ReleaseKey(key);
+                else
+                    this.environmentInterface.ReleaseWindowKey(this.windowHandle, key);
             }
 
             this.keysCurrentlyPressed.Clear();

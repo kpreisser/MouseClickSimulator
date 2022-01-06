@@ -15,6 +15,27 @@ namespace TTMouseclickSimulator.Core.Environment
             INPUT* pInputs,
             int cbSize);
 
+        [DllImport("user32.dll", EntryPoint = "SendMessageW", ExactSpelling = true, SetLastError = true)]
+        public static extern IntPtr SendMessageW(
+            IntPtr hWnd,
+            WM Msg,
+            IntPtr wParam = default(IntPtr),
+            IntPtr lParam = default(IntPtr));
+
+        [DllImport("user32.dll", EntryPoint = "SendNotifyMessageW", ExactSpelling = true, SetLastError = true)]
+        public static extern BOOL SendNotifyMessageW(
+            IntPtr hWnd,
+            WM Msg,
+            IntPtr wParam = default(IntPtr),
+            IntPtr lParam = default(IntPtr));
+
+        [DllImport("user32.dll", EntryPoint = "PostMessageW", ExactSpelling = true, SetLastError = true)]
+        public static extern BOOL PostMessageW(
+            IntPtr hWnd,
+            WM Msg,
+            IntPtr wParam = default(IntPtr),
+            IntPtr lParam = default(IntPtr));
+
         [DllImport("user32.dll", EntryPoint = "GetClientRect", ExactSpelling = true, SetLastError = true)]
         public static unsafe extern BOOL GetClientRect(IntPtr hWnd, RECT* lpRect);
 
@@ -113,7 +134,7 @@ namespace TTMouseclickSimulator.Core.Environment
         [StructLayout(LayoutKind.Sequential)]
         internal struct KEYBDINPUT
         {
-            internal AbstractWindowsEnvironment.VirtualKeyShort wVk;
+            internal AbstractWindowsEnvironment.VirtualKey wVk;
             internal ushort wScan;
             internal KEYEVENTF dwFlags;
             internal uint time;
@@ -170,6 +191,25 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             public int x;
             public int y;
+        }
+
+        public enum WM : uint
+        {
+            MOUSEMOVE = 0x0200,
+            LBUTTONDOWN = 0x0201,
+            LBUTTONUP = 0x0202,
+            RBUTTONDOWN = 0x0204,
+            RBUTTONUP = 0x0205,
+
+            WM_KEYDOWN = 0x0100,
+            WM_KEYUP = 0x0101,
+            WM_CHAR = 0x0102
+        }
+
+        [Flags]
+        public enum MK : int
+        {
+            LBUTTON = 0x0001
         }
 
         public struct BOOL

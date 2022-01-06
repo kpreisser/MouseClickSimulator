@@ -40,7 +40,8 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment
         protected override sealed void ValidateWindowPosition(WindowPosition pos)
         {
             // Check if the aspect ratio of the window is 4:3 or higher.
-            if (!(((double)pos.Size.Width / pos.Size.Height) >= 4d / 3d))
+            if (!pos.IsMinimized &&
+                ((double)pos.Size.Width / pos.Size.Height) < 4d / 3d)
                 throw new ArgumentException(
                     "The TT Rewritten window must have an aspect ratio " +
                     "of 4:3 or higher (e.g. 16:9).");

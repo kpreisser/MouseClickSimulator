@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Net;
 using System.Windows.Forms;
 
 namespace TTMouseclickSimulator.Core.Environment
@@ -81,7 +80,8 @@ namespace TTMouseclickSimulator.Core.Environment
         public unsafe WindowPosition GetWindowPosition(
             IntPtr hWnd,
             out bool isInForeground,
-            bool failIfNotInForeground = true)
+            bool failIfNotInForeground = true,
+            bool failIfMinimized = true)
         {
             // Note: To always correctly get the window position, the application must be
             // per-monitor (V1 or V2) DPI aware. Otherwise, we would get altered
@@ -103,15 +103,15 @@ namespace TTMouseclickSimulator.Core.Environment
             if (!NativeMethods.ClientToScreen(hWnd, &relPos))
                 throw new Exception("Could not retrieve window client coordinates");
 
-            // Check if the window is minimized.
-            if (clientRect.right == 0 && clientRect.bottom == 0 && relPos.x == -32000 && relPos.y == -32000)
-                throw new Exception("The window has been minimized.");
-
             var pos = new WindowPosition()
             {
                 Coordinates = new Coordinates(relPos.x, relPos.y),
                 Size = new Size(clientRect.right, clientRect.bottom)
             };
+
+            // Check if the window is minimized.
+            if (failIfMinimized && pos.IsMinimized)
+                throw new Exception("The window has been minimized.");
 
             // Validate the position.
             this.ValidateWindowPosition(pos);
@@ -131,12 +131,13 @@ namespace TTMouseclickSimulator.Core.Environment
         public void CreateWindowScreenshot(
             IntPtr hWnd,
             ref ScreenshotContent existingScreenshot,
+            bool failIfNotInForeground = true,
             bool fromScreen = false)
         {
             bool isInForeground;
             ScreenshotContent.Create(
                 fromScreen ? IntPtr.Zero : hWnd,
-                this.GetWindowPosition(hWnd, out isInForeground),
+                this.GetWindowPosition(hWnd, out isInForeground, failIfNotInForeground),
                 ref existingScreenshot);
         }
 
@@ -155,7 +156,7 @@ namespace TTMouseclickSimulator.Core.Environment
             this.DoMouseInput(0, 0, false, false);
         }
 
-        private unsafe void DoMouseInput(int x, int y, bool absoluteCoordinates, bool? mouseDown)
+        private void DoMouseInput(int x, int y, bool absoluteCoordinates, bool? mouseDown)
         {
             // Convert the screen coordinates into mouse coordinates.
             var cs = new Coordinates(x, y);
@@ -234,17 +235,17 @@ namespace TTMouseclickSimulator.Core.Environment
             return new Coordinates(cursorPosition.X, cursorPosition.Y);
         }
 
-        public void PressKey(VirtualKeyShort keyCode)
+        public void PressKey(VirtualKey keyCode)
         {
             this.PressOrReleaseKey(keyCode, true);
         }
 
-        public void ReleaseKey(VirtualKeyShort keyCode)
+        public void ReleaseKey(VirtualKey keyCode)
         {
             this.PressOrReleaseKey(keyCode, false);
         }
 
-        private unsafe void PressOrReleaseKey(VirtualKeyShort keyCode, bool down)
+        private void PressOrReleaseKey(VirtualKey keyCode, bool down)
         {
             var ki = new NativeMethods.KEYBDINPUT
             {
@@ -266,7 +267,7 @@ namespace TTMouseclickSimulator.Core.Environment
             NativeMethods.SendInput(input);
         }
 
-        public unsafe void WriteText(string characters)
+        public void WriteText(string characters)
         {
             var inputs = new NativeMethods.INPUT[2 * characters.Length];
 
@@ -296,6 +297,107 @@ namespace TTMouseclickSimulator.Core.Environment
             NativeMethods.SendInputs(inputs);
         }
 
+        public void MoveWindowMouse(IntPtr hWnd, int x, int y, bool isButtonDown)
+        {
+            NativeMethods.MK flags = 0;
+
+            if (isButtonDown)
+                flags |= NativeMethods.MK.LBUTTON;
+
+            // We only send WM_LBUTTON and WM_LBUTTONUP messages, but no WM_MOUSEMOVE messages,
+            // as in the latter case, the OS would send a WM_MOUSELEAVE message shortly
+            // afterwards if the window is currently inactive, which would cause the operation
+            // to not work correctly.
+            if (isButtonDown)
+            {
+                this.SendWindowMouseMessage(hWnd, NativeMethods.WM.LBUTTONDOWN, x, y, flags);
+            }
+        }
+
+        public void PressWindowMouseButton(IntPtr hWnd, int x, int y)
+        {
+            this.SendWindowMouseMessage(
+                hWnd,
+                NativeMethods.WM.LBUTTONDOWN,
+                x,
+                y,
+                NativeMethods.MK.LBUTTON);
+        }
+
+        public void ReleaseWindowMouseButton(IntPtr hWnd, int x, int y)
+        {
+            // Note: There should be a short delay between calling PressWindowMouseButton
+            // and ReleaseWindowMouseBUtton.
+            this.SendWindowMouseMessage(hWnd, NativeMethods.WM.LBUTTONUP, x, y, 0);
+        }
+
+        private void SendWindowMouseMessage(
+            IntPtr hWnd,
+            NativeMethods.WM msg,
+            int x,
+            int y,
+            NativeMethods.MK flags)
+        {
+            ushort x16 = checked((ushort)x);
+            ushort y16 = checked((ushort)y);
+
+            int wParam = (int)flags;
+            int lParam = unchecked(x16 | (y16 << 16));
+
+            // Use SendMessage rather than PostMessage so that we wait until the target
+            // window has processed the message.
+            NativeMethods.SendMessageW(
+                hWnd,
+                msg,
+                (IntPtr)wParam,
+                (IntPtr)lParam);
+        }
+
+        public void PressWindowKey(IntPtr hWnd, VirtualKey keyCode)
+        {
+            this.PressOrReleaseWindowKey(hWnd, keyCode, true);
+        }
+
+        public void ReleaseWindowKey(IntPtr hWnd, VirtualKey keyCode)
+        {
+            this.PressOrReleaseWindowKey(hWnd, keyCode, false);
+        }
+
+        private void PressOrReleaseWindowKey(IntPtr hWnd, VirtualKey keyCode, bool down)
+        {
+            var msg = down ? NativeMethods.WM.WM_KEYDOWN : NativeMethods.WM.WM_KEYUP;
+            int wParam = (int)keyCode;
+            int lParam = 1; // Bit 0-15: Repeat Count
+
+            if (!down)
+                lParam |= 3 << 30; // Previous key state (bit 30) and transition state (bit 31)
+
+            if (keyCode == VirtualKey.Left || keyCode == VirtualKey.Right ||
+                keyCode == VirtualKey.Up || keyCode == VirtualKey.Down ||
+                keyCode == VirtualKey.Home || keyCode == VirtualKey.End)
+            {
+                // Specify the arrow keys as extended key (otherwise it would mean
+                // they originate from the number pad).
+                lParam |= 1 << 24;
+            }
+
+            NativeMethods.SendMessageW(hWnd, msg, (IntPtr)wParam, (IntPtr)lParam);
+        }
+
+        public void WriteWindowText(IntPtr hWnd, string characters)
+        {
+            foreach (char c in characters)
+            {
+                int wParam = c;
+                int lParam = 1; // Bit 0-15: Repeat Count
+
+                NativeMethods.SendMessageW(
+                    hWnd,
+                    NativeMethods.WM.WM_CHAR,
+                    (IntPtr)wParam,
+                    (IntPtr)lParam);
+            }
+        }
 
         public unsafe class ScreenshotContent : IScreenshotContent
         {
@@ -526,34 +628,18 @@ namespace TTMouseclickSimulator.Core.Environment
         }
 
 
-        public enum VirtualKeyShort : ushort
+        public enum VirtualKey : ushort
         {
-            ///<summary>
-            ///ENTER key
-            ///</summary>
             Enter = 0x0D,
-
-            ///<summary>
-            ///CTRL key
-            ///</summary>
             Control = 0x11,
 
-            ///<summary>
-            ///LEFT ARROW key
-            ///</summary>
             Left = 0x25,
-            ///<summary>
-            ///UP ARROW key
-            ///</summary>
             Up = 0x26,
-            ///<summary>
-            ///RIGHT ARROW key
-            ///</summary>
             Right = 0x27,
-            ///<summary>
-            ///DOWN ARROW key
-            ///</summary>
             Down = 0x28,
+
+            Home = 0x24,
+            End = 0x23
         }
     }
 }

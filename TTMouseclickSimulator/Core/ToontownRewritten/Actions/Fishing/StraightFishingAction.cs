@@ -1,10 +1,15 @@
 ﻿using System.Threading.Tasks;
+
 using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
     public class StraightFishingAction : AbstractFishingRodAction
     {
+        public StraightFishingAction()
+        {
+        }
+
         protected override int WaitingForFishResultDialogTime => 25000;
 
         protected override sealed async Task FinishCastFishingRodAsync(IInteractionProvider provider)
@@ -19,7 +24,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             await provider.WaitAsync(300);
             provider.ReleaseMouseButton();
         }
-
 
         public override string ToString() => "Straight Fishing Cast";
     }

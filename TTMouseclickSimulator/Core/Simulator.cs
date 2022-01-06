@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
+
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
@@ -9,7 +9,6 @@ namespace TTMouseclickSimulator.Core
     public class Simulator
     {
         private readonly IAction mainAction;
-        private readonly AbstractWindowsEnvironment environmentInterface;
 
         private readonly StandardInteractionProvider provider;
         private readonly Action cancelCallback;
@@ -18,17 +17,12 @@ namespace TTMouseclickSimulator.Core
 
         public event Action SimulatorStarted;
         public event Action SimulatorStopped;
-        public event Action<bool?> SimulatorInitializing;
+        public event Action<bool?> SimulatorInitializing; 
 
-        /// <summary>
-        /// When an exception (which is not a <see cref="SimulatorCanceledException"/>) occurs while an action runs,
-        /// this allows the action to check if it should retry or cancel the simulator (in that case, it should
-        /// throw an <see cref="SimulatorCanceledException"/>).
-        /// </summary>
-        public Func<Exception, Task<bool>> AsyncRetryHandler;
-        
-
-        public Simulator(IAction mainAction, AbstractWindowsEnvironment environmentInterface)
+        public Simulator(
+            IAction mainAction,
+            AbstractWindowsEnvironment environmentInterface,
+            bool backgroundMode)
         {
             if (mainAction == null)
                 throw new ArgumentNullException(nameof(mainAction));
@@ -36,10 +30,20 @@ namespace TTMouseclickSimulator.Core
                 throw new ArgumentNullException(nameof(environmentInterface));
 
             this.mainAction = mainAction;
-            this.environmentInterface = environmentInterface;
 
-            this.provider = new StandardInteractionProvider(this, environmentInterface, out this.cancelCallback);
+            this.provider = new StandardInteractionProvider(
+                this,
+                environmentInterface,
+                backgroundMode,
+                out this.cancelCallback);
         }
+
+        /// <summary>
+        /// When an exception (which is not a <see cref="SimulatorCanceledException"/>) occurs while an action runs,
+        /// this allows the action to check if it should retry or cancel the simulator (in that case, it should
+        /// throw an <see cref="SimulatorCanceledException"/>).
+        /// </summary>
+        public Func<Exception, Task<bool>> AsyncRetryHandler { get; set; }
 
         /// <summary>
         /// Asynchronously runs this simulator.
@@ -54,7 +58,7 @@ namespace TTMouseclickSimulator.Core
             {
                 using (this.provider)
                 {
-                    OnSimulatorStarted();
+                    this.OnSimulatorStarted();
 
                     // InitializeAsync() does not need to be in the try block because it has its own.
                     await this.provider.InitializeAsync();
@@ -74,6 +78,7 @@ namespace TTMouseclickSimulator.Core
                             await this.provider.CheckRetryForExceptionAsync(ex);
                             continue;
                         }
+
                         break;
                     }
                 }
@@ -81,7 +86,7 @@ namespace TTMouseclickSimulator.Core
             finally
             {
                 this.canceled = true;
-                OnSimulatorStopped();
+                this.OnSimulatorStopped();
             }
         }
 
@@ -98,17 +103,17 @@ namespace TTMouseclickSimulator.Core
 
         protected void OnSimulatorStarted()
         {
-            SimulatorStarted?.Invoke();
+            this.SimulatorStarted?.Invoke();
         }
 
         protected void OnSimulatorStopped()
         {
-            SimulatorStopped?.Invoke();
+            this.SimulatorStopped?.Invoke();
         }
 
         internal protected void OnSimulatorInitializing(bool? multipleWindowsAvailable)
         {
-            SimulatorInitializing?.Invoke(multipleWindowsAvailable);
+            this.SimulatorInitializing?.Invoke(multipleWindowsAvailable);
         }
     }
 }

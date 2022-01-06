@@ -9,9 +9,11 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         public ScreenshotColor BubbleColor { get; }
         public AbstractFishingRodAction.Tolerance Tolerance { get; }
 
-
-        public FishingSpotData(Coordinates scan1, Coordinates scan2,
-            ScreenshotColor bubbleColor, AbstractFishingRodAction.Tolerance tolerance)
+        public FishingSpotData(
+            Coordinates scan1,
+            Coordinates scan2,
+            ScreenshotColor bubbleColor,
+            AbstractFishingRodAction.Tolerance tolerance)
         {
             this.Scan1 = scan1;
             this.Scan2 = scan2;

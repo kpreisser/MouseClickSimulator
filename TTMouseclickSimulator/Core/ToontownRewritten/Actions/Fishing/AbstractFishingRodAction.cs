@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
@@ -24,7 +25,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         /// Coordinates to use when we check for an error dialog. All of these coordinates must have the
         /// fish dialog color.
         /// </summary>
-        private static readonly Coordinates[]  fishErrorDialogCoordinates =
+        private static readonly Coordinates[] fishErrorDialogCoordinates =
         {
             new Coordinates(530, 766),
             new Coordinates(530, 490),
@@ -34,6 +35,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         private static readonly ScreenshotColor fishDialogColor =
             new ScreenshotColor(255, 255, 191);
 
+        public AbstractFishingRodAction()
+        {
+        }
 
         // This is determined by the class type, not by the instance so implement it
         // as abstract property instead of a field. This avoids it being serialized.
@@ -43,21 +47,17 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         /// </summary>
         protected abstract int WaitingForFishResultDialogTime { get; }
 
-
-        public AbstractFishingRodAction()
-        {
-        }
-
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             // Cast the fishing rod
-            OnActionInformationUpdated("Casting…");
-            await StartCastFishingRodAsync(provider);
-            await FinishCastFishingRodAsync(provider);
+            this.OnActionInformationUpdated("Casting…");
+            await this.StartCastFishingRodAsync(provider);
+            await this.FinishCastFishingRodAsync(provider);
 
             // Then, wait until we find a window displaying the caught fish
             // or the specified number of seconds has passed.
-            OnActionInformationUpdated("Waiting for the fish result dialog…");
+            this.OnActionInformationUpdated("Waiting for the fish result dialog…");
+
             var sw = new Stopwatch();
             sw.Start();
 
@@ -75,7 +75,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                         c, MouseHelpers.ReferenceWindowSize);
                     var col = screenshot.GetPixel(cc);
 
-                    if (CompareColor(fishDialogColor, col, 10))
+                    if (this.CompareColor(fishDialogColor, col, 10))
                     {
                         // OK, we caught a fish, so break from the loop.
                         found = true;
@@ -84,7 +84,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 }
             }
         }
-
 
         /// <summary>
         /// Clicks on the fishing rod button.
@@ -95,7 +94,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         {
             var coords = new Coordinates(800, 846);
             var pos = provider.GetCurrentWindowPosition();
-            coords = pos.ScaleCoordinates(coords,
+
+            coords = pos.ScaleCoordinates(
+                coords,
                 MouseHelpers.ReferenceWindowSize);
 
             // Move the mouse and press the button.
@@ -104,10 +105,12 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 
             await provider.WaitAsync(300);
 
-            CheckForFishErrorDialog(provider);
+            this.CheckForFishErrorDialog(provider);
         }
 
-        protected bool CompareColor(ScreenshotColor refColor, ScreenshotColor actualColor,
+        protected bool CompareColor(
+            ScreenshotColor refColor,
+            ScreenshotColor actualColor,
             Tolerance tolerance)
         {
             // Simply compare the discrepancy of the R, G and B values
@@ -131,7 +134,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         /// <param name="provider"></param>
         /// <returns></returns>
         protected abstract Task FinishCastFishingRodAsync(IInteractionProvider provider);
-        
 
         private void CheckForFishErrorDialog(IInteractionProvider provider)
         {
@@ -141,7 +143,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             bool foundDialog = true;
             foreach (var point in fishErrorDialogCoordinates)
             {
-                if (!CompareColor(fishDialogColor, screenshot.GetPixel(
+                if (!this.CompareColor(fishDialogColor, screenshot.GetPixel(
                     screenshot.WindowPosition.ScaleCoordinates(point, MouseHelpers.ReferenceWindowSize)), 4))
                 {
                     foundDialog = false;
@@ -156,12 +158,23 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
         }
 
 
-
-        public class Tolerance
+        public struct Tolerance
         {
             public byte ToleranceR { get; }
             public byte ToleranceG { get; }
             public byte ToleranceB { get; }
+
+            public Tolerance(byte toleranceR, byte toleranceG, byte toleranceB)
+            {
+                this.ToleranceR = toleranceR;
+                this.ToleranceG = toleranceG;
+                this.ToleranceB = toleranceB;
+            }
+
+            public Tolerance(byte tolerance)
+                : this(tolerance, tolerance, tolerance)
+            {
+            }
 
             public byte GetValueFromIndex(int index)
             {
@@ -176,18 +189,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                     default:
                         throw new ArgumentOutOfRangeException(nameof(index));
                 }
-            }
-
-            public Tolerance(byte toleranceR, byte toleranceG, byte toleranceB)
-            {
-                this.ToleranceR = toleranceR;
-                this.ToleranceG = toleranceG;
-                this.ToleranceB = toleranceB;
-            }
-
-            public Tolerance(byte tolerance)
-                : this(tolerance, tolerance, tolerance)
-            {
             }
 
             public static implicit operator Tolerance(byte value) => new Tolerance(value);

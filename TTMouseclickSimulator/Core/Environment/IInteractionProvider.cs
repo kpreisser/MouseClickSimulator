@@ -69,9 +69,9 @@ namespace TTMouseclickSimulator.Core.Environment
 
         void ReleaseMouseButton();
 
-        void PressKey(AbstractWindowsEnvironment.VirtualKeyShort key);
+        void PressKey(AbstractWindowsEnvironment.VirtualKey key);
 
-        void ReleaseKey(AbstractWindowsEnvironment.VirtualKeyShort key);
+        void ReleaseKey(AbstractWindowsEnvironment.VirtualKey key);
 
         /// <summary>
         /// Writes the given string into the window.

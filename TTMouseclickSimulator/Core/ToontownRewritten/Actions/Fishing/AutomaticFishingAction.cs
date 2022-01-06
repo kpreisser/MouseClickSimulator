@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+
 using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
 {
     public class AutomaticFishingAction : AbstractFishingRodAction
     {
-        private FishingSpotData spotData;
-
-        protected override int WaitingForFishResultDialogTime => 6000;
+        private readonly FishingSpotData spotData;
 
         public AutomaticFishingAction(int[] scan1, int[] scan2, byte[] bubbleColorRgb, byte[] toleranceRgb)
         {
@@ -19,13 +18,14 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                 new ScreenshotColor(bubbleColorRgb[0], bubbleColorRgb[1], bubbleColorRgb[2]),
                 new Tolerance(toleranceRgb[0], toleranceRgb[1], toleranceRgb[2]));
         }
-        
+
+        protected override int WaitingForFishResultDialogTime => 6000;
 
         protected override sealed async Task FinishCastFishingRodAsync(IInteractionProvider provider)
         {
             // Try to find a bubble.
             const string actionInformationScanning = "Scanning for fish bubbles…";
-            OnActionInformationUpdated(actionInformationScanning);
+            this.OnActionInformationUpdated(actionInformationScanning);
 
             const int scanStep = 15;
 
@@ -35,6 +35,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
             Coordinates? oldCoords = null;
             Coordinates? newCoords;
             int coordsMatchCounter = 0;
+
             while (true)
             {
                 var screenshot = provider.GetCurrentWindowScreenshot();
@@ -50,21 +51,22 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                         var c = new Coordinates(x, y);
                         c = screenshot.WindowPosition.ScaleCoordinates(c,
                             MouseHelpers.ReferenceWindowSize);
-                        if (CompareColor(this.spotData.BubbleColor, screenshot.GetPixel(c),
+
+                        if (this.CompareColor(this.spotData.BubbleColor, screenshot.GetPixel(c),
                             this.spotData.Tolerance))
                         {
                             newCoords = new Coordinates(x + 20, y + 20);
                             var scaledCoords = screenshot.WindowPosition.ScaleCoordinates(
                                 newCoords.Value, MouseHelpers.ReferenceWindowSize);
 
-                            OnActionInformationUpdated($"Found bubble at {scaledCoords.X}, {scaledCoords.Y}…");
+                            this.OnActionInformationUpdated($"Found bubble at {scaledCoords.X}, {scaledCoords.Y}…");
                             break;
                         }
                     }
                 }
-                if (!newCoords.HasValue)
-                    OnActionInformationUpdated(actionInformationScanning);
 
+                if (!newCoords.HasValue)
+                    this.OnActionInformationUpdated(actionInformationScanning);
 
                 if (newCoords.HasValue && oldCoords.HasValue
                     && Math.Abs(oldCoords.Value.X - newCoords.Value.X) <= scanStep
@@ -109,14 +111,13 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                     MouseHelpers.ReferenceWindowSize, VerticalScaleAlignment.NoAspectRatio);
                 provider.MoveMouse(coords);
 
-
                 if (coordsMatchCounter == 2)
                 {
                     // If we found the same coordinates two times, we assume
                     // the bubble is not moving at the moment.
                     break;
                 }
-                
+
                 await provider.WaitAsync(500);
 
                 // Ensure we don't wait longer than 36 seconds.
@@ -124,12 +125,10 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
                     break;
             }
 
-
             // There is no need to wait here because the mouse has already been positioned and we
             // waited at least 2x 500 ms at the new position, so now just release the mouse button.
             provider.ReleaseMouseButton();
         }
-
 
         public override string ToString() => $"Automatic Fishing – "
                 + $"Color: [{this.spotData.BubbleColor.r}, {this.spotData.BubbleColor.g}, {this.spotData.BubbleColor.b}]";

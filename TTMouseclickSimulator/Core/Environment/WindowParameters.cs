@@ -1,5 +1,5 @@
 ﻿namespace TTMouseclickSimulator.Core.Environment
-{    
+{
     /// <summary>
     /// Specifies parameters of the destination window in pixels.
     /// Note that the window border is excluded.
@@ -9,13 +9,23 @@
         /// <summary>
         /// The coordinates to the upper left point of the window contents.
         /// </summary>
-        public Coordinates Coordinates { get; set; }
+        public Coordinates Coordinates
+        {
+            get;
+            set;
+        }
         /// <summary>
         /// The size of the window contents.
         /// </summary>
-        public Size Size { get; set; }
+        public Size Size
+        {
+            get;
+            set;
+        }
 
-        
+        public bool IsMinimized => this.Coordinates.X == -32000 && this.Coordinates.Y == -32000 &&
+            this.Size.Width == 0 && this.Size.Height == 0;
+
         public Coordinates RelativeToAbsoluteCoordinates(Coordinates c)
         {
             return this.Coordinates.Add(c);

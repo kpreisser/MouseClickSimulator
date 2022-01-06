@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,12 +28,12 @@ namespace TTMouseclickSimulator
         private const string ProjectFileExtension = ".xml";
         private const string SampleProjectsFolderName = "SampleProjects";
 
-
         private SimulatorProject project;
         private SimulatorConfiguration.QuickActionDescriptor currentQuickAction;
         private Button[] quickActionButtons;
 
         private Simulator simulator;
+
         // Callbacks that we need to call when we start or stop the simulator.
         private Action simulatorStartAction, simulatorStopAction;
 
@@ -45,11 +43,10 @@ namespace TTMouseclickSimulator
         private bool closeWindowAfterStop;
         
         private readonly Microsoft.Win32.OpenFileDialog openFileDialog;
-
         
         public MainWindow()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             this.lblAppName.Content = AppName;
             this.Title = AppName;
@@ -60,17 +57,18 @@ namespace TTMouseclickSimulator
             // Set the initial directory to the executable path or the "SampleProjects" folder if it exists.
             string exeDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             string sampleProjectsPath = Path.Combine(exeDirectory, SampleProjectsFolderName);
+
             if (Directory.Exists(sampleProjectsPath))
                 this.openFileDialog.InitialDirectory = sampleProjectsPath;
             else
                 this.openFileDialog.InitialDirectory = exeDirectory;
 
-            RefreshProjectControls();
+            this.RefreshProjectControls();
         }
 
         private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            await RunSimulatorAsync();
+            await this.RunSimulatorAsync();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -80,7 +78,7 @@ namespace TTMouseclickSimulator
             if (this.simulator != null)
             {
                 e.Cancel = true;
-                Hide();
+                this.Hide();
 
                 this.closeWindowAfterStop = true;
                 this.simulator.Cancel();
@@ -92,25 +90,35 @@ namespace TTMouseclickSimulator
             this.btnStart.IsEnabled = false;
             this.btnStop.IsEnabled = true;
             this.btnLoad.IsEnabled = false;
+            this.chkEnableBackgroundMode.IsEnabled = false;
+
             if (this.quickActionButtons != null)
+            {
                 foreach (var bt in this.quickActionButtons)
                     bt.IsEnabled = false;
+            }
 
+            bool backgroundMode = this.chkEnableBackgroundMode.IsChecked == true;
 
             // Run the simulator in another task so it is not executed in the GUI thread.
             // However, we then await that new task so we are notified when it is finished.
-            var runException = null as Exception;
             this.simulatorStartAction?.Invoke();
+
+            var runException = default(Exception);
             await Task.Run(async () =>
             {
                 try
                 {
                     var environment = TTRWindowsEnvironment.Instance;
 
-                    var sim = this.simulator = new Simulator(this.currentQuickAction != null ? this.currentQuickAction.Action :
-                        this.project.Configuration.MainAction, environment);
+                    var sim = this.simulator = new Simulator(
+                        this.currentQuickAction != null ?
+                            this.currentQuickAction.Action :
+                            this.project.Configuration.MainAction,
+                        environment,
+                        backgroundMode);
 
-                    sim.AsyncRetryHandler = async ex => !this.closeWindowAfterStop && await HandleSimulatorRetryAsync(sim, ex);
+                    sim.AsyncRetryHandler = async ex => !this.closeWindowAfterStop && await this.HandleSimulatorRetryAsync(sim, ex);
 
                     sim.SimulatorInitializing += multipleWindowsAvailable => this.Dispatcher.Invoke(new Action(() =>
                     {
@@ -120,7 +128,8 @@ namespace TTMouseclickSimulator
                             this.overlayMessageBorder.Visibility = Visibility.Visible;
 
                             this.overlayMessageTextBlock.Text = multipleWindowsAvailable.Value ?
-                                    "Multiple Toontown windows detected. Please activate the window that the Simulator should use." :
+                                    "Multiple Toontown windows detected. Please activate the " +
+                                    "window that the Simulator should use." :
                                     "Waiting for the window to be activated...";
                         }
                         else
@@ -137,6 +146,7 @@ namespace TTMouseclickSimulator
                     runException = ex;   
                 }
             });
+
             this.simulatorStopAction?.Invoke();
 
             // Don't show a messagebox if we need to close the window.
@@ -155,7 +165,7 @@ namespace TTMouseclickSimulator
                 dialog.Show(this);
             }
 
-            HandleSimulatorCanceled();
+            this.HandleSimulatorCanceled();
         }
 
         private async Task<bool> HandleSimulatorRetryAsync(Simulator sim, Exception ex)
@@ -220,21 +230,23 @@ namespace TTMouseclickSimulator
             this.btnStart.IsEnabled = true;
             this.btnStop.IsEnabled = false;
             this.btnLoad.IsEnabled = true;
+            this.chkEnableBackgroundMode.IsEnabled = true;
+
             if (this.quickActionButtons != null)
+            {
                 foreach (var bt in this.quickActionButtons)
                     bt.IsEnabled = true;
+            }
 
             if (this.currentQuickAction != null)
             {
                 this.currentQuickAction = null;
-                RefreshProjectControls();
+                this.RefreshProjectControls();
             }
 
             if (this.closeWindowAfterStop)
-                Close();
+                this.Close();
         }
-
-
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
@@ -249,8 +261,11 @@ namespace TTMouseclickSimulator
                 // Try to load the given project.
                 try
                 {
-                    using (var fs = new FileStream(this.openFileDialog.FileName, FileMode.Open,
-                            FileAccess.Read, FileShare.Read))
+                    using (var fs = new FileStream(
+                        this.openFileDialog.FileName,
+                        FileMode.Open,
+                        FileAccess.Read,
+                        FileShare.Read))
                     {
                         this.project = XmlProjectDeserializer.Deserialize(fs);
                     }
@@ -279,10 +294,11 @@ namespace TTMouseclickSimulator
                 {
                     foreach (var b in this.quickActionButtons)
                         this.gridProjectControls.Children.Remove(b);
+
                     this.quickActionButtons = null;
                 }
 
-                RefreshProjectControls();
+                this.RefreshProjectControls();
 
                 // For each quick action, create a button.
                 this.quickActionButtons = new Button[this.project.Configuration.QuickActions.Count];
@@ -303,9 +319,9 @@ namespace TTMouseclickSimulator
                     b.Click += async (_s, _e) =>
                     {
                         this.currentQuickAction = quickAction;
-                        RefreshProjectControls();
+                        this.RefreshProjectControls();
 
-                        await RunSimulatorAsync();
+                        await this.RunSimulatorAsync();
                     };
                 }
             }
@@ -315,6 +331,7 @@ namespace TTMouseclickSimulator
         {
             this.lblActionTitle.Content = this.currentQuickAction != null ? this.currentQuickAction.Name 
                 : this.project?.Configuration.MainAction != null ? actionTitleMainAction : "";
+
             if (this.project == null)
             {
                 this.lblCurrentProject.Content = "(none)";
@@ -334,10 +351,20 @@ namespace TTMouseclickSimulator
                 if (mainAct != null)
                 {
                     int posCounter = 0;
-                    CreateActionLabels(mainAct, this.actionListGrid, 0, ref posCounter,
+                    this.CreateActionLabels(mainAct, this.actionListGrid, 0, ref posCounter,
                         out this.simulatorStartAction, out this.simulatorStopAction);
                 }
             }
+        }
+
+        private void HandleChkEnableBackgroundModeChecked(object sender, RoutedEventArgs e)
+        {
+            this.textBlockStopSimulatorNote.Visibility = Visibility.Collapsed;
+        }
+
+        private void HandleChkEnableBackgroundModeUnchecked(object sender, RoutedEventArgs e)
+        {
+            this.textBlockStopSimulatorNote.Visibility = Visibility.Visible;
         }
 
         private void CreateActionLabels(IAction action, Grid grid, int recursiveCount, 
@@ -365,15 +392,15 @@ namespace TTMouseclickSimulator
             posCounter++;
 
             if (action is IActionContainer)
-            {
-                
+            {                
                 var cont = (IActionContainer)action;
                 var subActions = cont.SubActions;
                 var handleStartActions = new Action[subActions.Count];
                 var handleStopActions = new Action[subActions.Count];
+
                 for (int i = 0; i < subActions.Count; i++)
                 {
-                    CreateActionLabels(subActions[i], grid, recursiveCount + 1, ref posCounter,
+                    this.CreateActionLabels(subActions[i], grid, recursiveCount + 1, ref posCounter,
                         out handleStartActions[i], out handleStopActions[i]);
                 }
 

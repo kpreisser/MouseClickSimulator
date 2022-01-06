@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
@@ -9,16 +10,14 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
     /// </summary>
     public class PressKeyAction : AbstractAction
     {
-
-        private readonly AbstractWindowsEnvironment.VirtualKeyShort key;
+        private readonly AbstractWindowsEnvironment.VirtualKey key;
         private readonly int duration;
 
-        public PressKeyAction(AbstractWindowsEnvironment.VirtualKeyShort key, int duration)
+        public PressKeyAction(AbstractWindowsEnvironment.VirtualKey key, int duration)
         {
             this.key = key;
             this.duration = duration;
         }
-
 
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
@@ -27,7 +26,6 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
             await provider.WaitAsync(this.duration, true);
             provider.ReleaseKey(this.key);
         }
-
 
         public override string ToString() => $"Press Key – Key: {this.key}, Duration: {this.duration}";
     }
