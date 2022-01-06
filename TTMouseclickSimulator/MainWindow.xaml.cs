@@ -278,7 +278,7 @@ namespace TTMouseclickSimulator
                         MainInstruction = "Could not load the selected project.",
                         Content = ex.Message,
                         ExpandedInformation = GetExceptionDetailsText(ex),
-                        MainIcon = TaskDialog.TaskDialogIcon.SecurityErrorBar,
+                        MainIcon = TaskDialog.TaskDialogIcon.Stop,
                         MainUpdateIcon = TaskDialog.TaskDialogIcon.Stop,
                         CommonButtons = TaskDialog.TaskDialogButtons.OK
                     };

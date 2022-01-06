@@ -31,7 +31,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment
             {
                 throw new ArgumentException(
                     "Could not find Toontown Rewritten. Please make sure " +
-                    "TT Rewritten is running before starting the simulator.");
+                    "TT Rewritten is running before starting the simulator.\n\n" +
+                    "If you're running Toontown Rewritten as administrator, you may also " +
+                    "need to the simulator as administrator.");
             }
 
             return processes;

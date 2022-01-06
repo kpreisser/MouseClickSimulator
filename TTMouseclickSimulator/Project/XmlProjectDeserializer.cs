@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Xml.Linq;
 
 using TTMouseclickSimulator.Core;
@@ -111,7 +113,7 @@ namespace TTMouseclickSimulator.Project
             {
                 i++;
 
-                var quickActionName = el.Attribute("title")?.Value ?? $"Quick Action [{i.ToString()}]";
+                var quickActionName = el.Attribute("title")?.Value ?? $"Quick Action [{i}]";
                 var quickActionList = ParseActionList(el);
                 if (quickActionList.Count != 1)
                 {
@@ -201,16 +203,19 @@ namespace TTMouseclickSimulator.Project
                             }
                             else if (param.ParameterType.IsAssignableFrom(typeof(double)))
                             {
-                                double number = double.Parse(attrval.Trim(), 
+                                double number = double.Parse(
+                                    attrval.Trim(), 
                                     CultureInfo.InvariantCulture);
                                 parameterValues[i] = number;
                             }
                             else if (param.ParameterType.IsAssignableFrom(typeof(int[]))
                                 || param.ParameterType.IsAssignableFrom(typeof(byte[])))
                             {
-                                var valueElements = attrval.Split(new string[] { "," }, 
+                                var valueElements = attrval.Split(
+                                    new string[] { "," }, 
                                     StringSplitOptions.RemoveEmptyEntries);
-                                var values = Array.CreateInstance(param.ParameterType.GetElementType(),
+                                var values = Array.CreateInstance(
+                                    param.ParameterType.GetElementType(),
                                     valueElements.Length);
 
                                 for (int j = 0; j < valueElements.Length; j++)
@@ -280,7 +285,18 @@ namespace TTMouseclickSimulator.Project
 
 
                     // Now instanciate the IAction.
-                    var instance = (IAction)constr.Invoke(parameterValues);
+                    IAction instance;
+                    try
+                    {
+                        instance = (IAction)constr.Invoke(parameterValues);
+                    }
+                    catch (TargetInvocationException ex)
+                    {
+                        // Unwrap and throw the exception.
+                        ExceptionDispatchInfo.Capture(ex.InnerException ?? ex).Throw();
+                        throw; // Satisfy CFA
+                    }
+
                     actionList.Add(instance);
                 }
             }
