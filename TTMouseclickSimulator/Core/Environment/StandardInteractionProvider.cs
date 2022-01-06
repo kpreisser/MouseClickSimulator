@@ -298,7 +298,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 /*
                  * Instead of using a wait method for the complete timeout (which is a bit
                  * inaccurate depending on the OS timer resolution, we use the specified
-                 * timeout - 5 to wait and then call Thread.SpinWait() to loop until the
+                 * timeout - 15 to wait and then call Thread.SpinWait() to loop until the
                  * complete wait interval has been reached which we measure using a
                  * high-resolution timer.
                  * This means shortly before this method returns there will be a bit CPU
@@ -307,7 +307,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 var sw = new Stopwatch();
                 sw.Start();
 
-                int waitTime = millisecondsTimeout - 5;
+                int waitTime = millisecondsTimeout - 15;
                 await this.WaitSemaphoreInternalAsync(waitTime);
 
                 // For the remaining time, loop until the complete time has passed.
