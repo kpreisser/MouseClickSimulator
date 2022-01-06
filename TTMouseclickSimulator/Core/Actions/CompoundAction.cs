@@ -12,7 +12,7 @@ namespace TTMouseclickSimulator.Core.Actions
     public class CompoundAction : AbstractActionContainer
     {
         public const int PauseIntervalMinimum = 0;
-        public const int PauseIntervalMaximum = 60000;
+        public const int PauseIntervalMaximum = 600000;
 
         private readonly IList<IAction> actionList;
         private readonly CompoundActionType type;
@@ -70,7 +70,6 @@ namespace TTMouseclickSimulator.Core.Actions
         {
             // Run the actions.
             int currentIdx = -1;
-            var randomOrder = default(int[]);
 
             Func<int> getNextActionIndex;
             if (this.type == CompoundActionType.Sequential)
@@ -85,7 +84,7 @@ namespace TTMouseclickSimulator.Core.Actions
             }
             else
             {
-                randomOrder = new int[this.actionList.Count];
+                var randomOrder = new int[this.actionList.Count];
                 getNextActionIndex = () =>
                 {
                     if (!this.loop && currentIdx + 1 == this.actionList.Count)
@@ -98,7 +97,7 @@ namespace TTMouseclickSimulator.Core.Actions
                         for (int i = 0; i < randomOrder.Length; i++)
                             randomOrder[i] = i;
 
-                        for (int i = 0; i < randomOrder.Length; i++)
+                        for (int i = 0; i < randomOrder.Length - 1; i++)
                         {
                             int rIdx = this.rng.Next(randomOrder.Length - i);
                             int tmp = randomOrder[i];
