@@ -346,7 +346,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
             // Use SendMessage rather than PostMessage so that we wait until the target
             // window has processed the message.
-            NativeMethods.SendMessageW(
+            NativeMethods.SendMessageManaged(
                 hWnd,
                 msg,
                 (IntPtr)wParam,
@@ -381,7 +381,9 @@ namespace TTMouseclickSimulator.Core.Environment
                 lParam |= 1 << 24;
             }
 
-            NativeMethods.SendMessageW(hWnd, msg, (IntPtr)wParam, (IntPtr)lParam);
+            // Use SendMessage rather than PostMessage so that we wait until the target
+            // window has processed the message.
+            NativeMethods.SendMessageManaged(hWnd, msg, (IntPtr)wParam, (IntPtr)lParam);
         }
 
         public void WriteWindowText(IntPtr hWnd, string characters)
@@ -391,7 +393,7 @@ namespace TTMouseclickSimulator.Core.Environment
                 int wParam = c;
                 int lParam = 1; // Bit 0-15: Repeat Count
 
-                NativeMethods.SendMessageW(
+                NativeMethods.SendMessageManaged(
                     hWnd,
                     NativeMethods.WM.WM_CHAR,
                     (IntPtr)wParam,

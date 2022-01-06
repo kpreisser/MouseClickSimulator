@@ -16,7 +16,7 @@ namespace TTMouseclickSimulator.Core.Environment
             int cbSize);
 
         [DllImport("user32.dll", EntryPoint = "SendMessageW", ExactSpelling = true, SetLastError = true)]
-        public static extern IntPtr SendMessageW(
+        private static extern IntPtr SendMessageW(
             IntPtr hWnd,
             WM Msg,
             IntPtr wParam = default(IntPtr),
@@ -35,6 +35,9 @@ namespace TTMouseclickSimulator.Core.Environment
             WM Msg,
             IntPtr wParam = default(IntPtr),
             IntPtr lParam = default(IntPtr));
+
+        [DllImport("kernel32.dll", EntryPoint = "SetLastError", ExactSpelling = true)]
+        public static extern void SetLastError(uint dwErrCode);
 
         [DllImport("user32.dll", EntryPoint = "GetClientRect", ExactSpelling = true, SetLastError = true)]
         public static unsafe extern BOOL GetClientRect(IntPtr hWnd, RECT* lpRect);
@@ -93,6 +96,36 @@ namespace TTMouseclickSimulator.Core.Environment
                 if (SendInputNative((uint)inputs.Length, inputsPtr, sizeof(INPUT)) == 0)
                     throw new Win32Exception();
             }
+        }
+
+        public static IntPtr SendMessageManaged(
+            IntPtr hWnd,
+            WM Msg,
+            IntPtr wParam = default(IntPtr),
+            IntPtr lParam = default(IntPtr))
+        {
+            // Before calling SendMessageW, set the last Win32 error code to 0, so that
+            // we can later detect whether an error occured. This is because SendMessageW
+            // only sets the last Win32 error if an error actually occured; however we
+            // have no way to detect whether this was the case from the return value.
+            // Note: Strictly speaking, this may not be reliable because the .NET runtime
+            // may call other Win32 APIs before actually calling SendMessageW (e.g.
+            // LoadLibraryW, GetProcAddress), but currently there's no other way to do
+            // this, so we rely on the current runtime behavior. Also, if these other
+            // Win32 calls would set an error code, it should mean our call to the
+            // native SendMessageW function will also fail.
+            SetLastError(0);
+
+            var result = SendMessageW(
+                hWnd,
+                Msg,
+                wParam,
+                lParam);
+
+            if (Marshal.GetLastWin32Error() != 0)
+                throw new Win32Exception();
+
+            return result;
         }
 
         [StructLayout(LayoutKind.Sequential)]
