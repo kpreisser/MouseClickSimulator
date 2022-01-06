@@ -344,13 +344,15 @@ namespace TTMouseclickSimulator.Core.Environment
             int wParam = (int)flags;
             int lParam = unchecked(x16 | (y16 << 16));
 
-            // Use SendMessage rather than PostMessage so that we wait until the target
-            // window has processed the message.
-            NativeMethods.SendMessageManaged(
+            // Use PostMessage (which doesn't block until the message was processed
+            // by the target window) so that the timings are similar as to when using
+            // using SendInput.
+            if (!NativeMethods.PostMessageW(
                 hWnd,
                 msg,
                 (IntPtr)wParam,
-                (IntPtr)lParam);
+                (IntPtr)lParam))
+                throw new Win32Exception();
         }
 
         public void PressWindowKey(IntPtr hWnd, VirtualKey keyCode)
@@ -381,9 +383,11 @@ namespace TTMouseclickSimulator.Core.Environment
                 lParam |= 1 << 24;
             }
 
-            // Use SendMessage rather than PostMessage so that we wait until the target
-            // window has processed the message.
-            NativeMethods.SendMessageManaged(hWnd, msg, (IntPtr)wParam, (IntPtr)lParam);
+            // Use PostMessage (which doesn't block until the message was processed
+            // by the target window) so that the timings are similar as to when using
+            // using SendInput.
+            if (!NativeMethods.PostMessageW(hWnd, msg, (IntPtr)wParam, (IntPtr)lParam))
+                throw new Win32Exception();
         }
 
         public void WriteWindowText(IntPtr hWnd, string characters)
@@ -393,11 +397,12 @@ namespace TTMouseclickSimulator.Core.Environment
                 int wParam = c;
                 int lParam = 1; // Bit 0-15: Repeat Count
 
-                NativeMethods.SendMessageManaged(
+                if (!NativeMethods.PostMessageW(
                     hWnd,
                     NativeMethods.WM.WM_CHAR,
                     (IntPtr)wParam,
-                    (IntPtr)lParam);
+                    (IntPtr)lParam))
+                    throw new Win32Exception();
             }
         }
 
