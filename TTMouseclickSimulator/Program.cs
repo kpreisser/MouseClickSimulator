@@ -11,6 +11,13 @@ namespace TTMouseclickSimulator
             // Try to set a better timer resolution than the default 15 ms.
             TrySetWindowsHighTimerResolution();
 
+            // Enable support for long file paths.
+            // Additionally, enable automatic per-monitor DPI scaling.
+            // TODO: Remove these switches once we target.NET 4.6.2 or higher.
+            AppContext.SetSwitch("Switch.System.IO.UseLegacyPathHandling", false);
+            AppContext.SetSwitch("Switch.System.IO.BlockLongPaths", false);
+            AppContext.SetSwitch("Switch.System.Windows.DoNotScaleForDpiChanges", false);
+
             App.Main();
         }
 
