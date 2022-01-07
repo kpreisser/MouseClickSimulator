@@ -1,4 +1,4 @@
-# Mouse Click Simulator for TT Rewritten
+# Mouse Click Simulator for Toontown Rewritten
 
 This is a new implementation of the older **TT Mouse Click Simulator** that is intended to work with Toontown Rewritten. It is implemented in C# and runs on Windows on .NET Framework 4.6 or higher.
 
@@ -10,7 +10,7 @@ You can watch a video of the <a href="https://www.youtube.com/watch?v=uq7VaJkO6-
 
 ![](https://user-images.githubusercontent.com/13289184/148388183-a2010232-dec5-4d50-9893-0d9994b6ac17.png)
 
-Note: This Simulator does not inject code into or otherwise manipulate the game. It only interacts with TTR by creating screenshots to analyze the window content 
+Note: This Simulator does not inject code into or otherwise manipulate the game. It only interacts with TTR by taking screenshots to analyze the window content 
 (for the fishing action) and simulating mouse clicks/movements and pressing keys.
 
 When enabling **Background Mode**, the simulator directly sends mouse and keyboard inputs to the Toontown window (instead of simulating gobal inputs),
@@ -24,7 +24,7 @@ Toontown Rewritten states in their Terms of Use that you should not use automati
 
 Please see the topic [Running the Simulator](https://github.com/kpreisser/MouseClickSimulator/wiki/Running-the-Simulator) for guidance how to download, build and run the Mouse Click Simulator on your computer.
 
-## Development Status
+## Development
 
 Currently, the implementation contains actions for pressing keys, writing text, SpeedChat, Doodle Interaction Panel and the Automatic Fishing Function. Furthermore, an action for planting a flower is supported.
 
@@ -34,6 +34,26 @@ When opening a project, the GUI shows the actions which the project contains in 
 
 In addition to a "Main Action" which usually runs in a loop and can be started by clicking on the generic "Start" button (e.g. the fishing function), the Mouse Click Simulator supports "Quick Actions" 
 that can be short and non-repeating, e.g. actions to plant specific flowers. For each Quick Action, a button is created which will start the corresponsing Quick Action when clicking on it.
+
+### Specifying Mouse Coordinates
+
+Currently, mouse coordinates used in the simulator (e.g. in the `scan1` and `scan2` attributes of the `<AutomaticFishing>` element in the XML files, and in the source code calling `IInteractionProvider.MoveMouse()` or 
+`MouseHelpers.DoSimpleMouseClickAsync()`) are interpreted for a window with an inner (client area) size of **1600 × 1151** using a 4:3 aspect ratio. These values were kept from the legacy TT mouse click simulator.
+
+To specify mouse coordinates for Toontown Rewritten, you can do the following to get the resulting coordinates that can be used in the simulator:
+- In the Toontown Options, set the display resolution to **800 × 600**. Do **not** resize the window after applying this resolution.
+- Determine the (x, y) coordinates within the client area of the window (that is, without the window borders and title bar), e.g. by taking a screenshot with F9.
+- Calculate the resulting coordinates as follows:
+  - x<sub>result</sub> = x ÷ 800 × 1600
+  - y<sub>result</sub> = y ÷ 600 × 1151
+
+In the C# code, you have then also specify the alignment (which is needed when the current window aspect ratio is greater than 4:3).
+To determine this, resize your Toontown window to **increase the width** (or decrease the height).
+- If the element that your coordinates point to stays at the center of the window, specify `VerticalScaleAlignment.Center`, or omit this parameter.
+- Otherwise, if the element stays that the left hand side of the window, specify `VerticalScaleAlignment.Left`.
+- Otherwise, if the element stays that the right hand side of the window, specify `VerticalScaleAlignment.Right`.
+
+You can find an example for this in [issue #24](https://github.com/kpreisser/MouseClickSimulator/issues/24#issuecomment-306059882).
 
 ### TODOs:
 - Document how to use the Mouse Click Simulator.

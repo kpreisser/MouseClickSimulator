@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace TTMouseclickSimulator.Core.Environment
 {
     /// <summary>
-    /// Allows actions to interact with the destination window, e.g. press keys and
+    /// Allows actions to interact with the target window, e.g. press keys and
     /// simulate mouse clicks and to wait asynchronously.
     /// </summary>
     public interface IInteractionProvider : IDisposable
