@@ -9,29 +9,22 @@ namespace TTMouseclickSimulator.Core.Environment
 {
     internal class StandardInteractionProvider : IInteractionProvider, IDisposable
     {
-        private readonly object syncRoot = new object();
-
         private readonly bool backgroundMode;
 
-        private bool disposed = false;
-
-        /// <summary>
-        /// Specifies if this InteractionProvider has been canceled. This flag can be set by
-        /// another thread while the simulator is running, therefore we need to lock on 'syncRoot' to
-        /// access it.
-        /// </summary>
-        private bool canceled = false;
-
-        private readonly SemaphoreSlim waitSemaphore = new SemaphoreSlim(0);
+        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         private readonly Simulator simulator;
         private readonly AbstractWindowsEnvironment environmentInterface;
+
+        private readonly List<AbstractWindowsEnvironment.VirtualKey> keysCurrentlyPressed =
+                new List<AbstractWindowsEnvironment.VirtualKey>();
+
+        private bool disposed;
         private IntPtr windowHandle;
 
         private AbstractWindowsEnvironment.ScreenshotContent currentScreenshot;
-        private bool isMouseButtonPressed = false;
-        private List<AbstractWindowsEnvironment.VirtualKey> keysCurrentlyPressed =
-                new List<AbstractWindowsEnvironment.VirtualKey>();
+
+        private bool isMouseButtonPressed;
 
         // Window-relative (when using backgroundMode) or absolute mouse coordinates
         private Coordinates? lastSetMouseCoordinates;
@@ -39,13 +32,22 @@ namespace TTMouseclickSimulator.Core.Environment
         public StandardInteractionProvider(
                 Simulator simulator,
                 AbstractWindowsEnvironment environmentInterface,
-                bool backgroundMode,
-                out Action cancelCallback)
+                bool backgroundMode)
         {
             this.simulator = simulator;
             this.environmentInterface = environmentInterface;
             this.backgroundMode = backgroundMode;
-            cancelCallback = this.HandleCancelCallback;
+        }
+
+        public CancellationToken CancellationToken => this.cancellationTokenSource.Token;
+
+        /// <summary>
+        /// Cancels this provider. This method can be called from different thread(s)
+        /// while the simulator is running.
+        /// </summary>
+        public void Cancel()
+        {
+            this.cancellationTokenSource.Cancel();
         }
 
         public void Dispose()
@@ -81,7 +83,8 @@ namespace TTMouseclickSimulator.Core.Environment
 
                                 // When there is only one process, we simply bring the window to
                                 // the foreground (if we didn't do it already).
-                                this.windowHandle = this.environmentInterface.FindMainWindowHandleOfProcess(processes[0]);
+                                this.windowHandle = this.environmentInterface.FindMainWindowHandleOfProcess(
+                                    processes[0]);
 
                                 if (!this.backgroundMode)
                                 {
@@ -92,11 +95,15 @@ namespace TTMouseclickSimulator.Core.Environment
                                     }
 
                                     // Wait a bit so that the window can go into foreground.
-                                    await this.WaitSemaphoreInternalAsync(250, false);
+                                    await this.WaitCoreAsync(250, false);
 
                                     // If the window isn't in foreground, try again.
                                     bool isInForeground;
-                                    this.environmentInterface.GetWindowPosition(this.windowHandle, out isInForeground, false);
+                                    this.environmentInterface.GetWindowPosition(
+                                        this.windowHandle,
+                                        out isInForeground,
+                                        false);
+
                                     if (isInForeground)
                                         break;
                                 }
@@ -126,7 +133,10 @@ namespace TTMouseclickSimulator.Core.Environment
                                         var hWnd = this.environmentInterface.FindMainWindowHandleOfProcess(process);
 
                                         bool isInForeground;
-                                        this.environmentInterface.GetWindowPosition(hWnd, out isInForeground, false);
+                                        this.environmentInterface.GetWindowPosition(
+                                            hWnd,
+                                            out isInForeground,
+                                            false);
 
                                         if (isInForeground)
                                         {
@@ -146,7 +156,7 @@ namespace TTMouseclickSimulator.Core.Environment
                                     break;
 
                                 // If non of the windows is in foreground, wait a bit and try again.
-                                await this.WaitSemaphoreInternalAsync(250, false);
+                                await this.WaitCoreAsync(250, false);
                             }
                         }
                         finally
@@ -158,12 +168,36 @@ namespace TTMouseclickSimulator.Core.Environment
                     }
 
                     this.simulator.OnSimulatorInitializing(null);
+
+                    if (this.backgroundMode)
+                    {
+                        // When starting in background mode, wait a second before doing anything, to
+                        // handle the case when the user clicks into the window to activate it
+                        // (when more than one processes were detected).
+                        await this.WaitAsync(900);
+
+                        // Then, simulate a click to (0, 0). This seems currently to be necessary so
+                        // that the first WM_LBUTTONDOWN that we send to the window works correctly
+                        // if the window is currently inactive (otherwise, the first message would
+                        // have the effect that the mouse button is pressed but is then immediately
+                        // released; probably due to a WM_MOUSELEAVE message being sent by Windows).
+                        this.MoveMouse(0, 0);
+                        this.PressMouseButton();
+                        await this.WaitAsync(50);
+                        this.ReleaseMouseButton();
+                        await this.WaitAsync(50);
+                    }
+                    else
+                    {
+                        // Also wait a short time when not using background mode.
+                        await this.WaitAsync(500);
+                    }
                 }
                 catch (Exception ex)
                 {
                     this.simulator.OnSimulatorInitializing(null);
 
-                    if (!(ex is SimulatorCanceledException))
+                    if (!(ex is OperationCanceledException))
                     {
                         await this.CheckRetryForExceptionAsync(ex, false);
                         continue;
@@ -176,50 +210,6 @@ namespace TTMouseclickSimulator.Core.Environment
 
                 break;
             }
-
-            if (this.backgroundMode)
-            {
-                // When starting in background mode, wait a second before doing anything, to
-                // handle the case when the user clicks into the window to activate it
-                // (when more than one processes were detected).
-                await this.WaitAsync(900);
-
-                // Then, simulate a click to (0, 0). This seems currently to be necessary so
-                // that the first WM_LBUTTONDOWN that we send to the window works correctly
-                // if the window is currently inactive (otherwise, the first message would
-                // have the effect that the mouse button is pressed but is then immediately
-                // released; probably due to a WM_MOUSELEAVE message being sent by Windows).
-                this.MoveMouse(0, 0);
-                this.PressMouseButton();
-                await this.WaitAsync(50);
-                this.ReleaseMouseButton();
-                await this.WaitAsync(50);
-            }
-            else
-            {
-                // Also wait a short time when not using background mode.
-                await this.WaitAsync(500);
-            }
-        }
-
-        /// <summary>
-        /// Handles a callback to cancel the <see cref="StandardInteractionProvider"/>.
-        /// This method can be called concurrently from a different thread while the simulator is running.
-        /// </summary>
-        private void HandleCancelCallback()
-        {
-            // Need to lock to ensure the semaphore is not disposed while we call Release() on it
-            // from another thread.
-            lock (this.syncRoot)
-            {
-                if (!this.canceled)
-                {
-                    this.canceled = true;
-
-                    // Release the semaphore (so that a task that is waiting can continue).
-                    this.waitSemaphore.Release();
-                }
-            }
         }
 
         public Task CheckRetryForExceptionAsync(Exception ex)
@@ -227,93 +217,27 @@ namespace TTMouseclickSimulator.Core.Environment
             return this.CheckRetryForExceptionAsync(ex, true);
         }
 
-        private async Task CheckRetryForExceptionAsync(Exception ex, bool reinitialize)
-        {
-            if (this.simulator.AsyncRetryHandler == null)
-            {
-                // Simply rethrow the exception.
-                ExceptionDispatchInfo.Capture(ex).Throw();
-            }
-            else
-            {
-                // Need to release active keys etc.
-                this.CancelActiveInteractions();
-
-                bool result = await this.simulator.AsyncRetryHandler(ex);
-                if (!result)
-                    throw new SimulatorCanceledException();
-
-                // When trying again, we need to re-initialize.
-                if (reinitialize)
-                    await this.InitializeAsync();
-            }
-        }
-
-        /// <summary>
-        /// Checks that the InteractionProvider has not been canceled.
-        /// </summary>
-        public void EnsureNotCanceled()
-        {
-            lock (this.syncRoot)
-            {
-                if (this.canceled)
-                    throw new SimulatorCanceledException();
-            }
-        }
-
-        private async Task WaitSemaphoreInternalAsync(int milliseconds, bool checkWindow = true)
-        {
-            this.EnsureNotCanceled();
-
-            if (!checkWindow)
-            {
-                if (await this.waitSemaphore.WaitAsync(Math.Max(0, milliseconds)))
-                    this.EnsureNotCanceled();
-            }
-            else
-            {
-                // Wait max. 100 ms, and check if the TT window is still active.
-                var sw = new Stopwatch();
-                sw.Start();
-                while (true)
-                {
-                    // Check if the window is still active (and, if not using background mode,
-                    // in foreground).
-                    this.GetMainWindowPosition(failIfMinimized: !this.backgroundMode);
-
-                    long remaining = milliseconds - sw.ElapsedMilliseconds;
-                    if (remaining <= 0)
-                        break;
-
-                    if (await this.waitSemaphore.WaitAsync(Math.Min((int)remaining, 100)))
-                        this.EnsureNotCanceled();
-                }
-            }
-        }
-
         public async Task WaitAsync(int millisecondsTimeout, bool useAccurateTimer = false)
         {
             if (useAccurateTimer)
             {
-                /*
-                 * Instead of using a wait method for the complete timeout (which is a bit
-                 * inaccurate depending on the OS timer resolution, we use the specified
-                 * timeout - 15 to wait and then call Thread.SpinWait() to loop until the
-                 * complete wait interval has been reached which we measure using a
-                 * high-resolution timer.
-                 * This means shortly before this method returns there will be a bit CPU
-                 * usage but the actual time which we waited will be more accurate.
-                 */
+                // Instead of using a wait method for the complete timeout (which is a bit
+                // inaccurate depending on the OS timer resolution, we use the specified
+                // timeout - 15 to wait and then call Thread.SpinWait() to loop until the
+                // complete wait interval has been reached which we measure using a
+                // high-resolution timer.
+                // This means shortly before this method returns there will be a bit CPU
+                // usage but the actual time which we waited will be more accurate.
                 var sw = new Stopwatch();
                 sw.Start();
 
                 int waitTime = millisecondsTimeout - 15;
-                await this.WaitSemaphoreInternalAsync(waitTime);
+                await this.WaitCoreAsync(waitTime);
 
                 // For the remaining time, loop until the complete time has passed.
                 while (true)
                 {
-                    this.EnsureNotCanceled();
+                    this.CancellationToken.ThrowIfCancellationRequested();
 
                     long remaining = millisecondsTimeout - sw.ElapsedMilliseconds;
                     if (remaining <= 0)
@@ -325,32 +249,20 @@ namespace TTMouseclickSimulator.Core.Environment
             }
             else
             {
-                await this.WaitSemaphoreInternalAsync(millisecondsTimeout);
+                await this.WaitCoreAsync(millisecondsTimeout);
             }
-        }
-
-        private WindowPosition GetMainWindowPosition(bool failIfMinimized = true)
-        {
-            // Fail if the window is no longer in foreground (active) and we are not
-            // using background mode.
-            bool isInForeground;
-            return this.environmentInterface.GetWindowPosition(
-                this.windowHandle,
-                out isInForeground,
-                !this.backgroundMode,
-                failIfMinimized);
         }
 
         public WindowPosition GetCurrentWindowPosition()
         {
-            this.EnsureNotCanceled();
+            this.CancellationToken.ThrowIfCancellationRequested();
 
             return this.GetMainWindowPosition();
         }
 
         public IScreenshotContent GetCurrentWindowScreenshot()
         {
-            this.EnsureNotCanceled();
+            this.CancellationToken.ThrowIfCancellationRequested();
 
             this.environmentInterface.CreateWindowScreenshot(
                 this.windowHandle,
@@ -362,7 +274,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void PressKey(AbstractWindowsEnvironment.VirtualKey key)
         {
-            this.EnsureNotCanceled();
+            this.CancellationToken.ThrowIfCancellationRequested();
 
             // Check if the window is still active and in foreground.
             this.GetMainWindowPosition(failIfMinimized: !this.backgroundMode);
@@ -380,7 +292,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void ReleaseKey(AbstractWindowsEnvironment.VirtualKey key)
         {
-            this.EnsureNotCanceled();
+            this.CancellationToken.ThrowIfCancellationRequested();
 
             int kcpIdx = this.keysCurrentlyPressed.IndexOf(key);
             if (kcpIdx >= 0)
@@ -396,7 +308,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void WriteText(string text)
         {
-            this.EnsureNotCanceled();
+            this.CancellationToken.ThrowIfCancellationRequested();
 
             // Check if the window is still active and in foreground.
             this.GetMainWindowPosition(failIfMinimized: !this.backgroundMode);
@@ -414,7 +326,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void MoveMouse(Coordinates c)
         {
-            this.EnsureNotCanceled();
+            this.CancellationToken.ThrowIfCancellationRequested();
 
             if (!this.backgroundMode)
             {
@@ -440,7 +352,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void PressMouseButton()
         {
-            this.EnsureNotCanceled();
+            this.CancellationToken.ThrowIfCancellationRequested();
 
             if (!this.backgroundMode)
             {
@@ -469,7 +381,7 @@ namespace TTMouseclickSimulator.Core.Environment
 
         public void ReleaseMouseButton()
         {
-            this.EnsureNotCanceled();
+            this.CancellationToken.ThrowIfCancellationRequested();
 
             if (this.isMouseButtonPressed)
             {
@@ -489,7 +401,7 @@ namespace TTMouseclickSimulator.Core.Environment
             }
         }
 
-        private void CancelActiveInteractions()
+        public void CancelActiveInteractions()
         {
             // Release mouse buttons and keys that are currently pressed.
             if (this.isMouseButtonPressed)
@@ -520,6 +432,75 @@ namespace TTMouseclickSimulator.Core.Environment
             this.keysCurrentlyPressed.Clear();
         }
 
+        private async Task WaitCoreAsync(int milliseconds, bool checkWindow = true)
+        {
+            this.CancellationToken.ThrowIfCancellationRequested();
+
+            if (!checkWindow)
+            {
+                await Task.Delay(
+                    Math.Max(0, milliseconds),
+                    this.CancellationToken);
+            }
+            else
+            {
+                // Wait max. 100 ms, and check if the TT window is still active.
+                var sw = new Stopwatch();
+                sw.Start();
+                while (true)
+                {
+                    // Check if the window is still active (and, if not using background mode,
+                    // in foreground).
+                    this.GetMainWindowPosition(failIfMinimized: !this.backgroundMode);
+
+                    long remaining = milliseconds - sw.ElapsedMilliseconds;
+                    if (remaining <= 0)
+                        break;
+
+                    await Task.Delay(
+                        Math.Min((int)remaining, 100),
+                        this.CancellationToken);
+                }
+            }
+        }
+
+        private async Task CheckRetryForExceptionAsync(Exception ex, bool reinitialize)
+        {
+            if (this.simulator.AsyncRetryHandler == null)
+            {
+                // Simply rethrow the exception.
+                ExceptionDispatchInfo.Capture(ex).Throw();
+            }
+            else
+            {
+                // Need to release active keys etc.
+                this.CancelActiveInteractions();
+
+                bool result = await this.simulator.AsyncRetryHandler(ex);
+                if (!result)
+                {
+                    this.cancellationTokenSource.Cancel();
+                    this.CancellationToken.ThrowIfCancellationRequested();
+                }
+
+                // When trying again, we need to re-initialize.
+                if (reinitialize)
+                    await this.InitializeAsync();
+            }
+        }
+
+        private WindowPosition GetMainWindowPosition(bool failIfMinimized = true)
+        {
+            // Fail if the window is no longer in foreground (active) and we are not
+            // using background mode.
+            bool isInForeground;
+            return this.environmentInterface.GetWindowPosition(
+                this.windowHandle,
+                out isInForeground,
+                !this.backgroundMode,
+                failIfMinimized);
+        }
+
         /// <summary>
         /// Disposes of this StandardInteractionProvider.
         /// </summary>
@@ -528,28 +509,14 @@ namespace TTMouseclickSimulator.Core.Environment
         {
             if (disposing)
             {
-                bool doDispose = false;
-
-                lock (this.syncRoot)
+                if (!this.disposed)
                 {
-                    if (!this.disposed)
-                    {
-                        this.disposed = true;
-                        doDispose = true;
-
-                        // Ensure the provider is canceled.
-                        if (!this.canceled)
-                            this.HandleCancelCallback();
-
-                        this.waitSemaphore.Dispose();
-                    }
-                }
-
-                if (doDispose)
-                {
-                    this.currentScreenshot?.Dispose();
+                    this.disposed = true;
 
                     this.CancelActiveInteractions();
+
+                    this.currentScreenshot?.Dispose();
+                    this.cancellationTokenSource.Dispose();
                 }
             }
         }

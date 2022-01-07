@@ -9,7 +9,6 @@ using System.Windows.Media;
 
 using TTMouseclickSimulator.Core;
 using TTMouseclickSimulator.Core.Actions;
-using TTMouseclickSimulator.Core.Environment;
 using TTMouseclickSimulator.Core.ToontownRewritten.Environment;
 using TTMouseclickSimulator.Project;
 using TTMouseclickSimulator.Utils;
@@ -28,6 +27,8 @@ namespace TTMouseclickSimulator
         private const string ProjectFileExtension = ".xml";
         private const string SampleProjectsFolderName = "SampleProjects";
 
+        private readonly Microsoft.Win32.OpenFileDialog openFileDialog;
+
         private SimulatorProject project;
         private SimulatorConfiguration.QuickActionDescriptor currentQuickAction;
         private Button[] quickActionButtons;
@@ -38,12 +39,10 @@ namespace TTMouseclickSimulator
         private Action simulatorStartAction, simulatorStopAction;
 
         /// <summary>
-        /// If true, the window should be closed after the simulator stopped.s
+        /// If true, the window should be closed after the simulator stopped.
         /// </summary>
         private bool closeWindowAfterStop;
-        
-        private readonly Microsoft.Win32.OpenFileDialog openFileDialog;
-        
+
         public MainWindow()
         {
             this.InitializeComponent();
@@ -69,6 +68,15 @@ namespace TTMouseclickSimulator
         private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
             await this.RunSimulatorAsync();
+        }
+
+        private void btnStop_Click(object sender, RoutedEventArgs e)
+        {
+            // The simulator is set to null before this button is disabled. However,
+            // normally it shouldn't be possible for the user to click it in this case
+            // because we show a modal task dialog.
+            this.simulator?.Cancel();
+            this.btnStop.IsEnabled = false;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -100,57 +108,67 @@ namespace TTMouseclickSimulator
 
             bool backgroundMode = this.chkEnableBackgroundMode.IsChecked == true;
 
-            // Run the simulator in another task so it is not executed in the GUI thread.
-            // However, we then await that new task so we are notified when it is finished.
             this.simulatorStartAction?.Invoke();
 
             var runException = default(Exception);
-            await Task.Run(async () =>
+            try
             {
-                try
-                {
-                    var environment = TTRWindowsEnvironment.Instance;
-
-                    var sim = this.simulator = new Simulator(
+                // We need to create (and dispose) the simulator in the GUI thread because
+                // we need to set it in an instance variable, and because the GUI thread may
+                // call Simulator.Cancel() that has to access the CancellationTokenSource of
+                // the StandardInteractionProvider.
+                var environment = TTRWindowsEnvironment.Instance;
+                using (var sim = this.simulator = new Simulator(
                         this.currentQuickAction != null ?
                             this.currentQuickAction.Action :
                             this.project.Configuration.MainAction,
                         environment,
-                        backgroundMode);
-
-                    sim.AsyncRetryHandler = async ex => !this.closeWindowAfterStop && await this.HandleSimulatorRetryAsync(sim, ex);
-
-                    sim.SimulatorInitializing += multipleWindowsAvailable => this.Dispatcher.Invoke(new Action(() =>
+                        backgroundMode))
+                {
+                    // Run the simulator in another task so it is not executed in the GUI
+                    // thread. However, we then await that new task so we are notified when
+                    // it is finished (and that continuation will be run in the GUI thread
+                    // again).
+                    await Task.Run(async () =>
                     {
-                        if (multipleWindowsAvailable != null)
-                        {
-                            // Initialization has started, so show the overlay message.
-                            this.overlayMessageBorder.Visibility = Visibility.Visible;
+                        sim.AsyncRetryHandler = this.HandleSimulatorRetryAsync;
 
-                            this.overlayMessageTextBlock.Text = multipleWindowsAvailable.Value ?
+                        sim.SimulatorInitializing += multipleWindowsAvailable => this.Dispatcher.Invoke(new Action(() =>
+                        {
+                            if (multipleWindowsAvailable != null)
+                            {
+                                // Initialization has started, so show the overlay message.
+                                this.overlayMessageBorder.Visibility = Visibility.Visible;
+
+                                this.overlayMessageTextBlock.Text = multipleWindowsAvailable.Value ?
                                     "Multiple Toontown windows detected. Please activate the " +
                                     "window that the Simulator should use." :
-                                    "Waiting for the window to be activated...";
-                        }
-                        else
-                        {
-                            // Initialization has finished.
-                            this.overlayMessageBorder.Visibility = Visibility.Hidden;
-                        }
-                    }));
+                                    "Waiting for the window to be activated…";
+                            }
+                            else
+                            {
+                                // Initialization has finished.
+                                this.overlayMessageBorder.Visibility = Visibility.Hidden;
+                            }
+                        }));
 
-                    await sim.RunAsync();
+                        await sim.RunAsync();
+                    });
                 }
-                catch (Exception ex)
-                {
-                    runException = ex;   
-                }
-            });
+            }
+            catch (Exception ex)
+            {
+                runException = ex;
+            }
+            finally
+            {
+                this.simulator = null;
+            }
 
             this.simulatorStopAction?.Invoke();
 
             // Don't show a messagebox if we need to close the window.
-            if (!this.closeWindowAfterStop && runException != null && !(runException is SimulatorCanceledException))
+            if (!this.closeWindowAfterStop && runException != null && !(runException is OperationCanceledException))
             {
                 var dialog = new TaskDialog()
                 {
@@ -161,45 +179,52 @@ namespace TTMouseclickSimulator
                     MainIcon = TaskDialog.TaskDialogIcon.Stop,
                     CommonButtons = TaskDialog.TaskDialogButtons.OK
                 };
+
                 dialog.Flags |= TaskDialog.TaskDialogFlags.ExpandFooterArea;
                 dialog.Show(this);
             }
 
-            this.HandleSimulatorCanceled();
+            this.HandleSimulatorStopped();
         }
 
-        private async Task<bool> HandleSimulatorRetryAsync(Simulator sim, Exception ex)
+        private async Task<bool> HandleSimulatorRetryAsync(Exception ex)
         {
             // Show a TaskDialog.
             bool result = false;
             await this.Dispatcher.InvokeAsync(new Action(() =>
             {
-                if (!this.closeWindowAfterStop)
+                // If we cancelled the simulator already in the meanwhile, it wouldn't make
+                // sense to show the dialog. Otherwise, evewn if the user selects "Try again",
+                // the simulator would still stop afterwards.
+                // The same is applies when the window has already been hidden and we just
+                // wait for the simulator to stop.
+                if (this.simulator.IsCancelled || this.closeWindowAfterStop)
+                    return;
+
+                var dialog = new TaskDialog()
                 {
-                    var dialog = new TaskDialog()
-                    {
-                        Title = AppName,
-                        MainInstruction = "Simulator interrupted!",
-                        Content = ex.Message,
-                        ExpandedInformation = GetExceptionDetailsText(ex),
-                        MainIcon = TaskDialog.TaskDialogIcon.Warning,
-                        CommonButtons = TaskDialog.TaskDialogButtons.Cancel
-                    };
-                    dialog.Flags |= TaskDialog.TaskDialogFlags.UseCommandLinks |
-                            TaskDialog.TaskDialogFlags.ExpandFooterArea;
+                    Title = AppName,
+                    MainInstruction = "Simulator interrupted!",
+                    Content = ex.Message,
+                    ExpandedInformation = GetExceptionDetailsText(ex),
+                    MainIcon = TaskDialog.TaskDialogIcon.Warning,
+                    CommonButtons = TaskDialog.TaskDialogButtons.Cancel
+                };
 
-                    var buttonTryAgain = dialog.CreateCustomButton("Try again\n"  +
-                            "The Simulator will try to run the current action again.");
-                    var buttonStop = dialog.CreateCustomButton("Stop the Simulator");
+                dialog.Flags |= TaskDialog.TaskDialogFlags.UseCommandLinks |
+                        TaskDialog.TaskDialogFlags.ExpandFooterArea;
 
-                    dialog.CustomButtons = new TaskDialog.ICustomButton[] { buttonTryAgain, buttonStop };
-                    dialog.DefaultCustomButton = buttonStop;
+                var buttonTryAgain = dialog.CreateCustomButton("Try again\n" +
+                        "The Simulator will try to run the current action again.");
+                var buttonStop = dialog.CreateCustomButton("Stop the Simulator");
 
-                    dialog.Show(this);
+                dialog.CustomButtons = new TaskDialog.ICustomButton[] { buttonTryAgain, buttonStop };
+                dialog.DefaultCustomButton = buttonStop;
 
-                    if (dialog.ResultCustomButton == buttonTryAgain)
-                        result = true;
-                }
+                dialog.Show(this);
+
+                if (dialog.ResultCustomButton == buttonTryAgain)
+                    result = true;
             }));
 
             return result;
@@ -224,9 +249,8 @@ namespace TTMouseclickSimulator
             return detailsSb?.ToString();
         }
 
-        private void HandleSimulatorCanceled()
+        private void HandleSimulatorStopped()
         {
-            this.simulator = null;
             this.btnStart.IsEnabled = true;
             this.btnStop.IsEnabled = false;
             this.btnLoad.IsEnabled = true;
@@ -246,12 +270,6 @@ namespace TTMouseclickSimulator
 
             if (this.closeWindowAfterStop)
                 this.Close();
-        }
-
-        private void btnStop_Click(object sender, RoutedEventArgs e)
-        {
-            this.simulator.Cancel();
-            this.btnStop.IsEnabled = false;
         }
 
         private void btnLoad_Click(object sender, RoutedEventArgs e)
@@ -282,7 +300,8 @@ namespace TTMouseclickSimulator
                         MainUpdateIcon = TaskDialog.TaskDialogIcon.Stop,
                         CommonButtons = TaskDialog.TaskDialogButtons.OK
                     };
-                    dialog.Flags |=  TaskDialog.TaskDialogFlags.SizeToContent |
+
+                    dialog.Flags |= TaskDialog.TaskDialogFlags.SizeToContent |
                         TaskDialog.TaskDialogFlags.ExpandFooterArea;
 
                     dialog.Show(this);
@@ -329,7 +348,7 @@ namespace TTMouseclickSimulator
 
         private void RefreshProjectControls()
         {
-            this.lblActionTitle.Content = this.currentQuickAction != null ? this.currentQuickAction.Name 
+            this.lblActionTitle.Content = this.currentQuickAction != null ? this.currentQuickAction.Name
                 : this.project?.Configuration.MainAction != null ? actionTitleMainAction : "";
 
             if (this.project == null)
@@ -338,7 +357,7 @@ namespace TTMouseclickSimulator
                 this.txtDescription.Text = string.Empty;
                 this.btnStart.IsEnabled = false;
             }
-            else 
+            else
             {
                 this.lblCurrentProject.Content = this.project.Title;
                 this.txtDescription.Text = this.project.Description;
@@ -346,13 +365,18 @@ namespace TTMouseclickSimulator
 
                 // Create labels for each action.
                 this.actionListGrid.Children.Clear();
-                var mainAct = this.currentQuickAction != null ? this.currentQuickAction.Action 
+                var mainAct = this.currentQuickAction != null ? this.currentQuickAction.Action
                     : this.project.Configuration.MainAction;
                 if (mainAct != null)
                 {
                     int posCounter = 0;
-                    this.CreateActionLabels(mainAct, this.actionListGrid, 0, ref posCounter,
-                        out this.simulatorStartAction, out this.simulatorStopAction);
+                    this.CreateActionLabels(
+                        mainAct,
+                        this.actionListGrid,
+                        0,
+                        ref posCounter,
+                        out this.simulatorStartAction,
+                        out this.simulatorStopAction);
                 }
             }
         }
@@ -367,8 +391,13 @@ namespace TTMouseclickSimulator
             this.textBlockStopSimulatorNote.Visibility = Visibility.Visible;
         }
 
-        private void CreateActionLabels(IAction action, Grid grid, int recursiveCount, 
-            ref int posCounter, out Action handleStart, out Action handleStop)
+        private void CreateActionLabels(
+            IAction action,
+            Grid grid,
+            int recursiveCount,
+            ref int posCounter,
+            out Action handleStart,
+            out Action handleStop)
         {
             var l = new Label();
             l.Margin = new Thickness(recursiveCount * 10, 18 * posCounter, 0, 0);
@@ -377,7 +406,8 @@ namespace TTMouseclickSimulator
             string str = action.ToString();
             l.Content = str;
 
-            handleStart = () => {
+            handleStart = () =>
+            {
                 l.Foreground = new SolidColorBrush(Color.FromArgb(255, 29, 134, 184));
             };
 
@@ -392,7 +422,7 @@ namespace TTMouseclickSimulator
             posCounter++;
 
             if (action is IActionContainer)
-            {                
+            {
                 var cont = (IActionContainer)action;
                 var subActions = cont.SubActions;
                 var handleStartActions = new Action[subActions.Count];

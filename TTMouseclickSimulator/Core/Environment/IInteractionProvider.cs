@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TTMouseclickSimulator.Core.Environment
@@ -8,22 +8,32 @@ namespace TTMouseclickSimulator.Core.Environment
     /// Allows actions to interact with the destination window, e.g. press keys and
     /// simulate mouse clicks and to wait asynchronously.
     /// </summary>
-    public interface IInteractionProvider
+    public interface IInteractionProvider : IDisposable
     {
         /// <summary>
-        /// If this method returns, this means the action should run again. Otherwise, this method will
-        /// re-throw the exception or throw an <see cref="SimulatorCanceledException"/>.
+        /// Gets a <see cref="CancellationToken"/> that indicates whether the simulator
+        /// was cancelled.
         /// </summary>
+        /// <value>
+        /// A <see cref="CancellationToken"/> that indicates whether the simulator was
+        /// cancelled.
+        /// </value>
+        CancellationToken CancellationToken { get; }
+
+        /// <summary>
+        /// Checks whether the simulator should retry the currenct action after an
+        /// exception occured.
+        /// </summary>
+        /// <remarks>
+        /// If this method returns, this means the action should run again. Otherwise,
+        /// this method will re-throw the exception or throw an
+        /// <see cref="OperationCanceledException"/>.
+        /// </remarks>
         /// <param name="ex"></param>
         Task CheckRetryForExceptionAsync(Exception ex);
 
         /// <summary>
-        /// Checks that the Simulator has not been canceled.
-        /// </summary>
-        void EnsureNotCanceled();
-
-        /// <summary>
-        /// Asynchronously waits until the specified interval is elapsed or the Simulator
+        /// Asynchronously waits until the specified interval is elapsed or the simulator
         /// has been canceled.
         /// </summary>
         /// <param name="millisecondsTimeout">The interval to wait.</param>
@@ -31,7 +41,7 @@ namespace TTMouseclickSimulator.Core.Environment
         /// of the time is more accurate but requires a bit CPU usage shortly before the method
         /// returns.</param>
         /// <returns></returns>
-        /// <exception cref="SimulatorCanceledException">If the wait has been cancelled.
+        /// <exception cref="OperationCanceledException">The wait has been cancelled.
         /// IActions don't need to catch this exception.</exception>
         Task WaitAsync(int millisecondsTimeout, bool useAccurateTimer = false);
 
@@ -40,7 +50,7 @@ namespace TTMouseclickSimulator.Core.Environment
         /// 
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="SimulatorCanceledException">If the simulator has been cancelled.
+        /// <exception cref="OperationCanceledException">The simulator has been cancelled.
         /// IActions don't need to catch this exception.</exception>
         WindowPosition GetCurrentWindowPosition();
 
@@ -79,16 +89,4 @@ namespace TTMouseclickSimulator.Core.Environment
         /// <param name="text"></param>
         void WriteText(string text);
     }
-
-
-    /// <summary>
-    /// Thrown when an action has been canceled because the simulator has been stopped.
-    /// </summary>
-    public class SimulatorCanceledException : Exception
-    {
-        public SimulatorCanceledException()
-            : base("The Simulator has been canceled.")
-        {
-        }
-    }    
 }

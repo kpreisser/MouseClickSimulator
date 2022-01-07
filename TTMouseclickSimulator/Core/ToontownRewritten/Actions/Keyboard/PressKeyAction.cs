@@ -22,6 +22,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard
         public override sealed async Task RunAsync(IInteractionProvider provider)
         {
             provider.PressKey(this.key);
+
             // Use a accurate timer for measuring the time after we need to release the key.
             await provider.WaitAsync(this.duration, true);
             provider.ReleaseKey(this.key);

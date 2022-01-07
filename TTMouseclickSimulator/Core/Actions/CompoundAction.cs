@@ -123,7 +123,7 @@ namespace TTMouseclickSimulator.Core.Actions
                     try
                     {
                         // Check if the simulator has already been canceled.
-                        provider.EnsureNotCanceled();
+                        provider.CancellationToken.ThrowIfCancellationRequested();
 
                         this.OnSubActionStartedOrStopped(nextIdx);
                         try
@@ -141,7 +141,7 @@ namespace TTMouseclickSimulator.Core.Actions
 
                         await provider.WaitAsync(waitInterval);
                     }
-                    catch (Exception ex) when (!(ex is SimulatorCanceledException))
+                    catch (Exception ex) when (!(ex is OperationCanceledException))
                     {
                         await provider.CheckRetryForExceptionAsync(ex);
                         continue;
@@ -155,7 +155,7 @@ namespace TTMouseclickSimulator.Core.Actions
         public override string ToString()
         {
             return $"Compound – Type: {this.type}, " +
-                    $"MinPause: {this.minimumPauseDuration}, MaxPause: {this.maximumPauseDuration}, Loop: {this.loop}";
+                $"MinPause: {this.minimumPauseDuration}, MaxPause: {this.maximumPauseDuration}, Loop: {this.loop}";
         }
 
 

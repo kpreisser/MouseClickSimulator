@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Environment;
@@ -43,11 +42,12 @@ namespace TTMouseclickSimulator.Core.Actions
                     {
                         try
                         {
-                            provider.EnsureNotCanceled();
+                            provider.CancellationToken.ThrowIfCancellationRequested();
+
                             this.OnActionInformationUpdated($"Iteration {i + 1}/{this.count?.ToString() ?? "∞"}");
                             await this.action.RunAsync(provider);
                         }
-                        catch (Exception ex) when (!(ex is SimulatorCanceledException))
+                        catch (Exception ex) when (!(ex is OperationCanceledException))
                         {
                             await provider.CheckRetryForExceptionAsync(ex);
                             continue;
