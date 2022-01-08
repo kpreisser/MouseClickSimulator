@@ -1,48 +1,43 @@
 ﻿using System;
 using System.Windows.Media;
 
-namespace TTMouseclickSimulator.Core.Environment
+namespace TTMouseclickSimulator.Core.Environment;
+
+public interface IScreenshotContent
 {
-    public interface IScreenshotContent
+    WindowPosition WindowPosition { get; }
+
+    ScreenshotColor GetPixel(Coordinates coords);
+
+    ScreenshotColor GetPixel(int x, int y);
+}
+
+public struct ScreenshotColor
+{
+    public byte r;
+    public byte g;
+    public byte b;
+
+    public ScreenshotColor(byte r, byte g, byte b)
     {
-        WindowPosition WindowPosition { get; }
-
-        ScreenshotColor GetPixel(Coordinates coords);
-
-        ScreenshotColor GetPixel(int x, int y);
+        this.r = r;
+        this.g = g;
+        this.b = b;
     }
 
-
-    public struct ScreenshotColor
+    public byte GetValueFromIndex(int index)
     {
-        public byte r;
-        public byte g;
-        public byte b;
-
-        public ScreenshotColor(byte r, byte g, byte b)
+        return index switch
         {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-        }
+            0 => this.r,
+            1 => this.g,
+            2 => this.b,
+            _ => throw new ArgumentOutOfRangeException(nameof(index)),
+        };
+    }
 
-        public byte GetValueFromIndex(int index)
-        {
-            switch (index) {
-                case 0:
-                    return this.r;
-                case 1:
-                    return this.g;
-                case 2:
-                    return this.b;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
-
-        public Color ToColor()
-        {
-            return Color.FromArgb(255, this.r, this.g, this.b);
-        }
+    public Color ToColor()
+    {
+        return Color.FromArgb(255, this.r, this.g, this.b);
     }
 }

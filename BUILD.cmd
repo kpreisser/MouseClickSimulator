@@ -13,24 +13,11 @@ cd /d "%~dp0"
 
 echo.Building the TTR Mouse Click Simulator...
 echo.
-REM MSBuild is always installed in the 32-Bit program files folder
-if "!ProgramFiles(x86)!"=="" (
-	set "ProgramFiles32Bit=!ProgramFiles!"
-) else (
-	set "ProgramFiles32Bit=!ProgramFiles(x86)!"
-)
-set "BuildExe=!ProgramFiles32Bit!\MSBuild\14.0\Bin\MSBuild.exe"
-
-if not exist "!BuildExe!" (
-	echo.ERROR: MSBuild not found at "!BuildExe!"^^!
-	pause
-	exit /b 1
-)
 
 REM Note that we need to specify both "Configuration" and "Platform" parameters, because
 REM otherwise MSBuild will fill missing parameters from environment variables (and some
 REM systems may have set a "Platform" variable).
-"!BuildExe!" /v:minimal /nologo /p:Configuration=Release /p:Platform=AnyCPU "TTMouseclickSimulator\TTMouseclickSimulator.csproj"
+"dotnet.exe" publish "TTMouseclickSimulator\TTMouseclickSimulator.csproj" -f net6.0-windows -c Release -p:Platform=AnyCPU --no-self-contained
 if not errorlevel 1 (
 	echo.
 	echo.Build successful^^!

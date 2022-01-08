@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace TTMouseclickSimulator
 {
@@ -8,15 +9,13 @@ namespace TTMouseclickSimulator
         [STAThread]
         public static void Main()
         {
+            // Enable per-monitor (V2) DPI awareness. This is necessary for getting
+            // unaltered window positions when using multiple monitors with different
+            // DPI settings.
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+
             // Try to set a better timer resolution than the default 15 ms.
             TrySetWindowsHighTimerResolution();
-
-            // Enable support for long file paths.
-            // Additionally, enable automatic per-monitor DPI scaling.
-            // TODO: Remove these switches once we target.NET 4.6.2 or higher.
-            AppContext.SetSwitch("Switch.System.IO.UseLegacyPathHandling", false);
-            AppContext.SetSwitch("Switch.System.IO.BlockLongPaths", false);
-            AppContext.SetSwitch("Switch.System.Windows.DoNotScaleForDpiChanges", false);
 
             App.Main();
         }
@@ -35,7 +34,7 @@ namespace TTMouseclickSimulator
                 // each process will use this default timer resolution unless it calls
                 // timeBeginPeriod to request a higher resolution.
                 // This affects API like Thread.Sleep().
-                TimeBeginPeriod(2);
+                _ = TimeBeginPeriod(2);
             }
             catch
             {

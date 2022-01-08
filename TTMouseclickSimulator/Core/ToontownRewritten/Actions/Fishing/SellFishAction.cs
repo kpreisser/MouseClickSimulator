@@ -3,20 +3,22 @@
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
-namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing
+namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing;
+
+public class SellFishAction : AbstractAction
 {
-    public class SellFishAction : AbstractAction
+    public SellFishAction()
     {
-        public SellFishAction()
-        {
-        }
+    }
 
-        public override sealed async Task RunAsync(IInteractionProvider provider)
-        {
-            var c = new Coordinates(1159, 911);
-            await MouseHelpers.DoSimpleMouseClickAsync(provider, c);
-        }
+    public override sealed async ValueTask RunAsync(IInteractionProvider provider)
+    {
+        var c = new Coordinates(1159, 911);
+        await MouseHelpers.DoSimpleMouseClickAsync(provider, c);
+    }
 
-        public override string ToString() => "Sell Fish";
+    public override string ToString()
+    {
+        return "Sell Fish";
     }
 }

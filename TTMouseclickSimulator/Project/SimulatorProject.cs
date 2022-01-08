@@ -1,22 +1,38 @@
-﻿using TTMouseclickSimulator.Core;
+﻿using System;
 
-namespace TTMouseclickSimulator.Project
+using TTMouseclickSimulator.Core;
+
+namespace TTMouseclickSimulator.Project;
+
+/// <summary>
+/// A simulator project that can be persisted.
+/// </summary>
+public class SimulatorProject
 {
-    /// <summary>
-    /// A simulator project that can be persisted.
-    /// </summary>
-    public class SimulatorProject
+    public SimulatorProject(string title, string description, SimulatorConfiguration configuration)
     {
-        public string Title { get; set; }
+        this.Title = title ?? throw new ArgumentNullException(nameof(title));
+        this.Description = description ?? throw new ArgumentNullException(nameof(description));
+        this.Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+    }
 
-        public string Description { get; set; }
+    public string Title
+    {
+        get;
+    }
 
-        public SimulatorConfiguration Configuration { get; set; }
+    public string Description
+    {
+        get;
+    }
 
+    public SimulatorConfiguration Configuration
+    {
+        get;
+    }
 
-        public override string ToString()
-        {
-            return this.Title;
-        }
+    public override string ToString()
+    {
+        return this.Title;
     }
 }

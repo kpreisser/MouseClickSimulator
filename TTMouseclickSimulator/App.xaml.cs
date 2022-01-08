@@ -1,9 +1,7 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 
-namespace TTMouseclickSimulator
+namespace TTMouseclickSimulator;
+
+public partial class App : Application
 {
-    public partial class App : Application
-    {
-    }
 }
