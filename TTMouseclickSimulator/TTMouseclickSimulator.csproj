@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
+    <RollForward>Major</RollForward>
     <OutputType>WinExe</OutputType>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
