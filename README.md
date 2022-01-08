@@ -1,4 +1,4 @@
-# Mouse Click Simulator for Toontown Rewritten
+ï»¿# Mouse Click Simulator for Toontown Rewritten
 
 This is a new implementation of the older **TT Mouse Click Simulator** that is intended to work with Toontown Rewritten. It is implemented in C# (.NET 6) and runs on Windows.
 
@@ -24,6 +24,23 @@ Toontown Rewritten states in their Terms of Use that you should not use automati
 
 Please see the topic [Running the Simulator](https://github.com/kpreisser/MouseClickSimulator/wiki/Running-the-Simulator) for guidance how to download, build and run the Mouse Click Simulator on your computer.
 
+## Release Notes
+**2021-01-08** (Commit [29a0786](https://github.com/kpreisser/MouseClickSimulator/commit/29a07863f4a0808f182db78a6e16f3dc490baad6))
+
+- Updated to **.NET 6**.
+  Due to this change, the prerequisites for building the simulator have slightly changed. Please see the topic 
+  [Running the Simulator](https://github.com/kpreisser/MouseClickSimulator/wiki/Running-the-Simulator) for the new instructions.
+- Added **Background Mode** which directly sends mouse and keyboard inputs to the Toontown window (instead of simulating gobal inputs).
+  This allows you to do other work while the simulator is running.
+- Added support for the 64-bit version of TT Rewritten ([#37](https://github.com/kpreisser/MouseClickSimulator/issues/37)).
+- Added a new project for keeping the toon awake.
+- Improved key press durations in the fishing projects, and added new projects for use during the winter theme.
+- Fixed a bug that prevented the window location from being detected correctly when using multiple monitors with different DPI settings.
+
+**2018-08-12** (Commit [67c4a87](https://github.com/kpreisser/MouseClickSimulator/commit/67c4a87c1db7fd906f3dfc88aa6cc26c51dc6d4f))
+
+- The simulator now detects when multiple TT Rewritten windows are open, and allows to select the one that should be used ([#27](https://github.com/kpreisser/MouseClickSimulator/issues/27)).
+
 ## Development
 
 Currently, the implementation contains actions for pressing keys, writing text, SpeedChat, Doodle Interaction Panel and the Automatic Fishing Function. Furthermore, an action for planting a flower is supported.
@@ -38,14 +55,14 @@ that can be short and non-repeating, e.g. actions to plant specific flowers. For
 ### Specifying Mouse Coordinates
 
 Currently, mouse coordinates used in the simulator (e.g. in the `scan1` and `scan2` attributes of the `<AutomaticFishing>` element in the XML files, and in the source code calling `IInteractionProvider.MoveMouse()` or 
-`MouseHelpers.DoSimpleMouseClickAsync()`) are interpreted for a window with an inner (client area) size of **1600 × 1151** using a 4:3 aspect ratio. These values were kept from the legacy TT mouse click simulator.
+`MouseHelpers.DoSimpleMouseClickAsync()`) are interpreted for a window with an inner (client area) size of **1600 Ã— 1151** using a 4:3 aspect ratio. These values were kept from the legacy TT mouse click simulator.
 
 To specify mouse coordinates for Toontown Rewritten, you can do the following to get the resulting coordinates that can be used in the simulator:
-- In the Toontown Options, set the display resolution to **800 × 600**. Do **not** resize the window after applying this resolution.
+- In the Toontown Options, set the display resolution to **800 Ã— 600**. Do **not** resize the window after applying this resolution.
 - Determine the (x, y) coordinates within the client area of the window (that is, without the window borders and title bar), e.g. by taking a screenshot with F9.
 - Calculate the resulting coordinates as follows:
-  - x<sub>result</sub> = x ÷ 800 × 1600
-  - y<sub>result</sub> = y ÷ 600 × 1151
+  - x<sub>result</sub> = x Ã· 800 Ã— 1600
+  - y<sub>result</sub> = y Ã· 600 Ã— 1151
 
 In the C# code, you have then also specify the alignment (which is needed when the current window aspect ratio is greater than 4:3).
 To determine this, resize your Toontown window to **increase the width** (or decrease the height).
