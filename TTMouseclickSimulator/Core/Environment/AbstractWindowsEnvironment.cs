@@ -102,7 +102,7 @@ public abstract class AbstractWindowsEnvironment
         // Get the screen coordinates of the point (0, 0) in the client rect.
         var relPos = default(NativeMethods.POINT);
         if (!NativeMethods.ClientToScreen(hWnd, &relPos))
-            throw new Exception("Could not retrieve window client coordinates");
+            throw new Exception("Could not retrieve window client coordinates.");
 
         var pos = new WindowPosition()
         {
@@ -444,7 +444,7 @@ public abstract class AbstractWindowsEnvironment
 
         public WindowPosition WindowPosition
         {
-            get =>this.windowPosition;
+            get => this.windowPosition;
 
             private set
             {
@@ -599,9 +599,11 @@ public abstract class AbstractWindowsEnvironment
 
             // This method assumes a 32-bit pixel format.
             if (this.bmpData!.PixelFormat != PixelFormat.Format32bppRgb)
+            {
                 throw new InvalidOperationException(
                     "This method only works with a " +
                     "pixel format of Format32bppRgb.");
+            }
 #endif
 
             // Go to the line and the column. We use a int pointer to do a single
