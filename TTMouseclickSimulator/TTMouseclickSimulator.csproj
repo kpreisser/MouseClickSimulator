@@ -17,70 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="SampleProjects\Automatic Fishing - Elm Street %28Winter Theme%29.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Automatic Fishing - Elm Street.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Automatic Fishing - Lighthouse Lane %28Winter Theme%29.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Automatic Fishing - Lighthouse Lane.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Automatic Fishing - Lullaby Lane %28Winter Theme%29.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Automatic Fishing - Lullaby Lane.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Automatic Fishing - Punchline Place %28Winter Theme%29.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Automatic Fishing - Punchline Place.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Automatic Fishing - Tenor Terrace %28Winter Theme%29.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Automatic Fishing - Tenor Terrace.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Automatic Fishing - Walrus Way %28Winter Theme%29.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Automatic Fishing - Walrus Way.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Gardening\Gardening - 1 Jellybean Combinations.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Gardening\Gardening - 2 Jellybean Combinations.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Gardening\Gardening - 3 Jellybean Combinations.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Gardening\Gardening - 4 Jellybean Combinations.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Gardening\Gardening - 5 Jellybean Combinations.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Gardening\Gardening - 6 Jellybean Combinations.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Gardening\Gardening - 7 Jellybean Combinations.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Gardening\Gardening - 8 Jellybean Combinations.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Sample Actions.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SampleProjects\Stay Awake.xml">
+    <None Update="SampleProjects\**\*.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
