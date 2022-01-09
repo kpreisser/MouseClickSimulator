@@ -265,10 +265,18 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
     {
         this.CancellationToken.ThrowIfCancellationRequested();
 
+        // When using background mode, create the screenshot directly from the window's
+        // DC instead of from the whole screen. However, this seems not always to work
+        // (apparently on older Windows versions), e.g. on a Windows 8.1 machine I just
+        // got a black screen using this method.
+        // Therefore, when not using background mode, we still create a screenshot from
+        // the whole screen, which should work in every case (and the window also needs
+        // to be in the foreground in this mode).
         this.environmentInterface.CreateWindowScreenshot(
             this.windowHandle,
             ref this.currentScreenshot,
-            !this.backgroundMode);
+            failIfNotInForeground: !this.backgroundMode,
+            fromScreen: !this.backgroundMode);
 
         return this.currentScreenshot;
     }
