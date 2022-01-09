@@ -8,7 +8,7 @@ namespace TTMouseclickSimulator.Core.Environment;
 /// Allows actions to interact with the target window, e.g. press keys and
 /// simulate mouse clicks and to wait asynchronously.
 /// </summary>
-public interface IInteractionProvider : IDisposable
+public interface IInteractionProvider
 {
     /// <summary>
     /// Gets a <see cref="CancellationToken"/> that indicates whether the simulator
@@ -26,7 +26,7 @@ public interface IInteractionProvider : IDisposable
     /// </summary>
     /// <remarks>
     /// If this method returns, this means the action should run again. Otherwise,
-    /// this method will re-throw the exception or throw an
+    /// this method will rethrow the exception or throw an
     /// <see cref="OperationCanceledException"/>.
     /// </remarks>
     /// <param name="ex"></param>
