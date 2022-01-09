@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32002.185
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTMouseclickSimulator", "TTMouseclickSimulator\TTMouseclickSimulator.csproj", "{1FFE5D00-ACA2-4A86-94FB-F978EF25FCE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TTMouseclickSimulator", "TTMouseclickSimulator\TTMouseclickSimulator.csproj", "{1FFE5D00-ACA2-4A86-94FB-F978EF25FCE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +18,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {16E0AF76-5C25-4B20-B12C-BD64CF2AD042}
 	EndGlobalSection
 EndGlobal
