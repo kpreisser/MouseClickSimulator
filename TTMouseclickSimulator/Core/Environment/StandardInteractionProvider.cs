@@ -268,10 +268,16 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
         // When using background mode, create the screenshot directly from the window's
         // DC instead of from the whole screen. However, this seems not always to work
         // (apparently on older Windows versions), e.g. on a Windows 8.1 machine I just
-        // got a black screen using this method.
+        // got a black screen using this method. Also, e.g. with DirectX games on
+        // Windows 10 and 11, this might not work.
         // Therefore, when not using background mode, we still create a screenshot from
         // the whole screen, which should work in every case (and the window also needs
         // to be in the foreground in this mode).
+        // Currently, there doesn't seem another easy way to get a screenshot froom a
+        // window client area if using the DC doesn't work (e.g. creating a DWM thumbnail
+        // won't allow us to access the pixel data). If this will generally no longer work
+        // with a future verison of the game, we may need to revert using the screen copy
+        // also for background mode, but set the game window as topmost window.
         this.environmentInterface.CreateWindowScreenshot(
             this.windowHandle,
             ref this.currentScreenshot,

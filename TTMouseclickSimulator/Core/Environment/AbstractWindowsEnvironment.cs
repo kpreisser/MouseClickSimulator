@@ -538,6 +538,9 @@ public abstract class AbstractWindowsEnvironment
                 else
                 {
                     // Create the screenshot directly from the window's device context.
+                    // This may not always work; at least when running Toontown on older
+                    // Windows versions like Windows 8.1 this may only retrieve a black
+                    // content.
                     var windowClientDc = NativeMethods.GetDC(windowHandle);
                     if (windowClientDc == IntPtr.Zero)
                     {
