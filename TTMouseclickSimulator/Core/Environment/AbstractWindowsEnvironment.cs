@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace TTMouseclickSimulator.Core.Environment;
 
 /// <summary>
-/// Provides methods to interact with other processes windows.
+/// Provides methods to interact with other processes and windows on Windows.
 /// </summary>
 public abstract class AbstractWindowsEnvironment
 {
@@ -61,7 +61,7 @@ public abstract class AbstractWindowsEnvironment
 
         var hWnd = p.MainWindowHandle;
         if (hWnd == IntPtr.Zero)
-            throw new ArgumentException("Could not find Main Window.");
+            throw new ArgumentException("Could not find main window.");
 
         return hWnd;
     }
@@ -69,7 +69,7 @@ public abstract class AbstractWindowsEnvironment
     public void BringWindowToForeground(IntPtr hWnd)
     {
         if (!NativeMethods.SetForegroundWindow(hWnd))
-            throw new Exception("Could not bring specified window to foreground.");
+            throw new Exception("Could not bring window to foreground.");
     }
 
     /// <summary>

@@ -58,7 +58,7 @@ public class CompoundAction : AbstractActionContainer
                 "The minimum pause duration must not be greater " +
                 "than the maximum wait interval.");
 
-        if (type == CompoundActionType.RandomIndex && !loop)
+        if (type is CompoundActionType.RandomIndex && !loop)
             throw new ArgumentException(
                 "When using CompoundActionType.RandomIndex, it is not possible " +
                 " to disable the loop.");
@@ -81,13 +81,13 @@ public class CompoundAction : AbstractActionContainer
         int currentIdx = -1;
 
         Func<int> getNextActionIndex;
-        if (this.type == CompoundActionType.Sequential)
+        if (this.type is CompoundActionType.Sequential)
         {
             getNextActionIndex = () =>
                 (!this.loop && currentIdx + 1 == this.actionList.Count) ? -1 :
                 currentIdx = (currentIdx + 1) % this.actionList.Count;
         }
-        else if (this.type == CompoundActionType.RandomIndex)
+        else if (this.type is CompoundActionType.RandomIndex)
         {
             getNextActionIndex = () => this.rng.Next(this.actionList.Count);
         }
@@ -100,7 +100,7 @@ public class CompoundAction : AbstractActionContainer
                     return -1;
 
                 currentIdx = (currentIdx + 1) % this.actionList.Count;
-                if (currentIdx == 0)
+                if (currentIdx is 0)
                 {
                     // Generate a new order array.
                     for (int i = 0; i < randomOrder.Length; i++)

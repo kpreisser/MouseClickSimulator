@@ -29,7 +29,7 @@ public class TTRWindowsEnvironment : AbstractWindowsEnvironment
         var processes = FindProcessesByName(ProcessName64);
         processes.AddRange(FindProcessesByName(ProcessName32));
 
-        if (processes.Count == 0)
+        if (processes.Count is 0)
         {
             throw new ArgumentException(
                 "Could not find Toontown Rewritten. Please make sure " +

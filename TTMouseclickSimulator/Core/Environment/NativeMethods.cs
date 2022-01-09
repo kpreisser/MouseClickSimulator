@@ -77,7 +77,7 @@ internal static class NativeMethods
 
     public static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
     {
-        if (IntPtr.Size == 8)
+        if (IntPtr.Size is 8)
             return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
         else
             return (IntPtr)SetWindowLong32(hWnd, nIndex, (int)dwNewLong);
@@ -85,7 +85,7 @@ internal static class NativeMethods
 
     public static unsafe void SendInput(INPUT input)
     {
-        if (SendInputNative(1, &input, sizeof(INPUT)) == 0)
+        if (SendInputNative(1, &input, sizeof(INPUT)) is 0)
             throw new Win32Exception();
     }
 

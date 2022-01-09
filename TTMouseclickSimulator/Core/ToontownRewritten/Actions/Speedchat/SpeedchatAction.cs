@@ -24,7 +24,7 @@ public class SpeedchatAction : AbstractAction
         this.menuItems = menuItems;
         if (menuItems.Length > 3)
             throw new ArgumentException("Only 3 levels are supported.");
-        if (menuItems.Length == 0)
+        if (menuItems.Length is 0)
             throw new ArgumentException("The menuItems array must not be empty.");
     }
 

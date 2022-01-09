@@ -47,8 +47,10 @@ public class PlantFlowerAction : AbstractAction
         {
             var c = new Coordinates((int)Math.Round(560 + jellybean * 60.5), 514);
             await MouseHelpers.DoSimpleMouseClickAsync(
-                provider, c,
-                VerticalScaleAlignment.Center, 100);
+                provider,
+                c,
+                VerticalScaleAlignment.Center,
+                100);
 
             await provider.WaitAsync(100);
         }

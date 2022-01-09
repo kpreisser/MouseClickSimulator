@@ -122,7 +122,7 @@ public static class XmlProjectDeserializer
             });
         }
 
-        if (config.MainAction is null && config.QuickActions.Count == 0)
+        if (config.MainAction is null && config.QuickActions.Count is 0)
             throw new ArgumentException(
                 "There must be a <MainAction> or at least one <QuickAction> " +
                 "element in the <SimulatorProject>.");
@@ -196,7 +196,7 @@ public static class XmlProjectDeserializer
                         {
                             bool b = false;
                             string s = attrval.Trim();
-                            if (s == "1" || s.ToLowerInvariant() == "true")
+                            if (s is "1" || s.ToLowerInvariant() is "true")
                                 b = true;
 
                             parameterValues[i] = b;

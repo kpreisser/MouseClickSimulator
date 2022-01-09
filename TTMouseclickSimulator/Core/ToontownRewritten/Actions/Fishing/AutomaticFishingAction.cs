@@ -52,7 +52,8 @@ public class AutomaticFishingAction : AbstractFishingRodAction
                 for (int x = this.spotData.Scan1.X; x <= this.spotData.Scan2.X; x += scanStep)
                 {
                     var c = new Coordinates(x, y);
-                    c = screenshot.WindowPosition.ScaleCoordinates(c,
+                    c = screenshot.WindowPosition.ScaleCoordinates(
+                        c,
                         MouseHelpers.ReferenceWindowSize);
 
                     if (this.CompareColor(
@@ -120,7 +121,7 @@ public class AutomaticFishingAction : AbstractFishingRodAction
 
             provider.MoveMouse(coords);
 
-            if (coordsMatchCounter == 2)
+            if (coordsMatchCounter is 2)
             {
                 // If we found the same coordinates two times, we assume
                 // the bubble is not moving at the moment.

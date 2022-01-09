@@ -76,7 +76,7 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
                     var processes = this.environmentInterface.FindProcesses();
                     try
                     {
-                        if (processes.Count == 1)
+                        if (processes.Count is 1)
                         {
                             if (lastInitializingEventParameter != false)
                             {

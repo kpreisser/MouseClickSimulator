@@ -114,7 +114,7 @@ public partial class MainWindow : Window
                 bt.IsEnabled = false;
         }
 
-        bool backgroundMode = this.chkEnableBackgroundMode.IsChecked == true;
+        bool backgroundMode = this.chkEnableBackgroundMode.IsChecked is true;
 
         this.simulatorStartAction?.Invoke();
 
@@ -302,7 +302,7 @@ public partial class MainWindow : Window
 
     private void HandleBtnLoadClick(object sender, RoutedEventArgs e)
     {
-        if (this.openFileDialog.ShowDialog(this) == true)
+        if (this.openFileDialog.ShowDialog(this) is true)
         {
             // Try to load the given project.
             try

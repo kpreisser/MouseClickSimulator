@@ -26,8 +26,8 @@ public struct WindowPosition
 
     public bool IsMinimized
     {
-        get => this.Coordinates.X == -32000 && this.Coordinates.Y == -32000 &&
-            this.Size.Width == 0 && this.Size.Height == 0;
+        get => this.Coordinates.X is -32000 && this.Coordinates.Y is -32000 &&
+            this.Size.Width is 0 && this.Size.Height is 0;
     }
 
     public Coordinates RelativeToAbsoluteCoordinates(Coordinates c)
