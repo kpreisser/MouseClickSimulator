@@ -10,9 +10,7 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction
 /// </summary>
 public class DoodlePanelAction : AbstractAction
 {
-
     private readonly DoodlePanelButton button;
-
 
     public DoodlePanelAction(DoodlePanelButton button)
     {
@@ -22,9 +20,8 @@ public class DoodlePanelAction : AbstractAction
     public override async ValueTask RunAsync(IInteractionProvider provider)
     {
         var c = new Coordinates(1397, 206 + (int)this.button * 49);
-        await MouseHelpers.DoSimpleMouseClickAsync(provider, c, VerticalScaleAlignment.Right);
+        await MouseHelpers.DoSimpleMouseClickAsync(provider, c, HorizontalScaleAlignment.Right);
     }
-
 
     public override string ToString()
     {

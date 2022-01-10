@@ -25,21 +25,21 @@ public static class TTRScaleExtensions
             this WindowPosition pos,
             Coordinates coords,
             Size referenceSize,
-            VerticalScaleAlignment valign = VerticalScaleAlignment.Center)
+            HorizontalScaleAlignment align = HorizontalScaleAlignment.Center)
     {
         double aspectWidth = pos.Size.Height / 3d * 4d;
         double widthDifference = pos.Size.Width - aspectWidth;
 
         int newX;
-        if (valign is VerticalScaleAlignment.NoAspectRatio)
+        if (align is HorizontalScaleAlignment.NoAspectRatio)
         {
             newX = (int)Math.Round((double)coords.X / referenceSize.Width * pos.Size.Width);
         }
         else
         {
             newX = (int)Math.Round((double)coords.X / referenceSize.Width * aspectWidth +
-                (valign is VerticalScaleAlignment.Left ? 0 :
-                valign is VerticalScaleAlignment.Center ? widthDifference / 2 : widthDifference));
+                (align is HorizontalScaleAlignment.Left ? 0 :
+                align is HorizontalScaleAlignment.Center ? widthDifference / 2 : widthDifference));
         }
 
         return new Coordinates()
@@ -50,11 +50,10 @@ public static class TTRScaleExtensions
     }
 }
 
-
 /// <summary>
-/// Specifies how the given X-Coordinate should be scaled.
+/// Specifies how the given X coordinate should be scaled.
 /// </summary>
-public enum VerticalScaleAlignment
+public enum HorizontalScaleAlignment
 {
     Left,
     Center,

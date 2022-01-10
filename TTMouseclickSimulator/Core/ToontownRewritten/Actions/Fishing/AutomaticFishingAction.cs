@@ -117,7 +117,7 @@ public class AutomaticFishingAction : AbstractFishingRodAction
             var coords = screenshot.WindowPosition.ScaleCoordinates(
                 newCoords.Value,
                 MouseHelpers.ReferenceWindowSize,
-                VerticalScaleAlignment.NoAspectRatio);
+                HorizontalScaleAlignment.NoAspectRatio);
 
             provider.MoveMouse(coords);
 

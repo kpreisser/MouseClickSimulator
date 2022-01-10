@@ -79,11 +79,11 @@ To specify mouse coordinates for Toontown Rewritten, you can do the following to
   - x<sub>result</sub> = x ÷ 800 × 1600
   - y<sub>result</sub> = y ÷ 600 × 1151
 
-In the C# code, you have then also specify the alignment (which is needed when the current window aspect ratio is greater than 4:3).
+In the C# code, you have then also specify the horizontal alignment (which is needed when the current window aspect ratio is greater than 4:3).
 To determine this, resize your Toontown window to **increase the width** (or decrease the height).
-- If the element that your coordinates point to stays at the center of the window, specify `VerticalScaleAlignment.Center`, or omit this parameter.
-- Otherwise, if the element stays at the left hand side of the window, specify `VerticalScaleAlignment.Left`.
-- Otherwise, if the element stays at the right hand side of the window, specify `VerticalScaleAlignment.Right`.
+- If the element that your coordinates point to stays at the center of the window, specify `HorizontalScaleAlignment.Center`, or omit this parameter.
+- Otherwise, if the element stays at the left hand side of the window, specify `HorizontalScaleAlignment.Left`.
+- Otherwise, if the element stays at the right hand side of the window, specify `HorizontalScaleAlignment.Right`.
 
 You can find an example for this in [issue #24](https://github.com/kpreisser/MouseClickSimulator/issues/24#issuecomment-306059882).
 

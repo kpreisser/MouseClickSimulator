@@ -38,7 +38,7 @@ public class PlantFlowerAction : AbstractAction
         await MouseHelpers.DoSimpleMouseClickAsync(
             provider,
             new Coordinates(76, 264),
-            VerticalScaleAlignment.Left);
+            HorizontalScaleAlignment.Left);
 
         await provider.WaitAsync(200);
 
@@ -49,8 +49,7 @@ public class PlantFlowerAction : AbstractAction
             await MouseHelpers.DoSimpleMouseClickAsync(
                 provider,
                 c,
-                VerticalScaleAlignment.Center,
-                100);
+                buttonDownTimeout: 100);
 
             await provider.WaitAsync(100);
         }

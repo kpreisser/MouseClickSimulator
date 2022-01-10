@@ -11,14 +11,14 @@ public static class MouseHelpers
     public static async Task DoSimpleMouseClickAsync(
         IInteractionProvider provider,
         Coordinates coords,
-        VerticalScaleAlignment valign = VerticalScaleAlignment.Center,
+        HorizontalScaleAlignment align = HorizontalScaleAlignment.Center,
         int buttonDownTimeout = 150)
     {
         var pos = provider.GetCurrentWindowPosition();
         coords = pos.ScaleCoordinates(
             coords,
             ReferenceWindowSize,
-            valign);
+            align);
 
         provider.MoveMouse(coords);
         provider.PressMouseButton();

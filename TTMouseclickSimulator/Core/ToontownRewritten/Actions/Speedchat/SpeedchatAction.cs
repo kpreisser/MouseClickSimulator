@@ -7,7 +7,6 @@ using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat;
 
-[Serializable]
 public class SpeedchatAction : AbstractAction
 {
     private static readonly int[] xWidths =
@@ -32,7 +31,7 @@ public class SpeedchatAction : AbstractAction
     {
         // Click on the Speedchat Icon.
         var c = new Coordinates(122, 40);
-        await MouseHelpers.DoSimpleMouseClickAsync(provider, c, VerticalScaleAlignment.Left, 100);
+        await MouseHelpers.DoSimpleMouseClickAsync(provider, c, HorizontalScaleAlignment.Left, 100);
 
         int currentYNumber = 0;
         for (int i = 0; i < this.menuItems.Length; i++)
@@ -42,7 +41,7 @@ public class SpeedchatAction : AbstractAction
             currentYNumber += this.menuItems[i];
 
             c = new Coordinates(xWidths[i], 40 + currentYNumber * 38);
-            await MouseHelpers.DoSimpleMouseClickAsync(provider, c, VerticalScaleAlignment.Left, 100);
+            await MouseHelpers.DoSimpleMouseClickAsync(provider, c, HorizontalScaleAlignment.Left, 100);
         }
     }
 
