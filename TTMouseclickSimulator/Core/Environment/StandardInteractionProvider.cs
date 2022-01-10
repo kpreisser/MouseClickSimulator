@@ -28,6 +28,11 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
     // Window-relative (when using backgroundMode) or absolute mouse coordinates
     private Coordinates? lastSetMouseCoordinates;
 
+    // Specifies we could already take the first sceenshot successfully.
+    private bool firstWindowScreenshotSuccessful;
+
+    private bool canRetryOnException = true;
+
     public StandardInteractionProvider(
             Simulator simulator,
             AbstractWindowsEnvironment environmentInterface,
@@ -61,6 +66,7 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
     public async Task InitializeAsync()
     {
         this.lastSetMouseCoordinates = null;
+        this.firstWindowScreenshotSuccessful = false;
 
         while (true)
         {
@@ -278,11 +284,30 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
         // won't allow us to access the pixel data). If this will generally no longer work
         // with a future verison of the game, we may need to revert using the screen copy
         // also for background mode, but set the game window as topmost window.
+        bool fromScreen = !this.backgroundMode;
         this.environmentInterface.CreateWindowScreenshot(
             this.windowHandle,
             ref this.currentScreenshot,
             failIfNotInForeground: !this.backgroundMode,
-            fromScreen: !this.backgroundMode);
+            fromScreen: fromScreen);
+
+        if (!fromScreen && !this.firstWindowScreenshotSuccessful)
+        {
+            // If we took the first screenshot from the window rather than the screen,
+            // check whether it only contains black pixels. In that case, throw an
+            // exception to inform the user that background mode won't work.
+            if (this.currentScreenshot.ContainsOnlyBlackPixels())
+            {
+                // Don't allow to retry in this case since it would lead to the same
+                // exception.
+                this.canRetryOnException = false;
+                throw new InvalidOperationException(
+                        "Couldn't capture screenshot from window. " +
+                        "Please disable background mode and try again.");
+            }
+
+            this.firstWindowScreenshotSuccessful = true;
+        }
 
         return this.currentScreenshot;
     }
@@ -493,7 +518,7 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
 
     private async ValueTask CheckRetryForExceptionAsync(Exception ex, bool reinitialize)
     {
-        if (this.simulator.AsyncRetryHandler is null)
+        if (!this.canRetryOnException || this.simulator.AsyncRetryHandler is null)
         {
             // Simply rethrow the exception.
             ExceptionDispatchInfo.Throw(ex);

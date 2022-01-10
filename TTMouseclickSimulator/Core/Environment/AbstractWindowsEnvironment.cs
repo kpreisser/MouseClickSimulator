@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 namespace TTMouseclickSimulator.Core.Environment;
@@ -588,6 +589,7 @@ public abstract class AbstractWindowsEnvironment
             return this.GetPixel(coords.X, coords.Y);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ScreenshotColor GetPixel(int x, int y)
         {
             // Only do these checks in Debug mode so we get optimal performance
@@ -621,6 +623,22 @@ public abstract class AbstractWindowsEnvironment
                 g = (byte)((color >> 0x8) & 0xFF),
                 r = (byte)((color >> 0x10) & 0xFF)
             };
+        }
+
+        public bool ContainsOnlyBlackPixels()
+        {
+            // Check whether the screenshot contains only black pixels, which means it
+            // probably didn't work.
+            int* scan0 = this.scan0;
+            int count = this.bmp.Width * this.bmp.Height;
+
+            for (int i = 0; i < count; i++)
+            {
+                if ((scan0[i] & 0xFFFFFF) is not 0)
+                    return false;
+            }
+
+            return true;
         }
 
         public void Dispose()
