@@ -51,11 +51,21 @@ internal static class NativeMethods
     [DllImport("user32.dll", EntryPoint = "SetForegroundWindow", ExactSpelling = true)]
     public static extern BOOL SetForegroundWindow(IntPtr hWnd);
 
-    [DllImport("user32.dll", EntryPoint = "SetWindowLong", ExactSpelling = true)]
+    [DllImport("user32.dll", EntryPoint = "SetWindowLong", ExactSpelling = true, SetLastError = true)]
     private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
 
-    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", ExactSpelling = true)]
+    [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", ExactSpelling = true, SetLastError = true)]
     private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+    [DllImport("user32.dll", EntryPoint = "SetWindowPos", ExactSpelling = true, SetLastError = true)]
+    public static extern BOOL SetWindowPos(
+        IntPtr hWnd,
+        nint hWndInsertAfter,
+        int X,
+        int Y,
+        int cx,
+        int xy,
+        SWP flags);
 
     [DllImport("user32.dll", EntryPoint = "GetDC", ExactSpelling = true)]
     public static extern IntPtr GetDC(IntPtr hWnd);
@@ -243,6 +253,25 @@ internal static class NativeMethods
     public enum MK : int
     {
         LBUTTON = 0x0001
+    }
+
+    public enum HWND : int
+    {
+        NOTOPMOST = -2,
+
+        TOPMOST = -1
+    }
+
+    [Flags]
+    public enum SWP : uint
+    {
+        NOSIZE = 0x0001,
+
+        NOMOVE = 0x0002,
+
+        NOACTIVATE = 0x0010,
+
+        ASYNCWINDOWPOS = 0x4000
     }
 
     public struct BOOL

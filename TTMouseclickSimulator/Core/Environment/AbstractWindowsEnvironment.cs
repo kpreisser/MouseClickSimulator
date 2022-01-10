@@ -142,6 +142,34 @@ public abstract class AbstractWindowsEnvironment
             ref existingScreenshot);
     }
 
+    public bool TrySetWindowTopmost(IntPtr hWnd, bool topmost, bool throwIfNotSuccessful = false)
+    {
+        var flags = NativeMethods.SWP.NOMOVE |
+            NativeMethods.SWP.NOSIZE |
+            NativeMethods.SWP.NOACTIVATE;
+
+        if (!topmost)
+        {
+            // When unsetting topmost, do it asynchronously because we don't need to
+            // wait for it.
+            flags |= NativeMethods.SWP.ASYNCWINDOWPOS;
+        }
+
+        bool result = NativeMethods.SetWindowPos(
+            hWnd,
+            (int)(topmost ? NativeMethods.HWND.TOPMOST : NativeMethods.HWND.NOTOPMOST),
+            0,
+            0,
+            0,
+            0,
+            flags);
+
+        if (!result && throwIfNotSuccessful)
+            throw new Win32Exception();
+
+        return result;
+    }
+
     public void MoveMouse(int x, int y)
     {
         this.DoMouseInput(x, y, true, null);
