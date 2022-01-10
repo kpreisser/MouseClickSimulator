@@ -30,7 +30,7 @@ Please see the topic [Running the Simulator](https://github.com/kpreisser/MouseC
 build and run the Mouse Click Simulator on your computer.
 
 ## Release Notes
-**2022-01-09** (Commit [8334b77](https://github.com/kpreisser/MouseClickSimulator/commit/bf78e3910d95b561cdbb0c34764dcb24dc648657))
+**2022-01-10** (Commit [8334b77](https://github.com/kpreisser/MouseClickSimulator/commit/bcec1855a60b4a2919545046691c655c31b0cc8c))
 
 - Updated to **.NET 6**.
   Due to this change, the prerequisites for building the simulator have slightly changed. Please see the topic 
