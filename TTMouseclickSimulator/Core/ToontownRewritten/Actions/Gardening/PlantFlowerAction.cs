@@ -49,7 +49,7 @@ public class PlantFlowerAction : AbstractAction
             await MouseHelpers.DoSimpleMouseClickAsync(
                 provider,
                 c,
-                buttonDownTimeout: 100);
+                buttonDownDuration: 100);
 
             await provider.WaitAsync(100);
         }

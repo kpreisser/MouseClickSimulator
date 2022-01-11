@@ -2,30 +2,60 @@
 <SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
   <Title>Gardening – 3 Jellybean Combinations</Title>
   <Description>
-This project contains QuickActions for planting flowers using combinations of 3 jellybeans.
+This project contains QuickActions for planting and watering flowers using combinations of 3 jellybeans.
 
 Before you click on one of the buttons, the toon needs to stand in front of an empty flower spot.
   </Description>
 
   
   <QuickAction title="Summer’s Last Rose  (Rose)">
-    <PlantFlower jellybeanCombination="0, 0, 0" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="0, 0, 0" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="Potsen Pansy  (Pansy)">
-    <PlantFlower jellybeanCombination="2, 0, 0" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="2, 0, 0" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="Hybrid Carnation  (Carnation)">
-    <PlantFlower jellybeanCombination="5, 0, 0" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="5, 0, 0" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="Midsummer Daisy  (Daisy)">
-    <PlantFlower jellybeanCombination="6, 0, 1" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="6, 0, 1" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="Tiger Lily  (Lily)">
-    <PlantFlower jellybeanCombination="7, 2, 2" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="7, 2, 2" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
 
 </SimulatorProject>

@@ -2,30 +2,60 @@
 <SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
   <Title>Gardening – 7 Jellybean Combinations</Title>
   <Description>
-This project contains QuickActions for planting flowers using combinations of 7 jellybeans.
+This project contains QuickActions for planting and watering flowers using combinations of 7 jellybeans.
 
 Before you click on one of the buttons, the toon needs to stand in front of an empty flower spot.
   </Description>
 
   
   <QuickAction title="Stinking Rose  (Rose)">
-    <PlantFlower jellybeanCombination="0, 7, 2, 5, 3, 7, 7" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="0, 7, 2, 5, 3, 7, 7" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="Model Carnation  (Carnation)">
-    <PlantFlower jellybeanCombination="5, 1, 1, 1, 1, 6, 1" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="5, 1, 1, 1, 1, 6, 1" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="Car Petunia  (Petunia)">
-    <PlantFlower jellybeanCombination="4, 3, 4, 3, 7, 4, 4" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="4, 3, 4, 3, 7, 4, 4" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="Crazy Daisy  (Daisy)">
-    <PlantFlower jellybeanCombination="6, 1, 0, 2, 1, 1, 1" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="6, 1, 0, 2, 1, 1, 1" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="Indubitab Lily  (Lily)">
-    <PlantFlower jellybeanCombination="7, 3, 7, 4, 7, 4, 4" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="7, 3, 7, 4, 7, 4, 4" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
 
 </SimulatorProject>

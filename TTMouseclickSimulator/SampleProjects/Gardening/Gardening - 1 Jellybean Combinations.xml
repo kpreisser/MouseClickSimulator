@@ -2,30 +2,60 @@
 <SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
   <Title>Gardening – 1 Jellybean Combinations</Title>
   <Description>
-This project contains QuickActions for planting flowers using combinations of 1 jellybean.
+This project contains QuickActions for planting and watering flowers using combinations of 1 jellybean.
 
 Before you click on one of the buttons, the toon needs to stand in front of an empty flower spot.
   </Description>
 
   
   <QuickAction title="Laff-o-dil  (Daffodil)">
-    <PlantFlower jellybeanCombination="1" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="1" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="Dandy Pansy  (Pansy)">
-    <PlantFlower jellybeanCombination="2" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="2" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="What-in Carnation  (Carnation)">
-    <PlantFlower jellybeanCombination="5" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="5" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="School Daisy  (Daisy)">
-    <PlantFlower jellybeanCombination="6" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="6" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
   
   <QuickAction title="Lily-of-the-Alley  (Lily)">
-    <PlantFlower jellybeanCombination="7" />
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="7" />
+      <Pause duration="6400" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
   </QuickAction>
 
 </SimulatorProject>

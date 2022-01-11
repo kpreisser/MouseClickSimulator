@@ -12,7 +12,7 @@ public static class MouseHelpers
         IInteractionProvider provider,
         Coordinates coords,
         HorizontalScaleAlignment align = HorizontalScaleAlignment.Center,
-        int buttonDownTimeout = 150)
+        int buttonDownDuration = 150)
     {
         var pos = provider.GetCurrentWindowPosition();
         coords = pos.ScaleCoordinates(
@@ -22,7 +22,7 @@ public static class MouseHelpers
 
         provider.MoveMouse(coords);
         provider.PressMouseButton();
-        await provider.WaitAsync(buttonDownTimeout);
+        await provider.WaitAsync(buttonDownDuration);
         provider.ReleaseMouseButton();
     }
 

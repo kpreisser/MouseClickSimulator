@@ -44,6 +44,8 @@ public static class XmlProjectDeserializer
         actionTypes.Add("DoodlePanel", typeof(DoodlePanelAction));
 
         actionTypes.Add("PlantFlower", typeof(PlantFlowerAction));
+        actionTypes.Add("Water", typeof(WaterAction));
+        actionTypes.Add("ConfirmFlowerPlantedDialog", typeof(ConfirmFlowerPlantedDialogAction));
 
         actionTypes.Add("AutomaticFishing", typeof(AutomaticFishingAction));
         actionTypes.Add("StraightFishing", typeof(StraightFishingAction));
@@ -95,7 +97,9 @@ public static class XmlProjectDeserializer
             var actionList = ParseActionList(mainActionEl);
             if (actionList.Count != 1)
             {
-                throw new InvalidDataException("<MainAction> must contain exactly one Action element.");
+                throw new InvalidDataException(
+                    "<MainAction> must contain exactly one Action element. " +
+                    "To group multiple actions, use a <Compound> action.");
             }
             config.MainAction = actionList[0];
         }
@@ -112,7 +116,9 @@ public static class XmlProjectDeserializer
 
             if (quickActionList.Count != 1)
             {
-                throw new InvalidDataException("<QuickAction> must contain exactly one Action element.");
+                throw new InvalidDataException(
+                    "<QuickAction> must contain exactly one Action element. " +
+                    "To group multiple actions, use a <Compound> action.");
             }
 
             config.QuickActions.Add(new SimulatorConfiguration.QuickActionDescriptor()
