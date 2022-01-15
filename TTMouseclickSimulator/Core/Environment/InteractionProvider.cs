@@ -187,7 +187,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
                     if (this.simulator.RequiredCapabilities.IsSet(SimulatorCapabilities.MouseInput))
                     {
                         // When we require mouse input, disable the window, so that it is harder to
-                        // interrupt our actions by user input. Note that it seems wven though the
+                        // interrupt our actions by user input. Note that it seems even though the
                         // window can't be activated by clicking into it, moving the mouse over it
                         // while we send the LBUTTONDOWN message can still interfere with our
                         // actions (can move the mouse pointer to the current cursor's position,
