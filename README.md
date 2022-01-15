@@ -1,13 +1,13 @@
 ﻿# Mouse Click Simulator for Toontown Rewritten
 
-This is a new implementation of the older **TT Mouse Click Simulator** that is intended to work with Toontown Rewritten. It is implemented
+This is a new implementation of the older **"TT-Mausklick"** simulator, intended to work with Toontown Rewritten. It is implemented
 in C# (.NET 6) and runs on Windows.
 
 The TTR Mouse Click Simulator is able to automatically fish in specific locations like Punchling Place, TTC. To accomplish this, it scans the
 screen to detect fish bubbles, calculates how far the rod must be cast to catch the fish, and moves the Toon to the fisherman to sell the fish.
 
-A recent addition for gardening is the the ability to plant flowers using 1 to 8 jellybean combinations, which is implemented using "Quick Actions".
-By clicking on a button with the flower's name, the Mouse Click Simulator will plant the flower by selecting the correct jellybean combination.
+Additionally, the simulator can plant and water flowers using 1 to 8 jellybean combinations, which is implemented using "Quick Actions".
+By clicking on a button with the flower's name, the Mouse Click Simulator will plant the flower by selecting the correct jellybean combination, and then water it.
 
 You can watch a video of the <a href="https://www.youtube.com/watch?v=uq7VaJkO6-k" target="_blank">Automatic Fishing Function for Tenor Terrace</a>
 and <a href="https://www.youtube.com/watch?v=dS-gBcvsjz4" target="_blank">Punchline Place</a>.
@@ -30,6 +30,12 @@ Please see the topic [Running the Simulator](https://github.com/kpreisser/MouseC
 build and run the Mouse Click Simulator on your computer.
 
 ## Release Notes
+
+**2022-01-15** (Commit [8334b77](https://github.com/kpreisser/MouseClickSimulator/commit/834a4ca019d7f393c7bf124433c391e7f1d63ebd))
+
+- Improved the gardening projects to automatically water a flower after planting it.
+- Improved the runtime behavior by checking requirements according to the declared capabilities of actions.
+
 **2022-01-10** (Commit [8334b77](https://github.com/kpreisser/MouseClickSimulator/commit/bcec1855a60b4a2919545046691c655c31b0cc8c))
 
 - Updated to **.NET 6**.
