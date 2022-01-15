@@ -45,10 +45,6 @@
             <LineBreak/><LineBreak/>
             The Toontown window can even be hidden behind other apps, but it shouldn't protrude beyond the edge of the screen.
             Also, you shouldn't move the mouse pointer into the Toontown window while the simulator is running.
-            <LineBreak/>
-            <LineBreak/>
-            However, this mode might not always work some configurations. In that case, you can disable it,
-            so that gobal mouse and keyboard input is synthesized.
           </TextBlock>
         </ToolTip>
       </CheckBox.ToolTip>

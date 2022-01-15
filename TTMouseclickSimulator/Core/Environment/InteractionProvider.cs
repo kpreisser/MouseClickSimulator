@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TTMouseclickSimulator.Core.Environment;
 
-internal class StandardInteractionProvider : IInteractionProvider, IDisposable
+internal class InteractionProvider : IInteractionProvider, IDisposable
 {
     private readonly bool backgroundMode;
 
@@ -28,12 +28,12 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
     // Window-relative (when using backgroundMode) or absolute mouse coordinates
     private Coordinates? lastSetMouseCoordinates;
 
-    // Specifies we could already take the first sceenshot successfully.
-    private bool firstWindowScreenshotSuccessful;
+    private bool windowIsDisabled;
+    private bool windowIsTopmost;
 
     private bool canRetryOnException = true;
 
-    public StandardInteractionProvider(
+    public InteractionProvider(
             Simulator simulator,
             AbstractWindowsEnvironment environmentInterface,
             bool backgroundMode)
@@ -66,7 +66,6 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
     public async Task InitializeAsync()
     {
         this.lastSetMouseCoordinates = null;
-        this.firstWindowScreenshotSuccessful = false;
 
         while (true)
         {
@@ -84,7 +83,7 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
                     {
                         if (processes.Count is 1)
                         {
-                            if (lastInitializingEventParameter != false)
+                            if (lastInitializingEventParameter is not false)
                             {
                                 lastInitializingEventParameter = false;
                                 this.simulator.OnSimulatorInitializing(lastInitializingEventParameter);
@@ -124,7 +123,7 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
                         }
                         else
                         {
-                            if (lastInitializingEventParameter != true)
+                            if (lastInitializingEventParameter is not true)
                             {
                                 lastInitializingEventParameter = true;
                                 this.simulator.OnSimulatorInitializing(lastInitializingEventParameter);
@@ -178,26 +177,58 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
 
                 if (this.backgroundMode)
                 {
-                    // When starting in background mode, wait a second before doing anything, to
-                    // handle the case when the user clicks into the window to activate it
-                    // (when more than one processes were detected).
-                    await this.WaitAsync(900);
+                    if (this.simulator.RequiredCapabilities.IsSet(SimulatorCapabilities.CaptureScreenshot))
+                    {
+                        // Verify that we actually can create a screenshot directly from the
+                        // window instead of from the screen.
+                        this.GetCurrentWindowScreenshot(isInitialization: true);
+                    }
 
-                    // Then, simulate a click to (0, 0). This seems currently to be necessary so
-                    // that the first WM_LBUTTONDOWN that we send to the window works correctly
-                    // if the window is currently inactive (otherwise, the first message would
-                    // have the effect that the mouse button is pressed but is then immediately
-                    // released; probably due to a WM_MOUSELEAVE message being sent by Windows).
-                    this.MoveMouse(0, 0);
-                    this.PressMouseButton();
-                    await this.WaitAsync(50);
-                    this.ReleaseMouseButton();
-                    await this.WaitAsync(50);
+                    if (this.simulator.RequiredCapabilities.IsSet(SimulatorCapabilities.MouseInput))
+                    {
+                        // When we require mouse input, disable the window, so that it is harder to
+                        // interrupt our actions by user input. Note that it seems wven though the
+                        // window can't be activated by clicking into it, moving the mouse over it
+                        // while we send the LBUTTONDOWN message can still interfere with our
+                        // actions (can move the mouse pointer to the current cursor's position,
+                        // and can release the mouse button).
+                        // Additionally, it's possible to activate the window by clicking on it's
+                        // task bar button, and then keyboard input will be possible.
+                        this.environmentInterface.SetWindowEnabled(
+                            this.windowHandle,
+                            enabled: false);
+
+                        this.windowIsDisabled = true;
+
+                        if (lastInitializingEventParameter.Value)
+                        {
+                            // Wait a bit after there were multiple windows, so that the user can
+                            // deactivate the window before the first mouse click.
+                            // TODO: Waybe we should wait until the window has been deactivated
+                            // again in this case before continuing, so the mouse input isn't
+                            // interrupted afterwards when the user then deactivates the window.
+                            await this.WaitAsync(800);
+                        }
+                    }
+
+                    // Wait a bit before starting.
+                    await this.WaitAsync(200);
                 }
                 else
                 {
+                    if (this.simulator.RequiredCapabilities.IsSet(SimulatorCapabilities.MouseInput) ||
+                        this.simulator.RequiredCapabilities.IsSet(SimulatorCapabilities.CaptureScreenshot))
+                    {
+                        // When we require mouse input or screenshots in non-background mode, set
+                        // the window to topmost, to ensure other topmost windows don't hide the
+                        // area that we want to click or scan.
+                        this.windowIsTopmost = this.environmentInterface.TrySetWindowTopmost(
+                            this.windowHandle,
+                            topmost: true);
+                    }
+
                     // Also wait a short time when not using background mode.
-                    await this.WaitAsync(500);
+                    await this.WaitAsync(200);
                 }
             }
             catch (Exception ex)
@@ -264,52 +295,12 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
     {
         this.CancellationToken.ThrowIfCancellationRequested();
 
-        return this.GetMainWindowPosition();
+        return this.GetWindowPositionCore();
     }
 
     public IScreenshotContent GetCurrentWindowScreenshot()
     {
-        this.CancellationToken.ThrowIfCancellationRequested();
-
-        // When using background mode, create the screenshot directly from the window's
-        // DC instead of from the whole screen. However, this seems not always to work
-        // (apparently on older Windows versions), e.g. on a Windows 8.1 machine I just
-        // got a black screen using this method. Also, e.g. with DirectX games on
-        // Windows 10 and 11, this might not work.
-        // Therefore, when not using background mode, we still create a screenshot from
-        // the whole screen, which should work in every case (and the window also needs
-        // to be in the foreground in this mode).
-        // Currently, there doesn't seem another easy way to get a screenshot froom a
-        // window client area if using the DC doesn't work (e.g. creating a DWM thumbnail
-        // won't allow us to access the pixel data). If this will generally no longer work
-        // with a future verison of the game, we may need to revert using the screen copy
-        // also for background mode, but set the game window as topmost window.
-        bool fromScreen = !this.backgroundMode;
-        this.environmentInterface.CreateWindowScreenshot(
-            this.windowHandle,
-            ref this.currentScreenshot,
-            failIfNotInForeground: !this.backgroundMode,
-            fromScreen: fromScreen);
-
-        if (!fromScreen && !this.firstWindowScreenshotSuccessful)
-        {
-            // If we took the first screenshot from the window rather than the screen,
-            // check whether it only contains black pixels. In that case, throw an
-            // exception to inform the user that background mode won't work.
-            if (this.currentScreenshot.ContainsOnlyBlackPixels())
-            {
-                // Don't allow to retry in this case since it would lead to the same
-                // exception.
-                this.canRetryOnException = false;
-                throw new InvalidOperationException(
-                        "Couldn't capture screenshot from window. " +
-                        "Please disable background mode and try again.");
-            }
-
-            this.firstWindowScreenshotSuccessful = true;
-        }
-
-        return this.currentScreenshot;
+        return this.GetCurrentWindowScreenshot(false);
     }
 
     public void PressKey(AbstractWindowsEnvironment.VirtualKey key)
@@ -317,7 +308,7 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
         this.CancellationToken.ThrowIfCancellationRequested();
 
         // Check if the window is still active and in foreground.
-        this.GetMainWindowPosition(failIfMinimized: !this.backgroundMode);
+        this.GetWindowPositionCore(failIfMinimized: !this.backgroundMode);
 
         if (!this.keysCurrentlyPressed.Contains(key))
         {
@@ -351,7 +342,7 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
         this.CancellationToken.ThrowIfCancellationRequested();
 
         // Check if the window is still active and in foreground.
-        this.GetMainWindowPosition(failIfMinimized: !this.backgroundMode);
+        this.GetWindowPositionCore(failIfMinimized: !this.backgroundMode);
 
         if (!this.backgroundMode)
             this.environmentInterface.WriteText(text);
@@ -371,19 +362,22 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
         if (!this.backgroundMode)
         {
             // Check if the window is still active and in foreground.
-            var pos = this.GetMainWindowPosition();
+            var pos = this.GetWindowPositionCore();
 
             // Convert the relative coordinates to absolute ones, then simulate the click.
             var absoluteCoords = pos.RelativeToAbsoluteCoordinates(c);
-            this.environmentInterface.MoveMouse(absoluteCoords.X, absoluteCoords.Y);
+            this.environmentInterface.MoveMouse(
+                checked((int)MathF.Round(absoluteCoords.X)),
+                checked((int)MathF.Round(absoluteCoords.Y)));
+
             this.lastSetMouseCoordinates = absoluteCoords;
         }
         else
         {
             this.environmentInterface.MoveWindowMouse(
                 this.windowHandle,
-                c.X,
-                c.Y,
+                checked((int)MathF.Round(c.X)),
+                checked((int)MathF.Round(c.Y)),
                 this.isMouseButtonPressed);
 
             this.lastSetMouseCoordinates = c;
@@ -397,7 +391,7 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
         if (!this.backgroundMode)
         {
             // Check if the window is still active and in foreground.
-            this.GetMainWindowPosition();
+            this.GetWindowPositionCore();
 
             if (!this.isMouseButtonPressed)
             {
@@ -417,8 +411,8 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
 
                 this.environmentInterface.PressWindowMouseButton(
                     this.windowHandle,
-                    this.lastSetMouseCoordinates.Value.X,
-                    this.lastSetMouseCoordinates.Value.Y);
+                    checked((int)MathF.Round(this.lastSetMouseCoordinates.Value.X)),
+                    checked((int)MathF.Round(this.lastSetMouseCoordinates.Value.Y)));
 
                 this.isMouseButtonPressed = true;
             }
@@ -444,9 +438,9 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
                 }
 
                 this.environmentInterface.ReleaseWindowMouseButton(
-                   this.windowHandle,
-                   this.lastSetMouseCoordinates.Value.X,
-                   this.lastSetMouseCoordinates.Value.Y);
+                    this.windowHandle,
+                    checked((int)MathF.Round(this.lastSetMouseCoordinates.Value.X)),
+                    checked((int)MathF.Round(this.lastSetMouseCoordinates.Value.Y)));
             }
 
             this.isMouseButtonPressed = false;
@@ -455,19 +449,27 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
 
     public void CancelActiveInteractions()
     {
-        // Release mouse buttons and keys that are currently pressed.
+        // Release mouse buttons and keys that are currently pressed, and revert changes to the
+        // window. We need to ignore exceptions here as this method should never fail.
         if (this.isMouseButtonPressed)
         {
-            if (!this.backgroundMode)
+            try
             {
-                this.environmentInterface.ReleaseMouseButton();
+                if (!this.backgroundMode)
+                {
+                    this.environmentInterface.ReleaseMouseButton();
+                }
+                else
+                {
+                    this.environmentInterface.ReleaseWindowMouseButton(
+                        this.windowHandle,
+                        checked((int)MathF.Round(this.lastSetMouseCoordinates!.Value.X)),
+                        checked((int)MathF.Round(this.lastSetMouseCoordinates.Value.Y)));
+                }
             }
-            else
+            catch
             {
-                this.environmentInterface.ReleaseWindowMouseButton(
-                   this.windowHandle,
-                   this.lastSetMouseCoordinates!.Value.X,
-                   this.lastSetMouseCoordinates.Value.Y);
+                // Ignore.
             }
 
             this.isMouseButtonPressed = false;
@@ -475,13 +477,50 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
 
         foreach (var key in this.keysCurrentlyPressed)
         {
-            if (!this.backgroundMode)
-                this.environmentInterface.ReleaseKey(key);
-            else
-                this.environmentInterface.ReleaseWindowKey(this.windowHandle, key);
+            try
+            {
+                if (!this.backgroundMode)
+                    this.environmentInterface.ReleaseKey(key);
+                else
+                    this.environmentInterface.ReleaseWindowKey(this.windowHandle, key);
+            }
+            catch
+            {
+                // Ignore.
+            }
         }
 
         this.keysCurrentlyPressed.Clear();
+
+        if (this.windowIsDisabled)
+        {
+            try
+            {
+                this.environmentInterface.SetWindowEnabled(this.windowHandle, enabled: true);
+            }
+            catch
+            {
+                // Ignore.
+            }
+
+            this.windowIsDisabled = false;
+        }
+
+        if (this.windowIsTopmost)
+        {
+            try
+            {
+                this.windowIsTopmost = this.environmentInterface.TrySetWindowTopmost(
+                    this.windowHandle,
+                    topmost: false);
+            }
+            catch
+            {
+                // Ignore.
+            }
+
+            this.windowIsTopmost = false;
+        }
     }
 
     private async ValueTask WaitCoreAsync(int milliseconds, bool checkWindow = true)
@@ -503,7 +542,7 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
             {
                 // Check if the window is still active (and, if not using background mode,
                 // in foreground).
-                this.GetMainWindowPosition(failIfMinimized: !this.backgroundMode);
+                this.GetWindowPositionCore(failIfMinimized: !this.backgroundMode);
 
                 long remaining = milliseconds - sw.ElapsedMilliseconds;
                 if (remaining <= 0)
@@ -514,6 +553,81 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
                     this.CancellationToken);
             }
         }
+    }
+
+    private WindowPosition GetWindowPositionCore(bool failIfMinimized = true)
+    {
+        // Fail if the window is no longer in foreground (active) and we are not
+        // using background mode.
+        var windowPosition = this.environmentInterface.GetWindowPosition(
+            this.windowHandle,
+            out _,
+            failIfNotInForeground: !this.backgroundMode,
+            failIfMinimized: failIfMinimized);
+
+        // When we use mouse input or capture screenshots, check that the aspect
+        // ratio of the window is 4:3 or higher if the window currently isn't minimized.
+        if ((this.simulator.RequiredCapabilities.IsSet(SimulatorCapabilities.MouseInput) ||
+            this.simulator.RequiredCapabilities.IsSet(SimulatorCapabilities.CaptureScreenshot)) &&
+            !windowPosition.IsMinimized)
+        {
+            if (((double)windowPosition.Size.Width / windowPosition.Size.Height) < 4d / 3d)
+            {
+                throw new ArgumentException(
+                    "The Toontown window must have an aspect ratio " +
+                    "of 4:3 or higher (e.g. 16:9).");
+            }
+
+            // TODO: Check if the window is beyond the virtual screen size (if in non-background
+            // mode and we require mouse or screenshot capabilities, or if in background mode and
+            // we require screenshot capabilities).
+        }
+
+        return windowPosition;
+    }
+
+    private IScreenshotContent GetCurrentWindowScreenshot(bool isInitialization)
+    {
+        this.CancellationToken.ThrowIfCancellationRequested();
+
+        // When using background mode, create the screenshot directly from the window's
+        // DC instead of from the whole screen. However, this seems not always to work
+        // (apparently on older Windows versions), e.g. on a Windows 8.1 machine I just
+        // got a black screen using this method. Also, e.g. with DirectX games on
+        // Windows 10 and 11, this might not work.
+        // Therefore, when not using background mode, we still create a screenshot from
+        // the whole screen, which should work in every case (and the window also needs
+        // to be in the foreground in this mode).
+        // Currently, there doesn't seem another easy way to get a screenshot froom a
+        // window client area if using the DC doesn't work (e.g. creating a DWM thumbnail
+        // won't allow us to access the pixel data). If this will generally no longer work
+        // with a future verison of the game, we may need to revert using the screen copy
+        // also for background mode, but set the game window as topmost window.
+        bool fromScreen = !this.backgroundMode;
+        var windowPosition = this.GetWindowPositionCore();
+        this.environmentInterface.CreateWindowScreenshot(
+            this.windowHandle,
+            windowPosition,
+            ref this.currentScreenshot,
+            fromScreen: fromScreen);
+
+        if (!fromScreen && isInitialization)
+        {
+            // If we took the first screenshot from the window rather than the screen,
+            // check whether it only contains black pixels. In that case, throw an
+            // exception to inform the user that background mode won't work.
+            if (this.currentScreenshot.ContainsOnlyBlackPixels())
+            {
+                // Don't allow to retry in this case since it would lead to the same
+                // exception.
+                this.canRetryOnException = false;
+                throw new InvalidOperationException(
+                    "Couldn't capture screenshot directly from window. " +
+                    "Please disable background mode and try again.");
+            }
+        }
+
+        return this.currentScreenshot;
     }
 
     private async ValueTask CheckRetryForExceptionAsync(Exception ex, bool reinitialize)
@@ -539,17 +653,6 @@ internal class StandardInteractionProvider : IInteractionProvider, IDisposable
             if (reinitialize)
                 await this.InitializeAsync();
         }
-    }
-
-    private WindowPosition GetMainWindowPosition(bool failIfMinimized = true)
-    {
-        // Fail if the window is no longer in foreground (active) and we are not
-        // using background mode.
-        return this.environmentInterface.GetWindowPosition(
-            this.windowHandle,
-            out _,
-            !this.backgroundMode,
-            failIfMinimized);
     }
 
     /// <summary>

@@ -19,6 +19,11 @@ public class PressKeyAction : AbstractAction
         this.duration = duration;
     }
 
+    public override SimulatorCapabilities RequiredCapabilities
+    {
+        get => SimulatorCapabilities.KeyboardInput;
+    }
+
     public override sealed async ValueTask RunAsync(IInteractionProvider provider)
     {
         provider.PressKey(this.key);

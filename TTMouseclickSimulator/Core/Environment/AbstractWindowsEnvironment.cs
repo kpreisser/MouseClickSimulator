@@ -107,7 +107,7 @@ public abstract class AbstractWindowsEnvironment
 
         var pos = new WindowPosition()
         {
-            Coordinates = new Coordinates(relPos.x, relPos.y),
+            Coordinates = (relPos.x, relPos.y),
             Size = new Size(clientRect.right, clientRect.bottom)
         };
 
@@ -115,30 +115,18 @@ public abstract class AbstractWindowsEnvironment
         if (failIfMinimized && pos.IsMinimized)
             throw new Exception("The window has been minimized.");
 
-        // Validate the position.
-        this.ValidateWindowPosition(pos);
         return pos;
-    }
-
-    /// <summary>
-    /// When overridden in subclasses, throws an exception if the window position is
-    /// not valid. This implementation does nothing.
-    /// </summary>
-    /// <param name="pos">The WindowPosition to validate.</param>
-    protected virtual void ValidateWindowPosition(WindowPosition pos)
-    {
-        // Do nothing.
     }
 
     public void CreateWindowScreenshot(
         IntPtr hWnd,
+        WindowPosition windowPosition,
         [NotNull] ref ScreenshotContent? existingScreenshot,
-        bool failIfNotInForeground = true,
         bool fromScreen = false)
     {
         ScreenshotContent.Create(
             fromScreen ? IntPtr.Zero : hWnd,
-            this.GetWindowPosition(hWnd, out _, failIfNotInForeground),
+            windowPosition,
             ref existingScreenshot);
     }
 
@@ -170,6 +158,11 @@ public abstract class AbstractWindowsEnvironment
         return result;
     }
 
+    public void SetWindowEnabled(IntPtr hWnd, bool enabled)
+    {
+        _ = NativeMethods.EnableWindow(hWnd, enabled);
+    }
+
     public void MoveMouse(int x, int y)
     {
         this.DoMouseInput(x, y, true, null);
@@ -188,13 +181,12 @@ public abstract class AbstractWindowsEnvironment
     private void DoMouseInput(int x, int y, bool absoluteCoordinates, bool? mouseDown)
     {
         // Convert the screen coordinates into mouse coordinates.
-        var cs = new Coordinates(x, y);
-        cs = this.GetMouseCoordinatesFromScreenCoordinates(cs);
+        var (mouseX, mouseY) = this.GetMouseCoordinatesFromScreenCoordinates(x, y);
 
         var mi = new NativeMethods.MOUSEINPUT()
         {
-            dx = cs.X,
-            dy = cs.Y
+            dx = mouseX,
+            dy = mouseY
         };
 
         if (absoluteCoordinates)
@@ -213,7 +205,8 @@ public abstract class AbstractWindowsEnvironment
                 NativeMethods.MOUSEEVENTF.LEFTUP;
         }
 
-        var input = new NativeMethods.INPUT
+        Span<NativeMethods.INPUT> inputs = stackalloc NativeMethods.INPUT[1];
+        inputs[0] = new NativeMethods.INPUT
         {
             type = NativeMethods.InputType.INPUT_MOUSE,
             InputUnion = {
@@ -221,18 +214,18 @@ public abstract class AbstractWindowsEnvironment
             }
         };
 
-        NativeMethods.SendInput(input);
+        NativeMethods.SendInput(inputs);
     }
 
-    private Coordinates GetMouseCoordinatesFromScreenCoordinates(Coordinates screenCoords)
+    private (int mouseX, int mouseY) GetMouseCoordinatesFromScreenCoordinates(int screenX, int screenY)
     {
         // Note: The mouse coordinates are relative to the primary monitor size and
         // location, not to the virtual screen size, so we use
         // SystemInformation.PrimaryMonitorSize.
         var primaryScreenSize = SystemInformation.PrimaryMonitorSize;
 
-        double x = (double)0x10000 * screenCoords.X / primaryScreenSize.Width;
-        double y = (double)0x10000 * screenCoords.Y / primaryScreenSize.Height;
+        double x = (double)0x10000 * screenX / primaryScreenSize.Width;
+        double y = (double)0x10000 * screenY / primaryScreenSize.Height;
 
         /* For correct conversion when converting the flointing point numbers
          * to integers, we need round away from 0, e.g.
@@ -255,7 +248,7 @@ public abstract class AbstractWindowsEnvironment
         int resX = checked((int)(x >= 0 ? Math.Ceiling(x) : Math.Floor(x)));
         int resY = checked((int)(y >= 0 ? Math.Ceiling(y) : Math.Floor(y)));
 
-        return new Coordinates(resX, resY);
+        return (resX, resY);
     }
 
     public Coordinates GetCurrentMousePosition()
@@ -284,7 +277,8 @@ public abstract class AbstractWindowsEnvironment
         if (!down)
             ki.dwFlags = NativeMethods.KEYEVENTF.KEYUP;
 
-        var input = new NativeMethods.INPUT
+        Span<NativeMethods.INPUT> inputs = stackalloc NativeMethods.INPUT[1];
+        inputs[0] = new NativeMethods.INPUT
         {
             type = NativeMethods.InputType.INPUT_KEYBOARD,
             InputUnion =
@@ -293,12 +287,15 @@ public abstract class AbstractWindowsEnvironment
             }
         };
 
-        NativeMethods.SendInput(input);
+        NativeMethods.SendInput(inputs);
     }
 
     public void WriteText(string characters)
     {
-        var inputs = new NativeMethods.INPUT[2 * characters.Length];
+        int inputsLength = 2 * characters.Length;
+        var inputs = inputsLength <= 128 ?
+            stackalloc NativeMethods.INPUT[inputsLength] :
+            new NativeMethods.INPUT[inputsLength];
 
         for (int i = 0; i < inputs.Length; i++)
         {
@@ -323,7 +320,7 @@ public abstract class AbstractWindowsEnvironment
             inputs[i] = input;
         }
 
-        NativeMethods.SendInputs(inputs);
+        NativeMethods.SendInput(inputs);
     }
 
     public void MoveWindowMouse(IntPtr hWnd, int x, int y, bool isButtonDown)
@@ -468,7 +465,7 @@ public abstract class AbstractWindowsEnvironment
 
         public Size Size
         {
-            get => new Size(this.bmp.Width, this.bmp.Height);
+            get => new(this.bmp.Width, this.bmp.Height);
         }
 
         public WindowPosition WindowPosition
@@ -614,7 +611,9 @@ public abstract class AbstractWindowsEnvironment
 
         public ScreenshotColor GetPixel(Coordinates coords)
         {
-            return this.GetPixel(coords.X, coords.Y);
+            return this.GetPixel(
+                checked((int)MathF.Round(coords.X)),
+                checked((int)MathF.Round(coords.Y)));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

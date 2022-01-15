@@ -20,6 +20,15 @@ public interface IAction
     event Action<string>? ActionInformationUpdated;
 
     /// <summary>
+    /// Gets the simulator capabilities that are required by this action.
+    /// </summary>
+    /// <returns></returns>
+    SimulatorCapabilities RequiredCapabilities
+    {
+        get;
+    }
+
+    /// <summary>
     /// Asynchonously runs the action using the specified IInteractionProvider.
     /// </summary>
     /// <param name="waitable"></param>

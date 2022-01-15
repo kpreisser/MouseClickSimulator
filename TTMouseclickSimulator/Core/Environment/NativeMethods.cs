@@ -67,6 +67,11 @@ internal static class NativeMethods
         int xy,
         SWP flags);
 
+    [DllImport("user32.dll", EntryPoint = "EnableWindow", ExactSpelling = true)]
+    public static extern BOOL EnableWindow(
+        IntPtr hWnd,
+        BOOL bEnable);
+
     [DllImport("user32.dll", EntryPoint = "GetDC", ExactSpelling = true)]
     public static extern IntPtr GetDC(IntPtr hWnd);
 
@@ -93,13 +98,7 @@ internal static class NativeMethods
             return (IntPtr)SetWindowLong32(hWnd, nIndex, (int)dwNewLong);
     }
 
-    public static unsafe void SendInput(INPUT input)
-    {
-        if (SendInputNative(1, &input, sizeof(INPUT)) is 0)
-            throw new Win32Exception();
-    }
-
-    public static unsafe void SendInputs(INPUT[] inputs)
+    public static unsafe void SendInput(ReadOnlySpan<INPUT> inputs)
     {
         fixed (INPUT* inputsPtr = inputs)
         {

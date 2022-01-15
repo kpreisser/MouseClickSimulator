@@ -38,6 +38,11 @@ public abstract class AbstractFishingRodAction : AbstractAction
     {
     }
 
+    public override SimulatorCapabilities RequiredCapabilities
+    {
+        get => SimulatorCapabilities.MouseInput | SimulatorCapabilities.CaptureScreenshot;
+    }
+
     // This is determined by the class type, not by the instance so implement it
     // as abstract property instead of a field. This avoids it being serialized.
     /// <summary>

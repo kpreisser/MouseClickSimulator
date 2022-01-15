@@ -30,14 +30,14 @@ public static class TTRScaleExtensions
         double aspectWidth = pos.Size.Height / 3d * 4d;
         double widthDifference = pos.Size.Width - aspectWidth;
 
-        int newX;
+        float newX;
         if (align is HorizontalScaleAlignment.NoAspectRatio)
         {
-            newX = (int)Math.Round((double)coords.X / referenceSize.Width * pos.Size.Width);
+            newX = (float)((double)coords.X / referenceSize.Width * pos.Size.Width);
         }
         else
         {
-            newX = (int)Math.Round((double)coords.X / referenceSize.Width * aspectWidth +
+            newX = (float)((double)coords.X / referenceSize.Width * aspectWidth +
                 (align is HorizontalScaleAlignment.Left ? 0 :
                 align is HorizontalScaleAlignment.Center ? widthDifference / 2 : widthDifference));
         }
@@ -45,7 +45,7 @@ public static class TTRScaleExtensions
         return new Coordinates()
         {
             X = newX,
-            Y = (int)Math.Round((double)coords.Y / referenceSize.Height * pos.Size.Height)
+            Y = (float)((double)coords.Y / referenceSize.Height * pos.Size.Height)
         };
     }
 }

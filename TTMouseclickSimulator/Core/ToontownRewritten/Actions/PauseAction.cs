@@ -17,6 +17,11 @@ public class PauseAction : AbstractAction
         this.duration = duration;
     }
 
+    public override SimulatorCapabilities RequiredCapabilities
+    {
+        get => default;
+    }
+
     public override sealed ValueTask RunAsync(IInteractionProvider provider)
     {
         return provider.WaitAsync(this.duration);

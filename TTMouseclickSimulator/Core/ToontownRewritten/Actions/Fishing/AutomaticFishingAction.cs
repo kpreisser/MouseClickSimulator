@@ -10,7 +10,11 @@ public class AutomaticFishingAction : AbstractFishingRodAction
 {
     private readonly FishingSpotData spotData;
 
-    public AutomaticFishingAction(int[] scan1, int[] scan2, byte[] bubbleColorRgb, byte[] toleranceRgb)
+    public AutomaticFishingAction(
+        float[] scan1,
+        float[] scan2,
+        byte[] bubbleColorRgb,
+        byte[] toleranceRgb)
     {
         this.spotData = new FishingSpotData(
             new Coordinates(scan1[0], scan1[1]),
@@ -47,9 +51,9 @@ public class AutomaticFishingAction : AbstractFishingRodAction
             // TODO: The fish bubble detection should be changed so that it does not scan
             // for a specific color, but instead checks that for a point if the color is
             // darker than the neighbor pixels (in some distance).
-            for (int y = this.spotData.Scan1.Y; y <= this.spotData.Scan2.Y && !newCoords.HasValue; y += scanStep)
+            for (float y = this.spotData.Scan1.Y; y <= this.spotData.Scan2.Y && !newCoords.HasValue; y += scanStep)
             {
-                for (int x = this.spotData.Scan1.X; x <= this.spotData.Scan2.X; x += scanStep)
+                for (float x = this.spotData.Scan1.X; x <= this.spotData.Scan2.X; x += scanStep)
                 {
                     var c = new Coordinates(x, y);
                     c = screenshot.WindowPosition.ScaleCoordinates(
@@ -76,8 +80,8 @@ public class AutomaticFishingAction : AbstractFishingRodAction
                 this.OnActionInformationUpdated(actionInformationScanning);
 
             if (newCoords.HasValue && oldCoords.HasValue
-                && Math.Abs(oldCoords.Value.X - newCoords.Value.X) <= scanStep
-                && Math.Abs(oldCoords.Value.Y - newCoords.Value.Y) <= scanStep)
+                && MathF.Abs(oldCoords.Value.X - newCoords.Value.X) <= scanStep
+                && MathF.Abs(oldCoords.Value.Y - newCoords.Value.Y) <= scanStep)
             {
                 // The new coordinates are (nearly) the same as the previous ones.
                 coordsMatchCounter++;
@@ -101,9 +105,9 @@ public class AutomaticFishingAction : AbstractFishingRodAction
             {
                 // Calculate the destination coordinates.
                 newCoords = new Coordinates(
-                    (int)Math.Round(800d + 120d / 429d * (800d - newCoords.Value.X) *
+                    (float)(800d + 120d / 429d * (800d - newCoords.Value.X) *
                     (0.75 + (820d - newCoords.Value.Y) / 820 * 0.38)),
-                    (int)Math.Round(846d + 169d / 428d * (820d - newCoords.Value.Y))
+                    (float)(846d + 169d / 428d * (820d - newCoords.Value.Y))
                 );
             }
 

@@ -17,6 +17,11 @@ public class DoodlePanelAction : AbstractAction
         this.button = button;
     }
 
+    public override SimulatorCapabilities RequiredCapabilities
+    {
+        get => SimulatorCapabilities.MouseInput;
+    }
+
     public override async ValueTask RunAsync(IInteractionProvider provider)
     {
         var c = new Coordinates(1397, 206 + (int)this.button * 49);

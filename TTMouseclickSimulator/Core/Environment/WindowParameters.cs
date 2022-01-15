@@ -9,7 +9,7 @@ public struct WindowPosition
     /// <summary>
     /// The coordinates to the upper left point of the window contents.
     /// </summary>
-    public Coordinates Coordinates
+    public (int X, int Y) Coordinates
     {
         get;
         set;
@@ -32,25 +32,25 @@ public struct WindowPosition
 
     public Coordinates RelativeToAbsoluteCoordinates(Coordinates c)
     {
-        return this.Coordinates.Add(c);
+        return c.Add(this.Coordinates);
     }
 }
 
 public struct Coordinates
 {
-    public Coordinates(int x, int y)
+    public Coordinates(float x, float y)
     {
         this.X = x;
         this.Y = y;
     }
 
-    public int X
+    public float X
     {
         get;
         set;
     }
 
-    public int Y
+    public float Y
     {
         get;
         set;
@@ -59,6 +59,11 @@ public struct Coordinates
     public Coordinates Add(Coordinates c)
     {
         return new Coordinates(this.X + c.X, this.Y + c.Y);
+    }
+
+    public static implicit operator Coordinates((int X, int Y) intCoordinates)
+    {
+        return new Coordinates(intCoordinates.X, intCoordinates.Y);
     }
 }
 

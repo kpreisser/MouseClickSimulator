@@ -14,6 +14,11 @@ public class WaterAction : AbstractAction
     {
     }
 
+    public override SimulatorCapabilities RequiredCapabilities
+    {
+        get => SimulatorCapabilities.MouseInput;
+    }
+
     public override sealed async ValueTask RunAsync(IInteractionProvider provider)
     {
         // Click on the "Water" button.

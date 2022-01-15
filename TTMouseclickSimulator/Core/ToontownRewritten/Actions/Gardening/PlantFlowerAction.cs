@@ -32,6 +32,11 @@ public class PlantFlowerAction : AbstractAction
         this.jellybeanCombination = jellybeanCombination;
     }
 
+    public override SimulatorCapabilities RequiredCapabilities
+    {
+        get => SimulatorCapabilities.MouseInput;
+    }
+
     public override sealed async ValueTask RunAsync(IInteractionProvider provider)
     {
         // Click on the "Plant Flower" button.

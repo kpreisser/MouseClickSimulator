@@ -14,14 +14,14 @@ public class CompoundAction : AbstractActionContainer
     public const int PauseIntervalMinimum = 0;
     public const int PauseIntervalMaximum = 600000;
 
-    private readonly IList<IAction> actionList;
+    private readonly IReadOnlyList<IAction> actionList;
     private readonly CompoundActionType type;
 
     private readonly int minimumPauseDuration;
     private readonly int maximumPauseDuration;
     private readonly bool loop;
 
-    private readonly Random rng = new Random();
+    private readonly Random rng = new();
 
     /// <summary>
     /// 
@@ -36,14 +36,15 @@ public class CompoundAction : AbstractActionContainer
     /// it will loop endlessly. Note that using false is not possible when specifying
     /// CompoundActionType.RandomIndex as type.</param>
     public CompoundAction(
-        IList<IAction> actionList,
+        IReadOnlyList<IAction> actionList,
         CompoundActionType type = CompoundActionType.Sequential,
         int minimumPause = 0,
         int maximumPause = 0,
         bool loop = true)
     {
         if (actionList is null || actionList.Count is 0)
-            throw new ArgumentException("There must be at least one IAction to start the simulator.");
+            throw new ArgumentException(
+                "There must be at least one IAction to start the simulator.");
 
         if (minimumPause < PauseIntervalMinimum
                 || minimumPause > PauseIntervalMaximum
@@ -61,7 +62,7 @@ public class CompoundAction : AbstractActionContainer
         if (type is CompoundActionType.RandomIndex && !loop)
             throw new ArgumentException(
                 "When using CompoundActionType.RandomIndex, it is not possible " +
-                " to disable the loop.");
+                "to disable the loop.");
 
         this.actionList = actionList;
         this.type = type;
@@ -70,7 +71,7 @@ public class CompoundAction : AbstractActionContainer
         this.loop = loop;
     }
 
-    public override sealed IList<IAction> SubActions
+    public override sealed IReadOnlyList<IAction> SubActions
     {
         get => this.actionList;
     }
@@ -79,8 +80,8 @@ public class CompoundAction : AbstractActionContainer
     {
         // Run the actions.
         int currentIdx = -1;
-
         Func<int> getNextActionIndex;
+
         if (this.type is CompoundActionType.Sequential)
         {
             getNextActionIndex = () =>
@@ -150,7 +151,7 @@ public class CompoundAction : AbstractActionContainer
 
                     await provider.WaitAsync(waitInterval);
                 }
-                catch (Exception ex) when (!(ex is OperationCanceledException))
+                catch (Exception ex) when (ex is not OperationCanceledException)
                 {
                     await provider.CheckRetryForExceptionAsync(ex);
                     continue;
@@ -175,6 +176,7 @@ public class CompoundAction : AbstractActionContainer
         /// (if loop is true) or the compound action returns.
         /// </summary>
         Sequential = 0,
+
         /// <summary>
         /// Specifies that the inner actions should be executed in random order.
         /// This means if n actions are specified and the n-th action has been executed,
@@ -183,6 +185,7 @@ public class CompoundAction : AbstractActionContainer
         /// (if loop is true) or the compound action returns.
         /// </summary>
         RandomOrder = 1,
+
         /// <summary>
         /// Specifies that the inner actions should be executed randomly. That means
         /// that some actions might be executed more often than others and some actions

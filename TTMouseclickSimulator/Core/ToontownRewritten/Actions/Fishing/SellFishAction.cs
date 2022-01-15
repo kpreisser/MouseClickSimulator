@@ -11,6 +11,11 @@ public class SellFishAction : AbstractAction
     {
     }
 
+    public override SimulatorCapabilities RequiredCapabilities
+    {
+        get => SimulatorCapabilities.MouseInput;
+    }
+
     public override sealed async ValueTask RunAsync(IInteractionProvider provider)
     {
         var c = new Coordinates(1159, 911);

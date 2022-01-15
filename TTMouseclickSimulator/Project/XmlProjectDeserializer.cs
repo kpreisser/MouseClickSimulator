@@ -136,7 +136,7 @@ public static class XmlProjectDeserializer
         return config;
     }
 
-    private static IList<IAction> ParseActionList(XElement parent)
+    private static IReadOnlyList<IAction> ParseActionList(XElement parent)
     {
         var actionList = new List<IAction>();
         foreach (var child in parent.Elements())
@@ -174,7 +174,7 @@ public static class XmlProjectDeserializer
                     // Check if the element specifies the parameter. If not, use the default
                     // value if available.
                     var attr = child.Attribute(param.Name!);
-                    if (typeof(IList<IAction>).IsAssignableFrom(param.ParameterType))
+                    if (typeof(IReadOnlyList<IAction>).IsAssignableFrom(param.ParameterType))
                     {
                         paramSubactionListIdx = i;
                     }
@@ -220,7 +220,8 @@ public static class XmlProjectDeserializer
                             parameterValues[i] = number;
                         }
                         else if (param.ParameterType.IsAssignableFrom(typeof(int[])) ||
-                            param.ParameterType.IsAssignableFrom(typeof(byte[])))
+                            param.ParameterType.IsAssignableFrom(typeof(byte[])) ||
+                            param.ParameterType.IsAssignableFrom(typeof(float[])))
                         {
                             var valueElements = attrval.Split(
                                 new string[] { "," },
@@ -234,8 +235,10 @@ public static class XmlProjectDeserializer
                                 object v;
                                 if (param.ParameterType.IsAssignableFrom(typeof(byte[])))
                                     v = byte.Parse(valueElements[j].Trim(), CultureInfo.InvariantCulture);
-                                else
+                                else if (param.ParameterType.IsAssignableFrom(typeof(int[])))
                                     v = int.Parse(valueElements[j].Trim(), CultureInfo.InvariantCulture);
+                                else
+                                    v = float.Parse(valueElements[j].Trim(), CultureInfo.InvariantCulture);
 
                                 values.SetValue(v, j);
                             }

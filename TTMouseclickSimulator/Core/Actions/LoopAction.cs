@@ -29,14 +29,15 @@ public class LoopAction : AbstractActionContainer
         this.count = count;
     }
 
-    public override IList<IAction> SubActions
+    public override IReadOnlyList<IAction> SubActions
     {
-        get => new List<IAction>() { this.action };
+        get => new IAction[] { this.action };
     }
 
     public override sealed async ValueTask RunAsync(IInteractionProvider provider)
     {
         this.OnSubActionStartedOrStopped(0);
+
         try
         {
             for (int i = 0; !this.count.HasValue || i < this.count.Value; i++)

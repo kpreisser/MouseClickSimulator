@@ -12,8 +12,9 @@ public class SpeedchatAction : AbstractAction
     private static readonly int[] xWidths =
     {
         215,
-        215 + 250,
-        215 + 250 + 180
+        215 + 230,
+        215 + 230 + 175,
+        215 + 230 + 175 + 160
     };
 
     private readonly int[] menuItems;
@@ -21,10 +22,15 @@ public class SpeedchatAction : AbstractAction
     public SpeedchatAction(params int[] menuItems)
     {
         this.menuItems = menuItems;
-        if (menuItems.Length > 3)
-            throw new ArgumentException("Only 3 levels are supported.");
+        if (menuItems.Length > xWidths.Length)
+            throw new ArgumentException($"Only {xWidths.Length} levels are supported.");
         if (menuItems.Length is 0)
             throw new ArgumentException("The menuItems array must not be empty.");
+    }
+
+    public override SimulatorCapabilities RequiredCapabilities
+    {
+        get => SimulatorCapabilities.MouseInput;
     }
 
     public override sealed async ValueTask RunAsync(IInteractionProvider provider)
@@ -40,7 +46,7 @@ public class SpeedchatAction : AbstractAction
 
             currentYNumber += this.menuItems[i];
 
-            c = new Coordinates(xWidths[i], 40 + currentYNumber * 38);
+            c = new Coordinates(xWidths[i], 40 + currentYNumber * 37.55f);
             await MouseHelpers.DoSimpleMouseClickAsync(provider, c, HorizontalScaleAlignment.Left, 100);
         }
     }

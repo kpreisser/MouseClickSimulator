@@ -11,5 +11,5 @@ public interface IActionContainer : IAction
     /// </summary>
     event Action<int?>? SubActionStartedOrStopped;
 
-    IList<IAction> SubActions { get; }
+    IReadOnlyList<IAction> SubActions { get; }
 }

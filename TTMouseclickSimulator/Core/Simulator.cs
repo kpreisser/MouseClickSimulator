@@ -10,7 +10,7 @@ public class Simulator : IDisposable
 {
     private readonly IAction mainAction;
 
-    private readonly StandardInteractionProvider provider;
+    private readonly InteractionProvider provider;
 
     public event Action? SimulatorStarted;
     public event Action? SimulatorStopped;
@@ -27,11 +27,17 @@ public class Simulator : IDisposable
             throw new ArgumentNullException(nameof(environmentInterface));
 
         this.mainAction = mainAction;
+        this.RequiredCapabilities = mainAction.RequiredCapabilities;
 
-        this.provider = new StandardInteractionProvider(
+        this.provider = new InteractionProvider(
             this,
             environmentInterface,
             backgroundMode);
+    }
+
+    public SimulatorCapabilities RequiredCapabilities
+    {
+        get;
     }
 
     /// <summary>
