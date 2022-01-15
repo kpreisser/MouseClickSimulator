@@ -300,11 +300,14 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
     public IScreenshotContent GetCurrentWindowScreenshot()
     {
+        this.ThrowIfCapabilityNotSet(SimulatorCapabilities.CaptureScreenshot);
+
         return this.GetCurrentWindowScreenshot(false);
     }
 
     public void PressKey(AbstractWindowsEnvironment.VirtualKey key)
     {
+        this.ThrowIfCapabilityNotSet(SimulatorCapabilities.KeyboardInput);
         this.CancellationToken.ThrowIfCancellationRequested();
 
         // Check if the window is still active and in foreground.
@@ -323,6 +326,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
     public void ReleaseKey(AbstractWindowsEnvironment.VirtualKey key)
     {
+        this.ThrowIfCapabilityNotSet(SimulatorCapabilities.KeyboardInput);
         this.CancellationToken.ThrowIfCancellationRequested();
 
         int kcpIdx = this.keysCurrentlyPressed.IndexOf(key);
@@ -339,6 +343,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
     public void WriteText(string text)
     {
+        this.ThrowIfCapabilityNotSet(SimulatorCapabilities.KeyboardInput);
         this.CancellationToken.ThrowIfCancellationRequested();
 
         // Check if the window is still active and in foreground.
@@ -357,6 +362,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
     public void MoveMouse(Coordinates c)
     {
+        this.ThrowIfCapabilityNotSet(SimulatorCapabilities.MouseInput);
         this.CancellationToken.ThrowIfCancellationRequested();
 
         if (!this.backgroundMode)
@@ -386,6 +392,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
     public void PressMouseButton()
     {
+        this.ThrowIfCapabilityNotSet(SimulatorCapabilities.MouseInput);
         this.CancellationToken.ThrowIfCancellationRequested();
 
         if (!this.backgroundMode)
@@ -421,6 +428,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
     public void ReleaseMouseButton()
     {
+        this.ThrowIfCapabilityNotSet(SimulatorCapabilities.MouseInput);
         this.CancellationToken.ThrowIfCancellationRequested();
 
         if (this.isMouseButtonPressed)
@@ -520,6 +528,15 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
             }
 
             this.windowIsTopmost = false;
+        }
+    }
+
+    private void ThrowIfCapabilityNotSet(SimulatorCapabilities capabilities)
+    {
+        if (!this.simulator.RequiredCapabilities.IsSet(capabilities))
+        {
+            throw new InvalidOperationException(
+                $"Capability '{capabilities}' has not been declared by one of the actions.");
         }
     }
 
