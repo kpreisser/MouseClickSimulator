@@ -11,7 +11,7 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
   <QuickAction title="Laff-o-dil  (Daffodil)">
     <Compound loop="False">
       <PlantFlower jellybeanCombination="1" />
-      <Pause duration="6400" />
+      <Pause duration="6200" />
       <ConfirmFlowerPlantedDialog />
       <Pause duration="300" />
       <Water />
@@ -21,7 +21,7 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
   <QuickAction title="Dandy Pansy  (Pansy)">
     <Compound loop="False">
       <PlantFlower jellybeanCombination="2" />
-      <Pause duration="6400" />
+      <Pause duration="6200" />
       <ConfirmFlowerPlantedDialog />
       <Pause duration="300" />
       <Water />
@@ -31,7 +31,7 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
   <QuickAction title="What-in Carnation  (Carnation)">
     <Compound loop="False">
       <PlantFlower jellybeanCombination="5" />
-      <Pause duration="6400" />
+      <Pause duration="6200" />
       <ConfirmFlowerPlantedDialog />
       <Pause duration="300" />
       <Water />
@@ -41,7 +41,7 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
   <QuickAction title="School Daisy  (Daisy)">
     <Compound loop="False">
       <PlantFlower jellybeanCombination="6" />
-      <Pause duration="6400" />
+      <Pause duration="6200" />
       <ConfirmFlowerPlantedDialog />
       <Pause duration="300" />
       <Water />
@@ -51,7 +51,7 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
   <QuickAction title="Lily-of-the-Alley  (Lily)">
     <Compound loop="False">
       <PlantFlower jellybeanCombination="7" />
-      <Pause duration="6400" />
+      <Pause duration="6200" />
       <ConfirmFlowerPlantedDialog />
       <Pause duration="300" />
       <Water />
