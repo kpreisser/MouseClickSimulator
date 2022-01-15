@@ -11,9 +11,9 @@ namespace TTMouseclickSimulator.Core.ToontownRewritten.Environment;
 /// </summary>
 public class TTRWindowsEnvironment : AbstractWindowsEnvironment
 {
-    private const string ProcessName64 = "TTREngine64";
+    private const string ProcessNameX64 = "TTREngine64";
 
-    private const string ProcessName32 = "TTREngine";
+    private const string ProcessNameX86 = "TTREngine";
 
     private TTRWindowsEnvironment()
     {
@@ -26,8 +26,8 @@ public class TTRWindowsEnvironment : AbstractWindowsEnvironment
 
     public override sealed List<Process> FindProcesses()
     {
-        var processes = FindProcessesByName(ProcessName64);
-        processes.AddRange(FindProcessesByName(ProcessName32));
+        var processes = FindProcessesByName(ProcessNameX64);
+        processes.AddRange(FindProcessesByName(ProcessNameX86));
 
         if (processes.Count is 0)
         {
