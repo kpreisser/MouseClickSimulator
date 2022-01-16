@@ -30,9 +30,9 @@ public struct WindowPosition
             this.Size.Width is 0 && this.Size.Height is 0;
     }
 
-    public Coordinates RelativeToAbsoluteCoordinates(Coordinates c)
+    public (int absoluteX, int absoluteY) RelativeToAbsoluteCoordinates(int relativeX, int relativeY)
     {
-        return c.Add(this.Coordinates);
+        return (checked(this.Coordinates.X + relativeX), checked(this.Coordinates.Y + relativeY));
     }
 }
 

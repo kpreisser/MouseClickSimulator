@@ -26,7 +26,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
     private bool isMouseButtonPressed;
 
     // Window-relative (when using backgroundMode) or absolute mouse coordinates
-    private Coordinates? lastSetMouseCoordinates;
+    private (int x, int y)? lastSetMouseCoordinates;
 
     private bool windowIsDisabled;
     private bool windowIsTopmost;
@@ -63,7 +63,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         this.lastSetMouseCoordinates = null;
 
@@ -355,12 +355,14 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
             this.environmentInterface.WriteWindowText(this.windowHandle, text);
     }
 
-    public void MoveMouse(int x, int y)
+    public void MoveMouse(Coordinates c)
     {
-        this.MoveMouse(new Coordinates(x, y));
+        this.MoveMouse(
+            checked((int)MathF.Round(c.X)),
+            checked((int)MathF.Round(c.Y)));
     }
 
-    public void MoveMouse(Coordinates c)
+    public void MoveMouse(int x, int y)
     {
         this.ThrowIfCapabilityNotSet(SimulatorCapabilities.MouseInput);
         this.CancellationToken.ThrowIfCancellationRequested();
@@ -371,22 +373,20 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
             var pos = this.GetWindowPositionCore();
 
             // Convert the relative coordinates to absolute ones, then simulate the click.
-            var absoluteCoords = pos.RelativeToAbsoluteCoordinates(c);
-            this.environmentInterface.MoveMouse(
-                checked((int)MathF.Round(absoluteCoords.X)),
-                checked((int)MathF.Round(absoluteCoords.Y)));
+            var (absoluteX, absoluteY) = pos.RelativeToAbsoluteCoordinates(x, y);
+            this.environmentInterface.MoveMouse(absoluteX, absoluteY);
 
-            this.lastSetMouseCoordinates = absoluteCoords;
+            this.lastSetMouseCoordinates = (absoluteX, absoluteY);
         }
         else
         {
             this.environmentInterface.MoveWindowMouse(
                 this.windowHandle,
-                checked((int)MathF.Round(c.X)),
-                checked((int)MathF.Round(c.Y)),
+                x,
+                y,
                 this.isMouseButtonPressed);
 
-            this.lastSetMouseCoordinates = c;
+            this.lastSetMouseCoordinates = (x, y);
         }
     }
 
@@ -418,8 +418,8 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
                 this.environmentInterface.PressWindowMouseButton(
                     this.windowHandle,
-                    checked((int)MathF.Round(this.lastSetMouseCoordinates.Value.X)),
-                    checked((int)MathF.Round(this.lastSetMouseCoordinates.Value.Y)));
+                    this.lastSetMouseCoordinates.Value.x,
+                    this.lastSetMouseCoordinates.Value.y);
 
                 this.isMouseButtonPressed = true;
             }
@@ -447,8 +447,8 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
                 this.environmentInterface.ReleaseWindowMouseButton(
                     this.windowHandle,
-                    checked((int)MathF.Round(this.lastSetMouseCoordinates.Value.X)),
-                    checked((int)MathF.Round(this.lastSetMouseCoordinates.Value.Y)));
+                    this.lastSetMouseCoordinates.Value.x,
+                    this.lastSetMouseCoordinates.Value.y);
             }
 
             this.isMouseButtonPressed = false;
@@ -471,8 +471,8 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
                 {
                     this.environmentInterface.ReleaseWindowMouseButton(
                         this.windowHandle,
-                        checked((int)MathF.Round(this.lastSetMouseCoordinates!.Value.X)),
-                        checked((int)MathF.Round(this.lastSetMouseCoordinates.Value.Y)));
+                        this.lastSetMouseCoordinates!.Value.x,
+                        this.lastSetMouseCoordinates.Value.y);
                 }
             }
             catch
