@@ -38,8 +38,11 @@ public static class TTRScaleExtensions
         else
         {
             newX = (float)((double)coords.X / referenceSize.Width * aspectWidth +
-                (align is HorizontalScaleAlignment.Left ? 0 :
-                align is HorizontalScaleAlignment.Center ? widthDifference / 2 : widthDifference));
+                widthDifference * align switch {
+                    HorizontalScaleAlignment.Left => 0,
+                    HorizontalScaleAlignment.Center => 0.5,
+                    _ => 1
+                });
         }
 
         return new Coordinates()
