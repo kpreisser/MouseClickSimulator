@@ -70,7 +70,9 @@ public class AutomaticFishingAction : AbstractFishingRodAction
                             newCoords.Value,
                             MouseHelpers.ReferenceWindowSize);
 
-                        this.OnActionInformationUpdated($"Found bubble at {scaledCoords.X}, {scaledCoords.Y}…");
+                        this.OnActionInformationUpdated(
+                            $"Found bubble at {MathF.Round(scaledCoords.X)}, {MathF.Round(scaledCoords.Y)}…");
+
                         break;
                     }
                 }
