@@ -41,9 +41,10 @@ public class Simulator : IDisposable
     }
 
     /// <summary>
-    /// When an exception (which is not a <see cref="SimulatorCanceledException"/>) occurs while an action runs,
-    /// this allows the action to check if it should retry or cancel the simulator (in that case, it should
-    /// throw an <see cref="SimulatorCanceledException"/>).
+    /// When an exception (which is not a <see cref="OperationCanceledException"/>) occurs
+    /// while an action runs, this allows the action to check if it should retry or cancel
+    /// the simulator (in that case, it should throw an
+    /// <see cref="OperationCanceledException"/>).
     /// </summary>
     public Func<Exception, ValueTask<bool>>? AsyncRetryHandler
     {
@@ -63,13 +64,17 @@ public class Simulator : IDisposable
     public async ValueTask RunAsync()
     {
         if (this.IsCancelled)
-            throw new InvalidOperationException("The simulator has already been canceled or stopped.");
+        {
+            throw new InvalidOperationException(
+                "The simulator has already been canceled or stopped.");
+        }
 
         try
         {
             this.OnSimulatorStarted();
 
-            // InitializeAsync() does not need to be in the try block because it has its own.
+            // InitializeAsync() does not need to be in the try-catch block because it has
+            // its own.
             await this.provider.InitializeAsync();
 
             while (true)
@@ -78,9 +83,6 @@ public class Simulator : IDisposable
                 {
                     // Run the action.
                     await this.mainAction.RunAsync(this.provider);
-
-                    // Normally the main action would be a CompoundAction that never returns, but
-                    // it is possible that the action will return normally.
                 }
                 catch (Exception ex) when (ex is not OperationCanceledException)
                 {
@@ -104,10 +106,12 @@ public class Simulator : IDisposable
     }
 
     /// <summary>
-    /// Cancels the simulator. This method can be called from the GUI thread while
-    /// the task that runs RunAsync is still active. It can also be called from
-    /// another thread.
+    /// Cancels the simulator.
     /// </summary>
+    /// <remarks>
+    /// This method can be called from another thread while the task that runs
+    /// <see cref="RunAsync"/> is still active.
+    /// </remarks>
     public void Cancel()
     {
         this.provider.Cancel();
