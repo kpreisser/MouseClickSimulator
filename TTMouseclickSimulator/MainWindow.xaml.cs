@@ -287,10 +287,10 @@ public partial class MainWindow : Window
                 dialogPage);
 
             if (resultButton == buttonTryAgain)
-                result = true;
+                Volatile.Write(ref result, true);
         });
 
-        return result;
+        return Volatile.Read(ref result);
     }
 
     private static string? GetExceptionDetailsText(Exception ex)
