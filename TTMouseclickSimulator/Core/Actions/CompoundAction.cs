@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Environment;
 
@@ -76,7 +75,7 @@ public class CompoundAction : AbstractActionContainer
         get => this.actionList;
     }
 
-    public override sealed async ValueTask RunAsync(IInteractionProvider provider)
+    public override sealed void Run(IInteractionProvider provider)
     {
         // Run the actions.
         int currentIdx = -1;
@@ -138,7 +137,7 @@ public class CompoundAction : AbstractActionContainer
                     this.OnSubActionStartedOrStopped(nextIdx);
                     try
                     {
-                        await this.actionList[nextIdx].RunAsync(provider);
+                        this.actionList[nextIdx].Run(provider);
                     }
                     finally
                     {
@@ -149,11 +148,11 @@ public class CompoundAction : AbstractActionContainer
                     int waitInterval = this.rng.Next(this.minimumPauseDuration, this.maximumPauseDuration);
                     this.OnActionInformationUpdated($"Pausing {waitInterval} ms");
 
-                    await provider.WaitAsync(waitInterval);
+                    provider.Wait(waitInterval);
                 }
                 catch (Exception ex) when (ex is not OperationCanceledException)
                 {
-                    await provider.CheckRetryForExceptionAsync(ex);
+                    provider.CheckRetryForException(ex);
                     continue;
                 }
 

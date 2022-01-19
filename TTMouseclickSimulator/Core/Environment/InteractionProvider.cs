@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace TTMouseclickSimulator.Core.Environment;
 
@@ -12,6 +11,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
     private readonly bool backgroundMode;
 
     private readonly CancellationTokenSource cancellationTokenSource = new();
+    private readonly SemaphoreSlim waitSemaphore = new(0);
 
     private readonly Simulator simulator;
     private readonly AbstractWindowsEnvironment environmentInterface;
@@ -63,7 +63,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async ValueTask InitializeAsync()
+    public void Initialize()
     {
         this.lastSetMouseCoordinates = null;
 
@@ -103,7 +103,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
                                 }
 
                                 // Wait a bit so that the window can go into foreground.
-                                await this.WaitCoreAsync(250, false);
+                                this.WaitCore(250, false);
 
                                 // If the window isn't in foreground, try again.
                                 this.environmentInterface.GetWindowPosition(
@@ -162,7 +162,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
                                 break;
 
                             // If non of the windows is in foreground, wait a bit and try again.
-                            await this.WaitCoreAsync(250, false);
+                            this.WaitCore(250, false);
                         }
                     }
                     finally
@@ -207,12 +207,12 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
                             // TODO: Waybe we should wait until the window has been deactivated
                             // again in this case before continuing, so the mouse input isn't
                             // interrupted afterwards when the user then deactivates the window.
-                            await this.WaitAsync(800);
+                            this.Wait(800);
                         }
                     }
 
                     // Wait a bit before starting.
-                    await this.WaitAsync(200);
+                    this.Wait(200);
                 }
                 else
                 {
@@ -228,7 +228,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
                     }
 
                     // Also wait a short time when not using background mode.
-                    await this.WaitAsync(200);
+                    this.Wait(200);
                 }
             }
             catch (Exception ex)
@@ -237,7 +237,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
                 if (ex is not OperationCanceledException)
                 {
-                    await this.CheckRetryForExceptionAsync(ex, false);
+                    this.CheckRetryForException(ex, false);
                     continue;
                 }
                 else
@@ -250,27 +250,29 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
         }
     }
 
-    public ValueTask CheckRetryForExceptionAsync(Exception ex)
+    public void CheckRetryForException(Exception ex)
     {
-        return this.CheckRetryForExceptionAsync(ex, true);
+        this.CheckRetryForException(ex, reinitialize: true);
     }
 
-    public async ValueTask WaitAsync(int millisecondsTimeout, bool useAccurateTimer = false)
+    public void Wait(int millisecondsTimeout, bool useAccurateTimer = false)
     {
         if (useAccurateTimer)
         {
-            // Instead of using a wait method for the complete timeout (which is a bit
-            // inaccurate depending on the OS timer resolution, we use the specified
-            // timeout - 15 to wait and then call Thread.SpinWait() to loop until the
-            // complete wait interval has been reached which we measure using a
+            // Instead of using a wait method for the complete timeout (which may be a
+            // bit inaccurate depending on the OS timer resolution), we use the specified
+            // timeout minus 5 to wait, and then call Thread.SpinWait() to loop until the
+            // complete wait interval has been reached, which we measure using a
             // high-resolution timer.
             // This means shortly before this method returns there will be a bit CPU
             // usage but the actual time which we waited will be more accurate.
+            // Note: On Windows, the timer resolution can be configured with the
+            // timeBeginPeriod API, which we call on start-up.
             var sw = new Stopwatch();
             sw.Start();
 
-            int waitTime = millisecondsTimeout - 15;
-            await this.WaitCoreAsync(waitTime);
+            int waitTime = millisecondsTimeout - 5;
+            this.WaitCore(waitTime);
 
             // For the remaining time, loop until the complete time has passed.
             while (true)
@@ -287,7 +289,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
         }
         else
         {
-            await this.WaitCoreAsync(millisecondsTimeout);
+            this.WaitCore(millisecondsTimeout);
         }
     }
 
@@ -540,13 +542,13 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
         }
     }
 
-    private async ValueTask WaitCoreAsync(int milliseconds, bool checkWindow = true)
+    private void WaitCore(int milliseconds, bool checkWindow = true)
     {
         this.CancellationToken.ThrowIfCancellationRequested();
 
         if (!checkWindow)
         {
-            await Task.Delay(
+            this.waitSemaphore.Wait(
                 Math.Max(0, milliseconds),
                 this.CancellationToken);
         }
@@ -565,7 +567,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
                 if (remaining <= 0)
                     break;
 
-                await Task.Delay(
+                this.waitSemaphore.Wait(
                     Math.Min((int)remaining, 100),
                     this.CancellationToken);
             }
@@ -647,9 +649,9 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
         return this.currentScreenshot;
     }
 
-    private async ValueTask CheckRetryForExceptionAsync(Exception ex, bool reinitialize)
+    private void CheckRetryForException(Exception ex, bool reinitialize)
     {
-        if (!this.canRetryOnException || this.simulator.AsyncRetryHandler is null)
+        if (!this.canRetryOnException || this.simulator.RetryHandler is null)
         {
             // Simply rethrow the exception.
             ExceptionDispatchInfo.Throw(ex);
@@ -659,7 +661,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
             // Need to release active keys etc.
             this.CancelActiveInteractions();
 
-            bool result = await this.simulator.AsyncRetryHandler(ex);
+            bool result = this.simulator.RetryHandler(ex);
             if (!result)
             {
                 this.cancellationTokenSource.Cancel();
@@ -668,7 +670,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
             // When trying again, we need to re-initialize.
             if (reinitialize)
-                await this.InitializeAsync();
+                this.Initialize();
         }
     }
 
@@ -688,6 +690,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
                 this.currentScreenshot?.Dispose();
                 this.cancellationTokenSource.Dispose();
+                this.waitSemaphore.Dispose();
             }
         }
     }

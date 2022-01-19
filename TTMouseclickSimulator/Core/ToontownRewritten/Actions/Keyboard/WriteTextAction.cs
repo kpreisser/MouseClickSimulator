@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
@@ -35,7 +34,7 @@ public class WriteTextAction : AbstractAction
         get => SimulatorCapabilities.KeyboardInput;
     }
 
-    public override sealed async ValueTask RunAsync(IInteractionProvider provider)
+    public override sealed void Run(IInteractionProvider provider)
     {
         // write the text and presses enter.
         if (!this.pauseDuration.HasValue)
@@ -47,14 +46,14 @@ public class WriteTextAction : AbstractAction
             for (int i = 0; i < this.text.Length; i++)
             {
                 provider.WriteText(this.text[i].ToString());
-                await provider.WaitAsync(this.pauseDuration.Value);
+                provider.Wait(this.pauseDuration.Value);
             }
         }
 
         // A CR LF (\r\n) in the above string would not have the desired effect;
         // instead we need to press the enter key.
         provider.PressKey(AbstractWindowsEnvironment.VirtualKey.Enter);
-        await provider.WaitAsync(100);
+        provider.Wait(100);
         provider.ReleaseKey(AbstractWindowsEnvironment.VirtualKey.Enter);
     }
 

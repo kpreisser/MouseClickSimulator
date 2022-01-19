@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using TTMouseclickSimulator.Core.Actions;
+﻿using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions;
@@ -22,9 +20,9 @@ public class PauseAction : AbstractAction
         get => default;
     }
 
-    public override sealed ValueTask RunAsync(IInteractionProvider provider)
+    public override sealed void Run(IInteractionProvider provider)
     {
-        return provider.WaitAsync(this.duration);
+        provider.Wait(this.duration);
     }
 
     public override string ToString()

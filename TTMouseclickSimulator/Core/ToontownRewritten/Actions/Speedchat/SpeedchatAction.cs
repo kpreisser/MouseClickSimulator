@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
@@ -33,21 +32,21 @@ public class SpeedchatAction : AbstractAction
         get => SimulatorCapabilities.MouseInput;
     }
 
-    public override sealed async ValueTask RunAsync(IInteractionProvider provider)
+    public override sealed void Run(IInteractionProvider provider)
     {
         // Click on the Speedchat Icon.
         var c = new Coordinates(122, 40);
-        await MouseHelpers.DoSimpleMouseClickAsync(provider, c, HorizontalScaleAlignment.Left, 100);
+        MouseHelpers.DoSimpleMouseClick(provider, c, HorizontalScaleAlignment.Left, 100);
 
         int currentYNumber = 0;
         for (int i = 0; i < this.menuItems.Length; i++)
         {
-            await provider.WaitAsync(300);
+            provider.Wait(300);
 
             currentYNumber += this.menuItems[i];
 
             c = new Coordinates(xWidths[i], 40 + currentYNumber * 37.55f);
-            await MouseHelpers.DoSimpleMouseClickAsync(provider, c, HorizontalScaleAlignment.Left, 100);
+            MouseHelpers.DoSimpleMouseClick(provider, c, HorizontalScaleAlignment.Left, 100);
         }
     }
 

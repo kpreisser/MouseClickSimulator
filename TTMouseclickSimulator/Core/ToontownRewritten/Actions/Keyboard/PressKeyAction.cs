@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using TTMouseclickSimulator.Core.Actions;
+﻿using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard;
@@ -24,12 +22,12 @@ public class PressKeyAction : AbstractAction
         get => SimulatorCapabilities.KeyboardInput;
     }
 
-    public override sealed async ValueTask RunAsync(IInteractionProvider provider)
+    public override sealed void Run(IInteractionProvider provider)
     {
         provider.PressKey(this.key);
 
         // Use a accurate timer for measuring the time after we need to release the key.
-        await provider.WaitAsync(this.duration, true);
+        provider.Wait(this.duration, true);
         provider.ReleaseKey(this.key);
     }
 

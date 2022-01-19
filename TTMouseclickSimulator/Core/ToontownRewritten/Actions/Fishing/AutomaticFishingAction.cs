@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Environment;
 
@@ -28,7 +27,7 @@ public class AutomaticFishingAction : AbstractFishingRodAction
         get => 6000;
     }
 
-    protected override sealed async ValueTask FinishCastFishingRodAsync(IInteractionProvider provider)
+    protected override sealed void FinishCastFishingRod(IInteractionProvider provider)
     {
         // Try to find a bubble.
         const string actionInformationScanning = "Scanning for fish bubbles…";
@@ -134,7 +133,7 @@ public class AutomaticFishingAction : AbstractFishingRodAction
                 break;
             }
 
-            await provider.WaitAsync(500);
+            provider.Wait(500);
 
             // Ensure we don't wait longer than 36 seconds.
             if (sw.ElapsedMilliseconds >= 36000)

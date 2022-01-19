@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using TTMouseclickSimulator.Core.Environment;
+﻿using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions;
 
@@ -8,7 +6,7 @@ public static class MouseHelpers
 {
     public static readonly Size ReferenceWindowSize = new(1600, 1151);
 
-    public static async Task DoSimpleMouseClickAsync(
+    public static void DoSimpleMouseClick(
         IInteractionProvider provider,
         Coordinates coords,
         HorizontalScaleAlignment align = HorizontalScaleAlignment.Center,
@@ -22,8 +20,7 @@ public static class MouseHelpers
 
         provider.MoveMouse(coords);
         provider.PressMouseButton();
-        await provider.WaitAsync(buttonDownDuration);
+        provider.Wait(buttonDownDuration);
         provider.ReleaseMouseButton();
     }
-
 }

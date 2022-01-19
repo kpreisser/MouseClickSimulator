@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using TTMouseclickSimulator.Core.Actions;
+﻿using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing;
@@ -16,10 +14,10 @@ public class SellFishAction : AbstractAction
         get => SimulatorCapabilities.MouseInput;
     }
 
-    public override sealed async ValueTask RunAsync(IInteractionProvider provider)
+    public override sealed void Run(IInteractionProvider provider)
     {
         var c = new Coordinates(1159, 911);
-        await MouseHelpers.DoSimpleMouseClickAsync(provider, c);
+        MouseHelpers.DoSimpleMouseClick(provider, c);
     }
 
     public override string ToString()

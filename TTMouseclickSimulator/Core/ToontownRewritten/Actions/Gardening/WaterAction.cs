@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using TTMouseclickSimulator.Core.Actions;
+﻿using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Gardening;
@@ -19,10 +17,10 @@ public class WaterAction : AbstractAction
         get => SimulatorCapabilities.MouseInput;
     }
 
-    public override sealed async ValueTask RunAsync(IInteractionProvider provider)
+    public override sealed void Run(IInteractionProvider provider)
     {
         // Click on the "Water" button.
-        await MouseHelpers.DoSimpleMouseClickAsync(
+        MouseHelpers.DoSimpleMouseClick(
             provider,
             new Coordinates(76, 374),
             HorizontalScaleAlignment.Left);

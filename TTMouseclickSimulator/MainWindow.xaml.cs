@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -133,35 +134,70 @@ public partial class MainWindow : Window
                 environment,
                 backgroundMode);
 
-            // Run the simulator in another task so it is not executed in the GUI
-            // thread. However, we then await that new task so we are notified when
-            // it is finished (and that continuation will be run in the GUI thread
-            // again).
-            await Task.Run(async () =>
+            // Start a new thread to run the simulator.
+            // Note: Generally, a dedicate thread seems more appropriate for this instead
+            // of using async methods that run in worker threads, as synchronous sleep APIs
+            // like Thread.Sleep() and SemaphoreSlim.Wait() are more accurate, especially
+            // when we call timeBeginPeriod on Windows to set a higher timer resolution.
+            // Additionally, we might call UI APIs that might be blocking (e.g. wait until
+            // a sent window message has been processed), and we should avoid running
+            // blocking operations in the .NET ThreadPool.
+            // Also, create a TCS so that the GUI thread can continue when the thread is
+            // finished. For logic correctness, we specify to run continuations async,
+            // to ensure we can join the thread in the continuation (although the GUI
+            // thread uses a SynchronizationContext, so it wouldn't make a difference
+            // there). 
+            var threadTcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var simulatorThread = new Thread(() =>
             {
-                sim.AsyncRetryHandler = this.HandleSimulatorRetryAsync;
-
-                sim.SimulatorInitializing += multipleWindowsAvailable => this.Dispatcher.Invoke(new Action(() =>
+                try
                 {
-                    if (multipleWindowsAvailable is not null)
-                    {
-                        // Initialization has started, so show the overlay message.
-                        this.overlayMessageBorder.Visibility = Visibility.Visible;
+                    sim.RetryHandler = this.HandleSimulatorRetry;
 
-                        this.overlayMessageTextBlock.Text = multipleWindowsAvailable.Value ?
-                            "Multiple Toontown windows detected. Please activate the " +
-                            "window that the Simulator should use." :
-                            "Waiting for the window to be activated…";
-                    }
-                    else
+                    sim.SimulatorInitializing += multipleWindowsAvailable => this.Dispatcher.Invoke(new Action(() =>
                     {
-                        // Initialization has finished.
-                        this.overlayMessageBorder.Visibility = Visibility.Hidden;
-                    }
-                }));
+                        if (multipleWindowsAvailable is not null)
+                        {
+                            // Initialization has started, so show the overlay message.
+                            this.overlayMessageBorder.Visibility = Visibility.Visible;
 
-                await sim.RunAsync();
+                            this.overlayMessageTextBlock.Text = multipleWindowsAvailable.Value ?
+                                "Multiple Toontown windows detected. Please activate the " +
+                                "window that the Simulator should use." :
+                                "Waiting for the window to be activated…";
+                        }
+                        else
+                        {
+                            // Initialization has finished.
+                            this.overlayMessageBorder.Visibility = Visibility.Hidden;
+                        }
+                    }));
+
+                    sim.Run();
+
+                    threadTcs.SetResult();
+                }
+                catch (Exception ex)
+                {
+                    threadTcs.SetException(ex);
+                }
             });
+
+            // Use a higher priority to ensure wait intervals used by actions are as
+            // accurate as possible.
+            simulatorThread.Priority = ThreadPriority.AboveNormal;
+            simulatorThread.Start();
+
+            try
+            {
+                // Wait until the thread completes successfully or an exception is thrown.
+                await threadTcs.Task;
+            }
+            finally
+            {
+                // Since we started the thread, we should also wait for it to finish.
+                simulatorThread.Join();
+            }
         }
         catch (Exception ex)
         {
@@ -204,11 +240,11 @@ public partial class MainWindow : Window
         this.HandleSimulatorStopped();
     }
 
-    private async ValueTask<bool> HandleSimulatorRetryAsync(Exception ex)
+    private bool HandleSimulatorRetry(Exception ex)
     {
         // Show a TaskDialog.
         bool result = false;
-        await this.Dispatcher.InvokeAsync(new Action(() =>
+        this.Dispatcher.Invoke(() =>
         {
             // If we cancelled the simulator already in the meanwhile, it wouldn't make
             // sense to show the dialog. Otherwise, evewn if the user selects "Try again",
@@ -252,7 +288,7 @@ public partial class MainWindow : Window
 
             if (resultButton == buttonTryAgain)
                 result = true;
-        }));
+        });
 
         return result;
     }

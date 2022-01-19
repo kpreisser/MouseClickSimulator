@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
@@ -37,32 +36,32 @@ public class PlantFlowerAction : AbstractAction
         get => SimulatorCapabilities.MouseInput;
     }
 
-    public override sealed async ValueTask RunAsync(IInteractionProvider provider)
+    public override sealed void Run(IInteractionProvider provider)
     {
         // Click on the "Plant Flower" button.
-        await MouseHelpers.DoSimpleMouseClickAsync(
+        MouseHelpers.DoSimpleMouseClick(
             provider,
             new Coordinates(76, 264),
             HorizontalScaleAlignment.Left);
 
-        await provider.WaitAsync(200);
+        provider.Wait(200);
 
         // Click on the jellybean fields.
         foreach (int jellybean in this.jellybeanCombination)
         {
             var c = new Coordinates((int)Math.Round(560 + jellybean * 60.5), 514);
-            await MouseHelpers.DoSimpleMouseClickAsync(
+            MouseHelpers.DoSimpleMouseClick(
                 provider,
                 c,
                 buttonDownDuration: 100);
 
-            await provider.WaitAsync(100);
+            provider.Wait(100);
         }
 
-        await provider.WaitAsync(100);
+        provider.Wait(100);
 
         // Click on the "Plant" button.
-        await MouseHelpers.DoSimpleMouseClickAsync(provider, new Coordinates(975, 772));
+        MouseHelpers.DoSimpleMouseClick(provider, new Coordinates(975, 772));
     }
 
     public override string ToString()

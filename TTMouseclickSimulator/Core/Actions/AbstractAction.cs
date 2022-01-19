@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Environment;
 
@@ -14,7 +13,7 @@ public abstract class AbstractAction : IAction
         get;
     }
 
-    public abstract ValueTask RunAsync(IInteractionProvider provider);
+    public abstract void Run(IInteractionProvider provider);
 
     protected void OnActionInformationUpdated(string text)
     {

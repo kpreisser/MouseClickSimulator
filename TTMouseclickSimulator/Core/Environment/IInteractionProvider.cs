@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace TTMouseclickSimulator.Core.Environment;
 
 /// <summary>
 /// Allows actions to interact with the target window, e.g. press keys and
-/// simulate mouse clicks and to wait asynchronously.
+/// simulate mouse clicks.
 /// </summary>
 public interface IInteractionProvider
 {
@@ -30,20 +29,19 @@ public interface IInteractionProvider
     /// <see cref="OperationCanceledException"/>.
     /// </remarks>
     /// <param name="ex"></param>
-    ValueTask CheckRetryForExceptionAsync(Exception ex);
+    void CheckRetryForException(Exception ex);
 
     /// <summary>
-    /// Asynchronously waits until the specified interval is elapsed or the simulator
-    /// has been canceled.
+    /// Waits until the specified interval is elapsed or the simulator has been canceled.
     /// </summary>
     /// <param name="millisecondsTimeout">The interval to wait.</param>
-    /// <param name="useAccurateTimer">If an accurate timer should be used. If true, measuring
-    /// of the time is more accurate but requires a bit CPU usage shortly before the method
-    /// returns.</param>
+    /// <param name="useAccurateTimer">Specifies whether to use an accurate timer. If
+    /// <c>true</c>, measuring of the time is more accurate but requires a bit CPU usage
+    /// shortly before the method returns.</param>
     /// <returns></returns>
     /// <exception cref="OperationCanceledException">The wait has been cancelled.
     /// IActions don't need to catch this exception.</exception>
-    ValueTask WaitAsync(int millisecondsTimeout, bool useAccurateTimer = false);
+    void Wait(int millisecondsTimeout, bool useAccurateTimer = false);
 
     /// <summary>
     /// Gets the current position of the destination window.

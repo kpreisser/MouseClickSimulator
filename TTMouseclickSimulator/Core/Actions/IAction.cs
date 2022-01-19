@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Environment;
 
@@ -29,9 +28,9 @@ public interface IAction
     }
 
     /// <summary>
-    /// Asynchonously runs the action using the specified IInteractionProvider.
+    /// Runs the action using the specified <see cref="IInteractionProvider"/>.
     /// </summary>
-    /// <param name="waitable"></param>
+    /// <param name="provider"></param>
     /// <returns></returns>
-    ValueTask RunAsync(IInteractionProvider provider);
+    void Run(IInteractionProvider provider);
 }

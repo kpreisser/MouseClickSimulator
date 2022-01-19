@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using TTMouseclickSimulator.Core.Actions;
+﻿using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction;
@@ -22,10 +20,10 @@ public class DoodlePanelAction : AbstractAction
         get => SimulatorCapabilities.MouseInput;
     }
 
-    public override async ValueTask RunAsync(IInteractionProvider provider)
+    public override void Run(IInteractionProvider provider)
     {
         var c = new Coordinates(1397, 206 + (int)this.button * 49);
-        await MouseHelpers.DoSimpleMouseClickAsync(provider, c, HorizontalScaleAlignment.Right);
+        MouseHelpers.DoSimpleMouseClick(provider, c, HorizontalScaleAlignment.Right);
     }
 
     public override string ToString()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
@@ -51,13 +50,13 @@ public abstract class AbstractFishingRodAction : AbstractAction
     /// </summary>
     protected abstract int WaitingForFishResultDialogTime { get; }
 
-    public override sealed async ValueTask RunAsync(IInteractionProvider provider)
+    public override sealed void Run(IInteractionProvider provider)
     {
         // Cast the fishing rod
         this.OnActionInformationUpdated("Casting…");
 
-        await this.StartCastFishingRodAsync(provider);
-        await this.FinishCastFishingRodAsync(provider);
+        this.StartCastFishingRod(provider);
+        this.FinishCastFishingRod(provider);
 
         // Then, wait until we find a window displaying the caught fish
         // or the specified number of seconds has passed.
@@ -69,7 +68,7 @@ public abstract class AbstractFishingRodAction : AbstractAction
         bool found = false;
         while (!found && sw.ElapsedMilliseconds <= this.WaitingForFishResultDialogTime)
         {
-            await provider.WaitAsync(500);
+            provider.Wait(500);
 
             // Get a current screenshot.
             var screenshot = provider.GetCurrentWindowScreenshot();
@@ -95,7 +94,7 @@ public abstract class AbstractFishingRodAction : AbstractAction
     /// </summary>
     /// <param name="provider"></param>
     /// <returns></returns>
-    protected async ValueTask StartCastFishingRodAsync(IInteractionProvider provider)
+    protected void StartCastFishingRod(IInteractionProvider provider)
     {
         var coords = new Coordinates(800, 846);
         var pos = provider.GetCurrentWindowPosition();
@@ -108,7 +107,7 @@ public abstract class AbstractFishingRodAction : AbstractAction
         provider.MoveMouse(coords);
         provider.PressMouseButton();
 
-        await provider.WaitAsync(300);
+        provider.Wait(300);
 
         this.CheckForFishErrorDialog(provider);
     }
@@ -138,7 +137,7 @@ public abstract class AbstractFishingRodAction : AbstractAction
     /// </summary>
     /// <param name="provider"></param>
     /// <returns></returns>
-    protected abstract ValueTask FinishCastFishingRodAsync(IInteractionProvider provider);
+    protected abstract void FinishCastFishingRod(IInteractionProvider provider);
 
     private void CheckForFishErrorDialog(IInteractionProvider provider)
     {

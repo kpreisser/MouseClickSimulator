@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Actions;
 using TTMouseclickSimulator.Core.Environment;
@@ -46,7 +45,7 @@ public class Simulator : IDisposable
     /// the simulator (in that case, it should throw an
     /// <see cref="OperationCanceledException"/>).
     /// </summary>
-    public Func<Exception, ValueTask<bool>>? AsyncRetryHandler
+    public Func<Exception, bool>? RetryHandler
     {
         get;
         set;
@@ -58,10 +57,10 @@ public class Simulator : IDisposable
     }
 
     /// <summary>
-    /// Asynchronously runs this simulator.
+    /// Runs this simulator.
     /// </summary>
     /// <returns></returns>
-    public async ValueTask RunAsync()
+    public void Run()
     {
         if (this.IsCancelled)
         {
@@ -73,20 +72,20 @@ public class Simulator : IDisposable
         {
             this.OnSimulatorStarted();
 
-            // InitializeAsync() does not need to be in the try-catch block because it has
+            // Initialize() does not need to be in the try-catch block because it has
             // its own.
-            await this.provider.InitializeAsync();
+            this.provider.Initialize();
 
             while (true)
             {
                 try
                 {
                     // Run the action.
-                    await this.mainAction.RunAsync(this.provider);
+                    this.mainAction.Run(this.provider);
                 }
                 catch (Exception ex) when (ex is not OperationCanceledException)
                 {
-                    await this.provider.CheckRetryForExceptionAsync(ex);
+                    this.provider.CheckRetryForException(ex);
                     continue;
                 }
 
@@ -95,7 +94,7 @@ public class Simulator : IDisposable
         }
         finally
         {
-            // Ensure we are marked as cancelled (so RunAsync cannot be called again).
+            // Ensure we are marked as cancelled (so Run() cannot be called again).
             this.provider.Cancel();
 
             // Cancel the interactions here because we don't want the GUI thread to
@@ -109,8 +108,8 @@ public class Simulator : IDisposable
     /// Cancels the simulator.
     /// </summary>
     /// <remarks>
-    /// This method can be called from another thread while the task that runs
-    /// <see cref="RunAsync"/> is still active.
+    /// This method can be called from another thread while the thread that runs
+    /// <see cref="Run"/> is still active.
     /// </remarks>
     public void Cancel()
     {

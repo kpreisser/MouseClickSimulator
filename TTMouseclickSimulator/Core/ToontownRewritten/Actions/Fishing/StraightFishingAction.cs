@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using TTMouseclickSimulator.Core.Environment;
+﻿using TTMouseclickSimulator.Core.Environment;
 
 namespace TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing;
 
@@ -15,7 +13,7 @@ public class StraightFishingAction : AbstractFishingRodAction
         get => 25000;
     }
 
-    protected override sealed async ValueTask FinishCastFishingRodAsync(IInteractionProvider provider)
+    protected override sealed void FinishCastFishingRod(IInteractionProvider provider)
     {
         // Simply cast the fishing rod straight, without checking for bubbles.
         var coords = new Coordinates(800, 1009);
@@ -26,7 +24,7 @@ public class StraightFishingAction : AbstractFishingRodAction
             MouseHelpers.ReferenceWindowSize);
 
         provider.MoveMouse(coords);
-        await provider.WaitAsync(300);
+        provider.Wait(300);
         provider.ReleaseMouseButton();
     }
 

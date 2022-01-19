@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 using TTMouseclickSimulator.Core.Environment;
 
@@ -34,7 +33,7 @@ public class LoopAction : AbstractActionContainer
         get => new IAction[] { this.action };
     }
 
-    public override sealed async ValueTask RunAsync(IInteractionProvider provider)
+    public override sealed void Run(IInteractionProvider provider)
     {
         this.OnSubActionStartedOrStopped(0);
 
@@ -49,11 +48,11 @@ public class LoopAction : AbstractActionContainer
                         provider.CancellationToken.ThrowIfCancellationRequested();
 
                         this.OnActionInformationUpdated($"Iteration {i + 1}/{this.count?.ToString() ?? "∞"}");
-                        await this.action.RunAsync(provider);
+                        this.action.Run(provider);
                     }
                     catch (Exception ex) when (ex is not OperationCanceledException)
                     {
-                        await provider.CheckRetryForExceptionAsync(ex);
+                        provider.CheckRetryForException(ex);
                         continue;
                     }
 
