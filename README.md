@@ -31,6 +31,13 @@ build and run the Mouse Click Simulator on your computer.
 
 ## Release Notes
 
+**2022-01-22** (Commit [8334b77](https://github.com/kpreisser/MouseClickSimulator/commit/0c38838e547bf2cbbc43b106d4178762ad7644b8))
+
+- Background mode is now disabled by default (like in earlier versions that didn't support this mode) as it doesn't seem to always work 
+  correctly ([#40](https://github.com/kpreisser/MouseClickSimulator/issues/40)).
+- Fixed an issue for auto fishing in Walrus Way that occured often when using a low FPS rate (like 30), where the toon would miss the 
+  fishing board after selling the fish.
+
 **2022-01-15** (Commit [8334b77](https://github.com/kpreisser/MouseClickSimulator/commit/834a4ca019d7f393c7bf124433c391e7f1d63ebd))
 
 - Improved the gardening projects to automatically water a flower after planting it.
