@@ -35,16 +35,19 @@
       </Grid>
     </Grid>
 
-    <TextBlock x:Name="textBlockStopSimulatorNote" Margin="212,0,10,0" TextWrapping="Wrap" Text="Note: To stop the Simulator, press the Windows key." Height="31" VerticalAlignment="Bottom" Foreground="Gray" Visibility="Collapsed"/>
-    <CheckBox x:Name="chkEnableBackgroundMode" Margin="10,0,0,36"  Content="Enable Background Mode" Height="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="156" IsChecked="True" Checked="HandleChkEnableBackgroundModeChecked" Unchecked="HandleChkEnableBackgroundModeUnchecked" ToolTipService.ShowDuration="60000">
+    <TextBlock x:Name="textBlockStopSimulatorNote" Margin="212,0,10,0" TextWrapping="Wrap" Text="Note: To stop the Simulator, press the Windows key." Height="31" VerticalAlignment="Bottom" Foreground="Gray"/>
+    <CheckBox x:Name="chkEnableBackgroundMode" Margin="10,0,0,36"  Content="Enable Background Mode" Height="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="156" Checked="HandleChkEnableBackgroundModeChecked" Unchecked="HandleChkEnableBackgroundModeUnchecked" ToolTipService.ShowDuration="60000">
       <CheckBox.ToolTip>
         <ToolTip>
           <TextBlock>
             When using background mode, the simulator directly sends mouse and keyboard inputs to the Toontown window 
             (instead of simulating gobal inputs), so you can do other work while the simulator is running.
             <LineBreak/><LineBreak/>
-            The Toontown window can even be hidden behind other apps, but it shouldn't protrude beyond the edge of the screen.
-            Also, you shouldn't move the mouse pointer into the Toontown window while the simulator is running.
+            The Toontown window can even be hidden behind other apps.
+            However, when using mouse actions (like auto fishing), you shouldn't move the mouse pointer into the Toontown window
+            while the simulator is running.
+            <LineBreak/><LineBreak/>
+            If this mode doesn't work correctly on your machine (e.g. toon gets sleepy), please disable background mode and try again.
           </TextBlock>
         </ToolTip>
       </CheckBox.ToolTip>
