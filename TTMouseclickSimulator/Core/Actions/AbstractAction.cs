@@ -1,8 +1,8 @@
 ﻿using System;
 
-using TTMouseclickSimulator.Core.Environment;
+using TTMouseClickSimulator.Core.Environment;
 
-namespace TTMouseclickSimulator.Core.Actions;
+namespace TTMouseClickSimulator.Core.Actions;
 
 public abstract class AbstractAction : IAction
 {

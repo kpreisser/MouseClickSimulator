@@ -1,4 +1,4 @@
-﻿namespace TTMouseclickSimulator.Core
+﻿namespace TTMouseClickSimulator.Core
 {
     public static class SimulatorCapabilitiesExtensions
     {

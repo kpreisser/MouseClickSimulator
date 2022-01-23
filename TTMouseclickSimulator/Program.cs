@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace TTMouseclickSimulator;
+namespace TTMouseClickSimulator;
 
 internal static class Program
 {

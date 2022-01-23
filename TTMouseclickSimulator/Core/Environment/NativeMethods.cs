@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-namespace TTMouseclickSimulator.Core.Environment;
+namespace TTMouseClickSimulator.Core.Environment;
 
 internal static class NativeMethods
 {
@@ -176,7 +176,7 @@ internal static class NativeMethods
     [StructLayout(LayoutKind.Sequential)]
     internal struct KEYBDINPUT
     {
-        internal AbstractWindowsEnvironment.VirtualKey wVk;
+        internal WindowsEnvironment.VirtualKey wVk;
         internal ushort wScan;
         internal KEYEVENTF dwFlags;
         internal uint time;

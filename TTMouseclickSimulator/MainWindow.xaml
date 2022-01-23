@@ -1,30 +1,33 @@
-﻿<Window x:Class="TTMouseclickSimulator.MainWindow"
+﻿<Window x:Class="TTMouseClickSimulator.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TTMouseclickSimulator"
+        xmlns:local="clr-namespace:TTMouseClickSimulator"
         mc:Ignorable="d"
         Title="AppName" Height="520" Width="542" TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" Closing="HandleWindowClosing">
   <Grid>
     <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,0,0,10" Width="75" Height="21" Click="HandleBtnStartClick" VerticalAlignment="Bottom"/>
     <Button x:Name="btnStop" IsEnabled="False" Content="Stop" HorizontalAlignment="Left" Margin="110,0,0,10" Width="75" Height="21" Click="HandleBtnStopClick" VerticalAlignment="Bottom"/>
     <Label x:Name="lblAppName" Content="AppName" Margin="10,10,10,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="18"/>
-    <Label Content="Current Project:" HorizontalAlignment="Left" Margin="10,74,0,0" VerticalAlignment="Top" FontSize="13.333"/>
-    <Label x:Name="lblCurrentProject" Content="xxxxx" HorizontalAlignment="Left" Margin="114,74,0,0" VerticalAlignment="Top" FontSize="13.333" FontWeight="Bold"/>
     <Button x:Name="btnLoad" Content="Load XML Project file…" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Width="154" Height="21" Click="HandleBtnLoadClick"/>
-    <Grid Margin="10,103,10,60">
+    <Grid Margin="10,76,10,60">
       <Grid x:Name="gridProjectControls">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
           <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" x:Name="txtDescription" TextWrapping="Wrap" Text="TextBlock&#xa;NewLine" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6"/>
 
-        <Label x:Name="lblActionTitle" Grid.Row="2" Content="lblActionTitle" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="SemiBold" Margin="0, 3, 0, 0" FontSize="13.333"/>
+        <TextBlock Grid.Row="0" x:Name="txtCurrentProject"  TextWrapping="Wrap" Text="xxxx" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6" FontSize="13.333"/>
 
-        <Grid Grid.Row="2" Margin="0,30,0,0">
+        <TextBlock Grid.Row="1" x:Name="txtDescription" TextWrapping="Wrap" Text="TextBlock&#xa;NewLine" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6"/>
+
+        <Label x:Name="lblActionTitle" Grid.Row="3" Content="lblActionTitle" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="SemiBold" Margin="0, 3, 0, 0" FontSize="13.333"/>
+
+        <Grid Grid.Row="4">
           <ScrollViewer Grid.Row="2" Margin="0,0,0,0" VerticalScrollBarVisibility="Auto">
             <Grid x:Name="actionListGrid"/>
           </ScrollViewer>
@@ -35,7 +38,7 @@
       </Grid>
     </Grid>
 
-    <TextBlock x:Name="textBlockStopSimulatorNote" Margin="212,0,10,0" TextWrapping="Wrap" Text="Note: To stop the Simulator, press the Windows key." Height="31" VerticalAlignment="Bottom" Foreground="Gray"/>
+    <TextBlock x:Name="textBlockStopSimulatorNote" Margin="212,0,10,0" TextWrapping="Wrap" Text="Note: To stop the Simulator, press the Windows key." Height="31" VerticalAlignment="Bottom" />
     <CheckBox x:Name="chkEnableBackgroundMode" Margin="10,0,0,36"  Content="Enable Background Mode" Height="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="156" Checked="HandleChkEnableBackgroundModeChecked" Unchecked="HandleChkEnableBackgroundModeUnchecked" ToolTipService.ShowDuration="60000">
       <CheckBox.ToolTip>
         <ToolTip>

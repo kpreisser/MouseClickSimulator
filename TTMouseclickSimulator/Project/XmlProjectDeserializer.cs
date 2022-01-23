@@ -6,16 +6,17 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Xml.Linq;
 
-using TTMouseclickSimulator.Core;
-using TTMouseclickSimulator.Core.Actions;
-using TTMouseclickSimulator.Core.ToontownRewritten.Actions;
-using TTMouseclickSimulator.Core.ToontownRewritten.Actions.DoodleInteraction;
-using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Fishing;
-using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Gardening;
-using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Keyboard;
-using TTMouseclickSimulator.Core.ToontownRewritten.Actions.Speedchat;
+using TTMouseClickSimulator.Core;
+using TTMouseClickSimulator.Core.Actions;
+using TTMouseClickSimulator.Core.Toontown;
+using TTMouseClickSimulator.Core.Toontown.Actions;
+using TTMouseClickSimulator.Core.Toontown.Actions.DoodleInteraction;
+using TTMouseClickSimulator.Core.Toontown.Actions.Fishing;
+using TTMouseClickSimulator.Core.Toontown.Actions.Gardening;
+using TTMouseClickSimulator.Core.Toontown.Actions.Keyboard;
+using TTMouseClickSimulator.Core.Toontown.Actions.Speedchat;
 
-namespace TTMouseclickSimulator.Project;
+namespace TTMouseClickSimulator.Project;
 
 /// <summary>
 /// Deserializes a SimulatorProject from an XML file.
@@ -67,7 +68,6 @@ public static class XmlProjectDeserializer
 
     private static SimulatorProject ParseDocument(XDocument doc)
     {
-        string title, description;
         var root = doc.Root;
         if (root?.Name != ns + "SimulatorProject")
             throw new InvalidDataException(
@@ -75,10 +75,10 @@ public static class XmlProjectDeserializer
                 $"in namespace \"{XmlNamespace}\" not found.");
 
         // Find the <Title>
-        title = root.Element(ns + "Title")?.Value.Trim() ?? string.Empty;
+        string title = root.Element(ns + "Title")?.Value.Trim() ?? string.Empty;
 
         // Find the <Desription>
-        description = root.Element(ns + "Description")?.Value.Trim() ?? string.Empty;
+        string description = root.Element(ns + "Description")?.Value.Trim() ?? string.Empty;
 
         // Parse the configuration elements directly from the root node.
         var config = ParseConfiguration(root);
@@ -89,6 +89,14 @@ public static class XmlProjectDeserializer
     private static SimulatorConfiguration ParseConfiguration(XElement configEl)
     {
         var config = new SimulatorConfiguration();
+
+        // Find the ToontownFlavor, if specified.
+        var toontownFlavor = ToontownFlavor.ToontownRewritten;
+        string? flavorString = configEl.Attribute("toontownFlavor")?.Value;
+        if (flavorString is not null)
+            toontownFlavor = Enum.Parse<ToontownFlavor>(flavorString, true);
+
+        config.ToontownFlavor = toontownFlavor;
 
         // Find the <MainAction>
         var mainActionEl = configEl.Element(ns + "MainAction");

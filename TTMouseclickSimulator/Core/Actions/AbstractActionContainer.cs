@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TTMouseclickSimulator.Core.Actions;
+namespace TTMouseClickSimulator.Core.Actions;
 
 public abstract class AbstractActionContainer : AbstractAction, IActionContainer
 {

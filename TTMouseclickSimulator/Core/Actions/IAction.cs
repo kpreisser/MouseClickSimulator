@@ -1,8 +1,8 @@
 ﻿using System;
 
-using TTMouseclickSimulator.Core.Environment;
+using TTMouseClickSimulator.Core.Environment;
 
-namespace TTMouseclickSimulator.Core.Actions;
+namespace TTMouseClickSimulator.Core.Actions;
 
 /// <summary>
 /// An action is called by the simulator to do something, e.g. press keys or do mouse clicks.

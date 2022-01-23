@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using TTMouseclickSimulator.Core.Environment;
+using TTMouseClickSimulator.Core.Environment;
 
-namespace TTMouseclickSimulator.Core.Actions;
+namespace TTMouseClickSimulator.Core.Actions;
 
 /// <summary>
 /// Represents an action that runs another action in a loop.

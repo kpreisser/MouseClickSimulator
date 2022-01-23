@@ -1,11 +1,18 @@
 ﻿using System.Collections.Generic;
 
-using TTMouseclickSimulator.Core.Actions;
+using TTMouseClickSimulator.Core.Actions;
+using TTMouseClickSimulator.Core.Toontown;
 
-namespace TTMouseclickSimulator.Core;
+namespace TTMouseClickSimulator.Core;
 
 public class SimulatorConfiguration
 {
+    public ToontownFlavor ToontownFlavor
+    {
+        get;
+        set;
+    }
+
     /// <summary>
     /// Specifies the action that is run by the simulator.
     /// </summary>

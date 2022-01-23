@@ -1,12 +1,12 @@
-﻿# Mouse Click Simulator for Toontown Rewritten
+﻿# Mouse Click Simulator for Toontown Rewritten and Corporate Clash
 
-This is a new implementation of the older **"TT-Mausklick"** simulator, intended to work with Toontown Rewritten. It is implemented
-in C# (.NET 6) and runs on Windows.
+This is a new implementation of the older **"TT-Mausklick"** simulator, intended to work with Toontown Rewritten and Corporate Clash.
+It is implemented in C# (.NET 6) and runs on Windows.
 
-The TTR Mouse Click Simulator is able to automatically fish in specific locations like Punchling Place, TTC. To accomplish this, it scans the
+The TT Mouse Click Simulator is able to automatically fish in specific locations like Punchling Place, TTC. To accomplish this, it scans the
 screen to detect fish bubbles, calculates how far the rod must be cast to catch the fish, and moves the Toon to the fisherman to sell the fish.
 
-Additionally, the simulator can plant and water flowers using 1 to 8 jellybean combinations, which is implemented using "Quick Actions".
+Additionally, for Toontown Rewritten, the simulator can plant and water flowers using 1 to 8 jellybean combinations, which is implemented using "Quick Actions".
 By clicking on a button with the flower's name, the Mouse Click Simulator will plant the flower by selecting the correct jellybean combination, and then water it.
 
 You can watch a video of the <a href="https://www.youtube.com/watch?v=uq7VaJkO6-k" target="_blank">Automatic Fishing Function for Tenor Terrace</a>
@@ -14,7 +14,7 @@ and <a href="https://www.youtube.com/watch?v=dS-gBcvsjz4" target="_blank">Punchl
 
 ![](https://user-images.githubusercontent.com/13289184/148388183-a2010232-dec5-4d50-9893-0d9994b6ac17.png)
 
-Note: This Simulator does not inject code into or otherwise manipulate the game. It only interacts with TTR by taking screenshots to analyze the window content
+Note: This Simulator does not inject code into or otherwise manipulate the game. It only interacts with TT by taking screenshots to analyze the window content
 (for the fishing action) and simulating mouse clicks/movements and pressing keys.
 
 When enabling **Background Mode**, the simulator directly sends mouse and keyboard inputs to the Toontown window (instead of simulating gobal inputs),
@@ -22,7 +22,7 @@ so you can do other work while the simulator is running.
 
 ## WARNING
 Use this program at your own risk!
-Toontown Rewritten states in their Terms of Use that you should not use automation software, so you might risk a ban if you use this program.
+Toontown Rewritten and Corporate Clash state in their Terms of Use that you should not use automation software, so you might risk a ban if you use this program.
 
 ## Running the Mouse Click Simulator
 
@@ -84,16 +84,18 @@ in the XML files, and in the source code calling `IInteractionProvider.MoveMouse
 interpreted for a window with an inner (client area) size of **1600 × 1151** using a 4:3 aspect ratio. These values were kept from the
 legacy TT mouse click simulator.
 
-To specify mouse coordinates for Toontown Rewritten, you can do the following to get the resulting coordinates that can be used in the simulator:
-- In the Toontown Options, set the display resolution to **800 × 600**. Do **not** resize the window after applying this resolution.
+To specify mouse coordinates for Toontown, you can do the following to get the resulting coordinates that can be used in the simulator:
+- In the Toontown Options, for **Toontown Rewritten**, set the display resolution to **800 × 600**. Do **not** resize the window after applying this resolution.
+  Or, for **Corporate Clash**, set the display resolution to any resolution you prefer, and set the aspect ratio to **4:3**.
 - Determine the (x, y) coordinates within the client area of the window (that is, without the window borders and title bar), e.g. by
   taking a screenshot with F9.
-- Calculate the resulting coordinates as follows:
+- Calculate the resulting coordinates as follows (replace 800 and 600 with the actual display resolution that you have set before):
   - x<sub>result</sub> = x ÷ 800 × 1600
   - y<sub>result</sub> = y ÷ 600 × 1151
 
 In the C# code, you have then also specify the horizontal alignment (which is needed when the current window aspect ratio is greater than 4:3).
-To determine this, resize your Toontown window to **increase the width** (or decrease the height).
+To determine this, for **Toontown Rewritten**, resize your Toontown window to **increase the width** (or decrease the height).
+Or, for **Corporate Clash**, reset the aspect ratio to **Adaptive**.
 - If the element that your coordinates point to stays at the center of the window, specify `HorizontalScaleAlignment.Center`, or omit this parameter.
 - Otherwise, if the element stays at the left hand side of the window, specify `HorizontalScaleAlignment.Left`.
 - Otherwise, if the element stays at the right hand side of the window, specify `HorizontalScaleAlignment.Right`.

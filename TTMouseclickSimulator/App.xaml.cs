@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace TTMouseclickSimulator;
+namespace TTMouseClickSimulator;
 
 public partial class App : Application
 {

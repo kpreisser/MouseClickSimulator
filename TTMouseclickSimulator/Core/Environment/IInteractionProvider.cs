@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace TTMouseclickSimulator.Core.Environment;
+namespace TTMouseClickSimulator.Core.Environment;
 
 /// <summary>
 /// Allows actions to interact with the target window, e.g. press keys and
@@ -77,9 +77,9 @@ public interface IInteractionProvider
 
     void ReleaseMouseButton();
 
-    void PressKey(AbstractWindowsEnvironment.VirtualKey key);
+    void PressKey(WindowsEnvironment.VirtualKey key);
 
-    void ReleaseKey(AbstractWindowsEnvironment.VirtualKey key);
+    void ReleaseKey(WindowsEnvironment.VirtualKey key);
 
     /// <summary>
     /// Writes the given string into the window.

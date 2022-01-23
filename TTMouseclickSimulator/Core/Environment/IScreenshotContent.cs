@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Media;
 
-namespace TTMouseclickSimulator.Core.Environment;
+namespace TTMouseClickSimulator.Core.Environment;
 
 public interface IScreenshotContent
 {

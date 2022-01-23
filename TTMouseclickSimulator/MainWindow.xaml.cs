@@ -6,14 +6,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Interop;
 using System.Windows.Media;
 
-using TTMouseclickSimulator.Core;
-using TTMouseclickSimulator.Core.Actions;
-using TTMouseclickSimulator.Core.ToontownRewritten.Environment;
-using TTMouseclickSimulator.Project;
+using TTMouseClickSimulator.Core;
+using TTMouseClickSimulator.Core.Actions;
+using TTMouseClickSimulator.Core.Environment;
+using TTMouseClickSimulator.Core.Toontown;
+using TTMouseClickSimulator.Project;
 
+using FormsDialogResult = System.Windows.Forms.DialogResult;
+using FormsIWin32Window = System.Windows.Forms.IWin32Window;
+using FormsOpenFileDialog = System.Windows.Forms.OpenFileDialog;
 using FormsTaskDialog = System.Windows.Forms.TaskDialog;
 using FormsTaskDialogButton = System.Windows.Forms.TaskDialogButton;
 using FormsTaskDialogCommandLinkButton = System.Windows.Forms.TaskDialogCommandLinkButton;
@@ -22,11 +27,11 @@ using FormsTaskDialogExpanderPosition = System.Windows.Forms.TaskDialogExpanderP
 using FormsTaskDialogIcon = System.Windows.Forms.TaskDialogIcon;
 using FormsTaskDialogPage = System.Windows.Forms.TaskDialogPage;
 
-namespace TTMouseclickSimulator;
+namespace TTMouseClickSimulator;
 
-public partial class MainWindow : Window
+public partial class MainWindow : Window, FormsIWin32Window
 {
-    private const string AppName = "TTR Mouse Click Simulator";
+    private const string AppName = "TT Mouse Click Simulator";
 
     private const string actionTitleMainAction = "Main Action";
 
@@ -36,7 +41,7 @@ public partial class MainWindow : Window
     private const string ProjectFileExtension = ".xml";
     private const string SampleProjectsFolderName = "SampleProjects";
 
-    private readonly Microsoft.Win32.OpenFileDialog openFileDialog;
+    private readonly FormsOpenFileDialog openFileDialog;
 
     private SimulatorProject? project;
     private SimulatorConfiguration.QuickActionDescriptor? currentQuickAction;
@@ -59,9 +64,15 @@ public partial class MainWindow : Window
         this.lblAppName.Content = AppName;
         this.Title = AppName;
 
-        this.openFileDialog = new Microsoft.Win32.OpenFileDialog();
-        this.openFileDialog.DefaultExt = ProjectFileExtension;
-        this.openFileDialog.Filter = "XML Simulator Project|*" + ProjectFileExtension;
+        // Prefer the WinForms OpenFileDialog over the WPF one, as the WinForms one will
+        // automatically fall back to the legacy dialog if an COMException occurs.
+        // See: https://github.com/dotnet/winforms/issues/2506
+        this.openFileDialog = new FormsOpenFileDialog()
+        {
+            DefaultExt = ProjectFileExtension,
+            Filter = "XML Simulator Project|*" + ProjectFileExtension
+        };
+
         // Set the initial directory to the executable path or the "SampleProjects" folder if it exists.
         string exeDirectory = Path.GetDirectoryName(Environment.ProcessPath)!;
         string sampleProjectsPath = Path.Combine(exeDirectory, SampleProjectsFolderName);
@@ -72,6 +83,11 @@ public partial class MainWindow : Window
             this.openFileDialog.InitialDirectory = exeDirectory;
 
         this.RefreshProjectControls();
+    }
+
+    IntPtr FormsIWin32Window.Handle
+    {
+        get => new WindowInteropHelper(this).Handle;
     }
 
     private async void HandleBtnStartClick(object sender, RoutedEventArgs e)
@@ -126,11 +142,12 @@ public partial class MainWindow : Window
             // we need to set it in an instance variable, and because the GUI thread may
             // call Simulator.Cancel() that has to access the CancellationTokenSource of
             // the StandardInteractionProvider.
-            var environment = TTRWindowsEnvironment.Instance;
+            var environment = WindowsEnvironment.Instance;
             using var sim = this.simulator = new Simulator(
+                this.project!.Configuration.ToontownFlavor,
                 this.currentQuickAction is not null ?
                     this.currentQuickAction.Action! :
-                    this.project!.Configuration.MainAction!,
+                    this.project.Configuration.MainAction!,
                 environment,
                 backgroundMode);
 
@@ -232,9 +249,7 @@ public partial class MainWindow : Window
                 }
             };
 
-            FormsTaskDialog.ShowDialog(
-                new WindowInteropHelper(this).Handle,
-                dialogPage);
+            FormsTaskDialog.ShowDialog(this, dialogPage);
         }
 
         this.HandleSimulatorStopped();
@@ -282,9 +297,7 @@ public partial class MainWindow : Window
                 DefaultButton = buttonStop
             };
 
-            var resultButton = FormsTaskDialog.ShowDialog(
-                new WindowInteropHelper(this).Handle,
-                dialogPage);
+            var resultButton = FormsTaskDialog.ShowDialog(this, dialogPage);
 
             if (resultButton == buttonTryAgain)
                 Volatile.Write(ref result, true);
@@ -338,7 +351,7 @@ public partial class MainWindow : Window
 
     private void HandleBtnLoadClick(object sender, RoutedEventArgs e)
     {
-        if (this.openFileDialog.ShowDialog(this) is true)
+        if (this.openFileDialog.ShowDialog(this) is FormsDialogResult.OK)
         {
             // Try to load the given project.
             try
@@ -369,9 +382,7 @@ public partial class MainWindow : Window
                     SizeToContent = true
                 };
 
-                FormsTaskDialog.ShowDialog(
-                    new WindowInteropHelper(this).Handle,
-                    dialogPage);
+                FormsTaskDialog.ShowDialog(this, dialogPage);
 
                 return;
             }
@@ -401,7 +412,7 @@ public partial class MainWindow : Window
                 b.Margin = new Thickness(0, 2 + 23 * i, 0, 0);
                 b.Content = "  " + quickAction.Name + "  ";
                 this.gridProjectControls.Children.Add(b);
-                Grid.SetRow(b, 1);
+                Grid.SetRow(b, 2);
 
                 b.Click += async (_s, _e) =>
                 {
@@ -421,13 +432,21 @@ public partial class MainWindow : Window
 
         if (this.project is null)
         {
-            this.lblCurrentProject.Content = "(none)";
+            this.txtCurrentProject.Inlines.Clear();
+            this.txtCurrentProject.Inlines.Add(new Run("Project: "));
+            this.txtCurrentProject.Inlines.Add(new Bold(new Run("(none)")));
             this.txtDescription.Text = string.Empty;
             this.btnStart.IsEnabled = false;
         }
         else
         {
-            this.lblCurrentProject.Content = this.project.Title;
+            var ttFlavor = this.project.Configuration.ToontownFlavor is ToontownFlavor.CorporateClash ? "Corporate Clash" : "Toontown Rewritten";
+
+            this.txtCurrentProject.Inlines.Clear();
+            this.txtCurrentProject.Inlines.Add(new Run("Project: "));
+            this.txtCurrentProject.Inlines.Add(new Bold(new Run(this.project.Title)));
+            this.txtCurrentProject.Inlines.Add(new Run($" ({ttFlavor})"));
+
             this.txtDescription.Text = this.project.Description;
             this.btnStart.IsEnabled = this.project.Configuration.MainAction is not null;
 

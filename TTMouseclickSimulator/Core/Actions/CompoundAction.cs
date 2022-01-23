@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using TTMouseclickSimulator.Core.Environment;
+using TTMouseClickSimulator.Core.Environment;
 
-namespace TTMouseclickSimulator.Core.Actions;
+namespace TTMouseClickSimulator.Core.Actions;
 
 /// <summary>
 /// An action that loops through a list of other actions either in order or by chance.

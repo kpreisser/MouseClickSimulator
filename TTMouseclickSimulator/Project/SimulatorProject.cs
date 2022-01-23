@@ -1,8 +1,8 @@
 ﻿using System;
 
-using TTMouseclickSimulator.Core;
+using TTMouseClickSimulator.Core;
 
-namespace TTMouseclickSimulator.Project;
+namespace TTMouseClickSimulator.Project;
 
 /// <summary>
 /// A simulator project that can be persisted.

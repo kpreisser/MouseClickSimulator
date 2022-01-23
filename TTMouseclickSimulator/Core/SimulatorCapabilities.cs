@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TTMouseclickSimulator.Core
+namespace TTMouseClickSimulator.Core
 {
     [Flags]
     public enum SimulatorCapabilities

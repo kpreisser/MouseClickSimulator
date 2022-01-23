@@ -1,4 +1,4 @@
-﻿namespace TTMouseclickSimulator.Core.Environment;
+﻿namespace TTMouseClickSimulator.Core.Environment;
 
 /// <summary>
 /// Specifies parameters of the destination window in pixels.

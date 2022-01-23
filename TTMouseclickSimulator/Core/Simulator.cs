@@ -1,9 +1,11 @@
 ﻿using System;
 
-using TTMouseclickSimulator.Core.Actions;
-using TTMouseclickSimulator.Core.Environment;
+using TTMouseClickSimulator.Core.Actions;
+using TTMouseClickSimulator.Core.Environment;
+using TTMouseClickSimulator.Core.Toontown;
+using TTMouseClickSimulator.Core.Toontown.Environment;
 
-namespace TTMouseclickSimulator.Core;
+namespace TTMouseClickSimulator.Core;
 
 public class Simulator : IDisposable
 {
@@ -16,8 +18,9 @@ public class Simulator : IDisposable
     public event Action<bool?>? SimulatorInitializing;
 
     public Simulator(
+        ToontownFlavor toontownFlavor,
         IAction mainAction,
-        AbstractWindowsEnvironment environmentInterface,
+        WindowsEnvironment environmentInterface,
         bool backgroundMode)
     {
         if (mainAction is null)
@@ -28,8 +31,10 @@ public class Simulator : IDisposable
         this.mainAction = mainAction;
         this.RequiredCapabilities = mainAction.RequiredCapabilities;
 
-        this.provider = new InteractionProvider(
+        // TODO: The simulator shouldn't have to know about this TT-specific subclass.
+        this.provider = new ToontownInteractionProvider(
             this,
+            toontownFlavor,
             environmentInterface,
             backgroundMode);
     }

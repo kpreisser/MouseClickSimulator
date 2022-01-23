@@ -4,24 +4,25 @@ using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 
-namespace TTMouseclickSimulator.Core.Environment;
+namespace TTMouseClickSimulator.Core.Environment;
 
-internal class InteractionProvider : IInteractionProvider, IDisposable
+public abstract class InteractionProvider : IInteractionProvider, IDisposable
 {
+    protected readonly WindowsEnvironment environmentInterface;
+
     private readonly bool backgroundMode;
 
     private readonly CancellationTokenSource cancellationTokenSource = new();
     private readonly SemaphoreSlim waitSemaphore = new(0);
 
     private readonly Simulator simulator;
-    private readonly AbstractWindowsEnvironment environmentInterface;
 
-    private readonly List<AbstractWindowsEnvironment.VirtualKey> keysCurrentlyPressed = new();
+    private readonly List<WindowsEnvironment.VirtualKey> keysCurrentlyPressed = new();
 
     private bool disposed;
     private IntPtr windowHandle;
 
-    private AbstractWindowsEnvironment.ScreenshotContent? currentScreenshot;
+    private WindowsEnvironment.ScreenshotContent? currentScreenshot;
 
     private bool isMouseButtonPressed;
 
@@ -35,7 +36,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
 
     public InteractionProvider(
             Simulator simulator,
-            AbstractWindowsEnvironment environmentInterface,
+            WindowsEnvironment environmentInterface,
             bool backgroundMode)
     {
         this.simulator = simulator;
@@ -78,7 +79,8 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
                 {
                     // First, find the game processes. This will always return at least one process,
                     // or throw.
-                    var processes = this.environmentInterface.FindProcesses();
+                    var processes = this.FindProcesses();
+
                     try
                     {
                         if (processes.Count is 1)
@@ -307,7 +309,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
         return this.GetCurrentWindowScreenshot(false);
     }
 
-    public void PressKey(AbstractWindowsEnvironment.VirtualKey key)
+    public void PressKey(WindowsEnvironment.VirtualKey key)
     {
         this.ThrowIfCapabilityNotSet(SimulatorCapabilities.KeyboardInput);
         this.CancellationToken.ThrowIfCancellationRequested();
@@ -326,7 +328,7 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
         }
     }
 
-    public void ReleaseKey(AbstractWindowsEnvironment.VirtualKey key)
+    public void ReleaseKey(WindowsEnvironment.VirtualKey key)
     {
         this.ThrowIfCapabilityNotSet(SimulatorCapabilities.KeyboardInput);
         this.CancellationToken.ThrowIfCancellationRequested();
@@ -532,6 +534,8 @@ internal class InteractionProvider : IInteractionProvider, IDisposable
             this.windowIsTopmost = false;
         }
     }
+
+    protected abstract List<Process> FindProcesses();
 
     private void ThrowIfCapabilityNotSet(SimulatorCapabilities capabilities)
     {
