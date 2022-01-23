@@ -21,6 +21,7 @@ When enabling **Background Mode**, the simulator directly sends mouse and keyboa
 so you can do other work while the simulator is running.
 
 ## WARNING
+
 Use this program at your own risk!
 Toontown Rewritten and Corporate Clash state in their Terms of Use that you should not use automation software, so you might risk a ban if you use this program.
 
@@ -33,10 +34,7 @@ build and run the Mouse Click Simulator on your computer.
 
 **2022-01-23** (Commit [e8cb4a8](https://github.com/kpreisser/MouseClickSimulator/commit/e8cb4a8e083d31bfd81d9c88405d5177007b5183))
 
-- Added support for **Corporate Clash** ([#32](https://github.com/kpreisser/MouseClickSimulator/issues/32)). 
-
-**2022-01-22** (Commit [0c38838](https://github.com/kpreisser/MouseClickSimulator/commit/0c38838e547bf2cbbc43b106d4178762ad7644b8))
-
+- Added support for **Corporate Clash** ([#32](https://github.com/kpreisser/MouseClickSimulator/issues/32)).
 - Background mode is now disabled by default (like in earlier versions that didn't support this mode) as it doesn't seem to always work 
   correctly ([#40](https://github.com/kpreisser/MouseClickSimulator/issues/40)).
 - Fixed an issue for auto fishing in Walrus Way that occured often when using a low FPS rate (like 30), where the toon would miss the 
