@@ -3,7 +3,7 @@
 This is a new implementation of the older **"TT-Mausklick"** simulator, intended to work with Toontown Rewritten and Corporate Clash.
 It is implemented in C# (.NET 6) and runs on Windows.
 
-The TT Mouse Click Simulator is able to automatically fish in specific locations like Punchling Place, TTC. To accomplish this, it scans the
+The TT Mouse Click Simulator is able to automatically fish in specific locations like Punchline Place, TTC. To accomplish this, it scans the
 screen to detect fish bubbles, calculates how far the rod must be cast to catch the fish, and moves the Toon to the fisherman to sell the fish.
 
 Additionally, for Toontown Rewritten, the simulator can plant and water flowers using 1 to 8 jellybean combinations, which is implemented using "Quick Actions".
