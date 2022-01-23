@@ -38,7 +38,7 @@ namespace TTMouseClickSimulator.Core.Toontown.Environment
 
                 if (processes.Count is 0)
                 {
-                    throw new ArgumentException(
+                    throw new InvalidOperationException(
                         "Could not find Toontown Rewritten. Please make sure " +
                         "TT Rewritten is running before starting the simulator.\n\n" +
                         "If you're running Toontown Rewritten as administrator, you may also " +
@@ -47,13 +47,13 @@ namespace TTMouseClickSimulator.Core.Toontown.Environment
 
                 return processes;
             }
-            else
+            else if (this.ToontownFlavor is ToontownFlavor.CorporateClash)
             {
                 var processes = this.environmentInterface.FindProcessesByName(CCProcessName);
 
                 if (processes.Count is 0)
                 {
-                    throw new ArgumentException(
+                    throw new InvalidOperationException(
                         "Could not find Corporate Clash. Please make sure " +
                         "Corporate Clash is running before starting the simulator.\n\n" +
                         "If you're running Corporate Clash as administrator, you may also " +
@@ -61,6 +61,10 @@ namespace TTMouseClickSimulator.Core.Toontown.Environment
                 }
 
                 return processes;
+            }
+            else
+            {
+                throw new NotSupportedException("Unsupported Toontown flavor: " + this.ToontownFlavor);
             }
         }
     }
