@@ -31,19 +31,23 @@ build and run the Mouse Click Simulator on your computer.
 
 ## Release Notes
 
-**2022-01-22** (Commit [8334b77](https://github.com/kpreisser/MouseClickSimulator/commit/0c38838e547bf2cbbc43b106d4178762ad7644b8))
+**2022-01-23** (Commit [e8cb4a8](https://github.com/kpreisser/MouseClickSimulator/commit/e8cb4a8e083d31bfd81d9c88405d5177007b5183))
+
+- Added support for **Corporate Clash** ([#32](https://github.com/kpreisser/MouseClickSimulator/issues/32)). 
+
+**2022-01-22** (Commit [0c38838](https://github.com/kpreisser/MouseClickSimulator/commit/0c38838e547bf2cbbc43b106d4178762ad7644b8))
 
 - Background mode is now disabled by default (like in earlier versions that didn't support this mode) as it doesn't seem to always work 
   correctly ([#40](https://github.com/kpreisser/MouseClickSimulator/issues/40)).
 - Fixed an issue for auto fishing in Walrus Way that occured often when using a low FPS rate (like 30), where the toon would miss the 
   fishing board after selling the fish.
 
-**2022-01-15** (Commit [8334b77](https://github.com/kpreisser/MouseClickSimulator/commit/834a4ca019d7f393c7bf124433c391e7f1d63ebd))
+**2022-01-15** (Commit [834a4ca](https://github.com/kpreisser/MouseClickSimulator/commit/834a4ca019d7f393c7bf124433c391e7f1d63ebd))
 
 - Improved the gardening projects to automatically water a flower after planting it.
 - Improved the runtime behavior by checking requirements according to the declared capabilities of actions.
 
-**2022-01-10** (Commit [8334b77](https://github.com/kpreisser/MouseClickSimulator/commit/bcec1855a60b4a2919545046691c655c31b0cc8c))
+**2022-01-10** (Commit [bcec185](https://github.com/kpreisser/MouseClickSimulator/commit/bcec1855a60b4a2919545046691c655c31b0cc8c))
 
 - Updated to **.NET 6**.
   Due to this change, the prerequisites for building the simulator have slightly changed. Please see the topic 
@@ -55,10 +59,15 @@ build and run the Mouse Click Simulator on your computer.
 - Improved key press durations in the fishing projects, and added new projects for use during the winter theme.
 - Fixed a bug that prevented the window location from being detected correctly when using multiple monitors with different DPI settings.
 
+<details>
+  <summary>Click to expand older release notes</summary>
+
 **2018-08-12** (Commit [67c4a87](https://github.com/kpreisser/MouseClickSimulator/commit/67c4a87c1db7fd906f3dfc88aa6cc26c51dc6d4f))
 
 - The simulator now detects when multiple TT Rewritten windows are open, and allows to select the one that should be used
   ([#27](https://github.com/kpreisser/MouseClickSimulator/issues/27)).
+
+</details>
 
 ## Development
 
