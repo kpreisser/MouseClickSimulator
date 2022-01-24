@@ -54,6 +54,8 @@ public static class XmlProjectDeserializer
         actionTypes.Add("QuitFishing", typeof(QuitFishingAction));
 
         actionTypes.Add("PressKey", typeof(PressKeyAction));
+        actionTypes.Add("KeyDown", typeof(KeyDownAction));
+        actionTypes.Add("KeyUp", typeof(KeyUpAction));
         actionTypes.Add("WriteText", typeof(WriteTextAction));
 
         actionTypes.Add("Speedchat", typeof(SpeedchatAction));

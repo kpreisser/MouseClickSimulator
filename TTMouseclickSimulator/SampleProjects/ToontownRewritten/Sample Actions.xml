@@ -22,6 +22,15 @@
       <PressKey key="Left" duration="500" />
       <PressKey key="Right" duration="700" />
       <PressKey key="Control" duration="500" />
+
+      <Compound type="Sequential" loop="false">
+        <KeyDown key="Up" />
+        <KeyDown key="Right" />
+        <Pause duration="500" />
+        <KeyUp key="Right" />
+        <Pause duration="500" />
+        <KeyUp key="Up" />
+      </Compound>
         
       <!--
       A loop specifies that the inner action should be executed a given number of times,
