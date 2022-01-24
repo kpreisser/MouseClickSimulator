@@ -550,6 +550,11 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
         // Do nothing.
     }
 
+    protected virtual void ValidateWindowPositionAndSize(WindowPosition windowPosition)
+    {
+        // Do nothing.
+    }
+
     private void ThrowIfCapabilityNotSet(SimulatorCapabilities capabilities)
     {
         if (!this.simulator.RequiredCapabilities.IsSet(capabilities))
@@ -571,7 +576,7 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
         }
         else
         {
-            // Wait max. 100 ms, and check if the TT window is still active.
+            // Wait at most 100 ms, and check if the window is still active.
             var sw = new Stopwatch();
             sw.Start();
             while (true)
@@ -593,30 +598,24 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
 
     private WindowPosition GetWindowPositionCore(bool failIfMinimized = true)
     {
-        // Fail if the window is no longer in foreground (active) and we are not
-        // using background mode.
+        // Fail if the window is no longer in foreground (active) and we are not using
+        // background mode.
         var windowPosition = this.environmentInterface.GetWindowPosition(
             this.windowHandle,
             out _,
             failIfNotInForeground: !this.backgroundMode,
             failIfMinimized: failIfMinimized);
 
-        // When we use mouse input or capture screenshots, check that the aspect
-        // ratio of the window is 4:3 or higher if the window currently isn't minimized.
+        // When we use mouse input or capture screenshots, allow the subclass to validate the
+        // window location and size.
         if ((this.simulator.RequiredCapabilities.IsSet(SimulatorCapabilities.MouseInput) ||
-            this.simulator.RequiredCapabilities.IsSet(SimulatorCapabilities.CaptureScreenshot)) &&
-            !windowPosition.IsMinimized)
+            this.simulator.RequiredCapabilities.IsSet(SimulatorCapabilities.CaptureScreenshot)))
         {
-            if (((double)windowPosition.Size.Width / windowPosition.Size.Height) < 4d / 3d)
-            {
-                throw new ArgumentException(
-                    "The Toontown window must have an aspect ratio " +
-                    "of 4:3 or higher (e.g. 16:9).");
-            }
+            this.ValidateWindowPositionAndSize(windowPosition);
 
             // TODO: Check if the window is beyond the virtual screen size (if in non-background
-            // mode and we require mouse or screenshot capabilities, or if in background mode and
-            // we require screenshot capabilities).
+            // mode and we require mouse or screenshot capabilities, or if in background mode
+            // and we require screenshot capabilities).
         }
 
         return windowPosition;
