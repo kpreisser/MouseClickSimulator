@@ -12,7 +12,7 @@ By clicking on a button with the flower's name, the Mouse Click Simulator will p
 You can watch a video of the <a href="https://www.youtube.com/watch?v=uq7VaJkO6-k" target="_blank">Automatic Fishing Function for Tenor Terrace</a>
 and <a href="https://www.youtube.com/watch?v=dS-gBcvsjz4" target="_blank">Punchline Place</a>.
 
-![](https://user-images.githubusercontent.com/13289184/148388183-a2010232-dec5-4d50-9893-0d9994b6ac17.png)
+![](https://user-images.githubusercontent.com/13289184/150864161-64f25257-9175-48a5-b713-2634dbf2aaaa.png)
 
 Note: This Simulator does not inject code into or otherwise manipulate the game. It only interacts with TT by taking screenshots to analyze the window content
 (for the fishing action) and simulating mouse clicks/movements and pressing keys.
@@ -31,6 +31,11 @@ Please see the topic [Running the Simulator](https://github.com/kpreisser/MouseC
 build and run the Mouse Click Simulator on your computer.
 
 ## Release Notes
+
+**2022-01-24** (Commit [db8435c](https://github.com/kpreisser/MouseClickSimulator/commit/db8435c5d0c7309c3e09b214b0a587b3e12d32c2))
+
+- Added support for alphabetic keys in the `KeyPress` action, and added new `KeyDown` and `KeyUp` actions.
+- Added an option to convert arrow keys into WASD keys for movement ([#40](https://github.com/kpreisser/MouseClickSimulator/issues/40)).
 
 **2022-01-23** (Commit [e8cb4a8](https://github.com/kpreisser/MouseClickSimulator/commit/e8cb4a8e083d31bfd81d9c88405d5177007b5183))
 
