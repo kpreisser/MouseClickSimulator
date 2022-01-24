@@ -174,7 +174,7 @@ public partial class MainWindow : Window, FormsIWin32Window
                 {
                     sim.RetryHandler = this.HandleSimulatorRetry;
 
-                    sim.SimulatorInitializing += multipleWindowsAvailable => this.Dispatcher.Invoke(new Action(() =>
+                    sim.SimulatorInitializing += multipleWindowsAvailable => this.Dispatcher.Invoke(() =>
                     {
                         if (multipleWindowsAvailable is not null)
                         {
@@ -191,7 +191,7 @@ public partial class MainWindow : Window, FormsIWin32Window
                             // Initialization has finished.
                             this.overlayMessageBorder.Visibility = Visibility.Hidden;
                         }
-                    }));
+                    });
 
                     sim.Run();
 
@@ -404,17 +404,20 @@ public partial class MainWindow : Window, FormsIWin32Window
 
             // For each quick action, create a button.
             this.quickActionButtons = new Button[this.project.Configuration!.QuickActions.Count];
-            for (int idx = 0; idx < this.project.Configuration.QuickActions.Count; idx++)
+            for (int _i = 0; _i < this.project.Configuration.QuickActions.Count; _i++)
             {
-                int i = idx;
+                int i = _i;
                 var quickAction = this.project.Configuration.QuickActions[i];
 
-                var b = this.quickActionButtons[i] = new Button();
-                b.Height = 21;
-                b.HorizontalAlignment = HorizontalAlignment.Left;
-                b.VerticalAlignment = VerticalAlignment.Top;
-                b.Margin = new Thickness(0, 2 + 23 * i, 0, 0);
-                b.Content = "  " + quickAction.Name + "  ";
+                var b = this.quickActionButtons[i] = new Button()
+                {
+                    Height = 21,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Margin = new Thickness(0, 2 + 23 * i, 0, 0),
+                    Content = "  " + quickAction.Name + "  "
+                };
+
                 this.gridProjectControls.Children.Add(b);
                 Grid.SetRow(b, 2);
 
@@ -431,8 +434,11 @@ public partial class MainWindow : Window, FormsIWin32Window
 
     private void RefreshProjectControls()
     {
-        this.lblActionTitle.Content = this.currentQuickAction is not null ? this.currentQuickAction.Name :
-            this.project?.Configuration.MainAction is not null ? actionTitleMainAction : "";
+        this.lblActionTitle.Content = this.currentQuickAction is not null ?
+            this.currentQuickAction.Name :
+            this.project?.Configuration.MainAction is not null ?
+                actionTitleMainAction :
+                string.Empty;
 
         if (this.project is null)
         {
@@ -444,7 +450,9 @@ public partial class MainWindow : Window, FormsIWin32Window
         }
         else
         {
-            var ttFlavor = this.project.Configuration.ToontownFlavor is ToontownFlavor.CorporateClash ? "Corporate Clash" : "Toontown Rewritten";
+            string ttFlavor = this.project.Configuration.ToontownFlavor is ToontownFlavor.CorporateClash ?
+                "Corporate Clash" :
+                "Toontown Rewritten";
 
             this.txtCurrentProject.Inlines.Clear();
             this.txtCurrentProject.Inlines.Add(new Run("Project: "));
@@ -456,8 +464,9 @@ public partial class MainWindow : Window, FormsIWin32Window
 
             // Create labels for each action.
             this.actionListGrid.Children.Clear();
-            var mainAct = this.currentQuickAction is not null ? this.currentQuickAction.Action
-                : this.project.Configuration.MainAction;
+            var mainAct = this.currentQuickAction is not null ?
+                this.currentQuickAction.Action :
+                this.project.Configuration.MainAction;
 
             if (mainAct is not null)
             {
@@ -491,8 +500,11 @@ public partial class MainWindow : Window, FormsIWin32Window
         out Action handleStart,
         out Action handleStop)
     {
-        var l = new Label();
-        l.Margin = new Thickness(recursiveCount * 10, 18 * posCounter, 0, 0);
+        var l = new Label
+        {
+            Margin = new Thickness(recursiveCount * 10, 18 * posCounter, 0, 0)
+        };
+
         grid.Children.Add(l);
 
         string str = action.ToString()!;
@@ -509,16 +521,21 @@ public partial class MainWindow : Window, FormsIWin32Window
             l.Content = str;
         };
 
-        action.ActionInformationUpdated += s => this.Dispatcher.Invoke(new Action(() => l.Content = str + " – " + s));
+        // Note: We use InvokeAsync (without waiting until completion) rather than Invoke, to
+        // ensure this doesn't negatively affect wait times in the simulator thread due to
+        // possible blocking.
+        // In extreme cases, this could lead to the GUI thread message queue exceeding its
+        // limit when the actions produce events faster than the GUI thread can process them,
+        // but this shouldn't occur during normal operation.
+        action.ActionInformationUpdated += s => this.Dispatcher.InvokeAsync(
+            () => l.Content = str + " – " + s);
 
         posCounter++;
 
-        if (action is IActionContainer)
+        if (action is IActionContainer actionContainer)
         {
-            var cont = (IActionContainer)action;
-            var subActions = cont.SubActions;
-            var handleStartActions = new Action[subActions.Count];
-            var handleStopActions = new Action[subActions.Count];
+            var subActions = actionContainer.SubActions;
+            var handleDelegates = new (Action startAction, Action stopAction)[subActions.Count];
 
             for (int i = 0; i < subActions.Count; i++)
             {
@@ -527,23 +544,26 @@ public partial class MainWindow : Window, FormsIWin32Window
                     grid,
                     recursiveCount + 1,
                     ref posCounter,
-                    out handleStartActions[i],
-                    out handleStopActions[i]);
+                    out var startAction,
+                    out var stopAction);
+
+                handleDelegates[i] = (startAction, stopAction);
             }
 
             int? currentActiveAction = null;
-            cont.SubActionStartedOrStopped += (idx) => this.Dispatcher.Invoke(new Action(() =>
+            actionContainer.SubActionStartedOrStopped += idx => this.Dispatcher.InvokeAsync(() =>
             {
-                if (idx.HasValue)
+                if (idx is not null)
                 {
-                    currentActiveAction = idx;
-                    handleStartActions[idx.Value]();
+                    currentActiveAction = idx.Value;
+                    handleDelegates[idx.Value].startAction();
                 }
-                else if (currentActiveAction.HasValue)
+                else if (currentActiveAction is not null)
                 {
-                    handleStopActions[currentActiveAction.Value]();
+                    handleDelegates[currentActiveAction.Value].stopAction();
+                    currentActiveAction = null;
                 }
-            }));
+            });
         }
     }
 }

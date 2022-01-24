@@ -105,7 +105,7 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
                                 }
 
                                 // Wait a bit so that the window can go into foreground.
-                                this.WaitCore(250, false);
+                                this.WaitCore(100, false);
 
                                 // If the window isn't in foreground, try again.
                                 this.environmentInterface.GetWindowPosition(
@@ -163,8 +163,8 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
                             if (foundWindow)
                                 break;
 
-                            // If non of the windows is in foreground, wait a bit and try again.
-                            this.WaitCore(250, false);
+                            // If none of the windows is in foreground, wait a bit and try again.
+                            this.WaitCore(200, false);
                         }
                     }
                     finally
