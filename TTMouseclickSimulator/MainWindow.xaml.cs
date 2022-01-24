@@ -123,6 +123,7 @@ public partial class MainWindow : Window, FormsIWin32Window
         this.btnStart.IsEnabled = false;
         this.btnStop.IsEnabled = true;
         this.btnLoad.IsEnabled = false;
+        this.chkUseWasdMovement.IsEnabled = false;
         this.chkEnableBackgroundMode.IsEnabled = false;
 
         if (this.quickActionButtons is not null)
@@ -132,6 +133,7 @@ public partial class MainWindow : Window, FormsIWin32Window
         }
 
         bool backgroundMode = this.chkEnableBackgroundMode.IsChecked is true;
+        bool useWasdMovement = this.chkUseWasdMovement.IsChecked is true;
 
         this.simulatorStartAction?.Invoke();
 
@@ -149,6 +151,7 @@ public partial class MainWindow : Window, FormsIWin32Window
                     this.currentQuickAction.Action! :
                     this.project.Configuration.MainAction!,
                 environment,
+                useWasdMovement,
                 backgroundMode);
 
             // Start a new thread to run the simulator.
@@ -331,6 +334,7 @@ public partial class MainWindow : Window, FormsIWin32Window
         this.btnStart.IsEnabled = true;
         this.btnStop.IsEnabled = false;
         this.btnLoad.IsEnabled = true;
+        this.chkUseWasdMovement.IsEnabled = true;
         this.chkEnableBackgroundMode.IsEnabled = true;
 
         if (this.quickActionButtons is not null)

@@ -36,7 +36,7 @@ build and run the Mouse Click Simulator on your computer.
 
 - Added support for **Corporate Clash** ([#32](https://github.com/kpreisser/MouseClickSimulator/issues/32)).
 - Background mode is now disabled by default (like in earlier versions that didn't support this mode) as it doesn't seem to always work 
-  correctly ([#40](https://github.com/kpreisser/MouseClickSimulator/issues/40)).
+  correctly.
 - Fixed an issue for auto fishing in Walrus Way that occured often when using a low FPS rate (like 30), where the toon would miss the 
   fishing board after selling the fish.
 

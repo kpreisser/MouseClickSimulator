@@ -317,6 +317,10 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
         // Check if the window is still active and in foreground.
         this.GetWindowPositionCore(failIfMinimized: !this.backgroundMode);
 
+        // Allow the subclass to transform the key (e.g. change arrow keys to WASD
+        // keys).
+        this.TransformVirtualKey(ref key);
+
         if (!this.keysCurrentlyPressed.Contains(key))
         {
             if (!this.backgroundMode)
@@ -332,6 +336,10 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
     {
         this.ThrowIfCapabilityNotSet(SimulatorCapabilities.KeyboardInput);
         this.CancellationToken.ThrowIfCancellationRequested();
+
+        // Allow the subclass to transform the key (e.g. change arrow keys to WASD
+        // keys).
+        this.TransformVirtualKey(ref key);
 
         int kcpIdx = this.keysCurrentlyPressed.IndexOf(key);
         if (kcpIdx >= 0)
@@ -536,6 +544,11 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
     }
 
     protected abstract List<Process> FindProcesses();
+
+    protected virtual void TransformVirtualKey(ref WindowsEnvironment.VirtualKey key)
+    {
+        // Do nothing.
+    }
 
     private void ThrowIfCapabilityNotSet(SimulatorCapabilities capabilities)
     {

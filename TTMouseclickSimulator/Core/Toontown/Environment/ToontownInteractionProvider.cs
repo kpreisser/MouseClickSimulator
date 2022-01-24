@@ -29,6 +29,12 @@ namespace TTMouseClickSimulator.Core.Toontown.Environment
             get;
         }
 
+        public bool UseWasdMovement
+        {
+            get;
+            init;
+        }
+
         protected override sealed List<Process> FindProcesses()
         {
             if (this.ToontownFlavor is ToontownFlavor.ToontownRewritten)
@@ -65,6 +71,22 @@ namespace TTMouseClickSimulator.Core.Toontown.Environment
             else
             {
                 throw new NotSupportedException("Unsupported Toontown flavor: " + this.ToontownFlavor);
+            }
+        }
+
+        protected override void TransformVirtualKey(ref WindowsEnvironment.VirtualKey key)
+        {
+            if (this.UseWasdMovement)
+            {
+                // Replace arrow keys with WASD keys.
+                key = key switch
+                {
+                    WindowsEnvironment.VirtualKey.Up => WindowsEnvironment.VirtualKey.W,
+                    WindowsEnvironment.VirtualKey.Down => WindowsEnvironment.VirtualKey.S,
+                    WindowsEnvironment.VirtualKey.Left => WindowsEnvironment.VirtualKey.A,
+                    WindowsEnvironment.VirtualKey.Right => WindowsEnvironment.VirtualKey.D,
+                    var other => other
+                };
             }
         }
     }

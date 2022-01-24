@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TTMouseClickSimulator"
         mc:Ignorable="d"
-        Title="AppName" Height="520" Width="542" TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" Closing="HandleWindowClosing">
+        Title="AppName" Height="540" Width="542" TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" Closing="HandleWindowClosing">
   <Grid>
     <Button x:Name="btnStart" Content="Start" HorizontalAlignment="Left" Margin="10,0,0,10" Width="75" Height="21" Click="HandleBtnStartClick" VerticalAlignment="Bottom"/>
     <Button x:Name="btnStop" IsEnabled="False" Content="Stop" HorizontalAlignment="Left" Margin="110,0,0,10" Width="75" Height="21" Click="HandleBtnStopClick" VerticalAlignment="Bottom"/>
     <Label x:Name="lblAppName" Content="AppName" Margin="10,10,10,0" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="18"/>
     <Button x:Name="btnLoad" Content="Load XML Project file…" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Width="154" Height="21" Click="HandleBtnLoadClick"/>
-    <Grid Margin="10,76,10,60">
+    <Grid Margin="10,76,10,80">
       <Grid x:Name="gridProjectControls">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
@@ -39,7 +39,18 @@
     </Grid>
 
     <TextBlock x:Name="textBlockStopSimulatorNote" Margin="212,0,10,0" TextWrapping="Wrap" Text="Note: To stop the Simulator, press the Windows key." Height="31" VerticalAlignment="Bottom" />
-    <CheckBox x:Name="chkEnableBackgroundMode" Margin="10,0,0,36"  Content="Enable Background Mode" Height="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="156" Checked="HandleChkEnableBackgroundModeChecked" Unchecked="HandleChkEnableBackgroundModeUnchecked" ToolTipService.ShowDuration="60000">
+    <CheckBox x:Name="chkUseWasdMovement" Margin="10,0,0,56"  Content="Use WASD instead of array keys for movement" Height="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" ToolTipService.ShowDuration="60000">
+      <CheckBox.ToolTip>
+        <ToolTip>
+          <TextBlock>
+            Enable this option when you have set W, A, S, D keys instead of array keys for movement in the controls options.
+           <LineBreak/><LineBreak/>
+            This will automatically convert arrow keys as specified in project files to WASD keys.
+          </TextBlock>
+        </ToolTip>
+      </CheckBox.ToolTip>
+    </CheckBox>
+    <CheckBox x:Name="chkEnableBackgroundMode" Margin="10,0,0,36"  Content="Enable Background Mode" Height="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Checked="HandleChkEnableBackgroundModeChecked" Unchecked="HandleChkEnableBackgroundModeUnchecked" ToolTipService.ShowDuration="60000">
       <CheckBox.ToolTip>
         <ToolTip>
           <TextBlock>

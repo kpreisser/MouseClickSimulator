@@ -21,6 +21,7 @@ public class Simulator : IDisposable
         ToontownFlavor toontownFlavor,
         IAction mainAction,
         WindowsEnvironment environmentInterface,
+        bool useWasdMovement,
         bool backgroundMode)
     {
         if (mainAction is null)
@@ -36,7 +37,10 @@ public class Simulator : IDisposable
             this,
             toontownFlavor,
             environmentInterface,
-            backgroundMode);
+            backgroundMode)
+        {
+            UseWasdMovement = useWasdMovement
+        };
     }
 
     public SimulatorCapabilities RequiredCapabilities
