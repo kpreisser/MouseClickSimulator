@@ -417,6 +417,12 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
         this.ThrowIfCapabilityNotSet(SimulatorCapabilities.MouseInput);
         this.CancellationToken.ThrowIfCancellationRequested();
 
+        if (this.lastSetMouseCoordinates is null)
+        {
+            throw new InvalidOperationException(
+                "Current mouse coordinates have not been set.");
+        }
+
         if (!this.backgroundMode)
         {
             // Check if the window is still active and in foreground.
@@ -424,7 +430,10 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
 
             if (!this.isMouseButtonPressed)
             {
-                this.environmentInterface.PressMouseButton();
+                this.environmentInterface.PressMouseButton(
+                    this.lastSetMouseCoordinates.Value.x,
+                    this.lastSetMouseCoordinates.Value.y);
+
                 this.isMouseButtonPressed = true;
             }
         }
@@ -432,12 +441,6 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
         {
             if (!this.isMouseButtonPressed)
             {
-                if (this.lastSetMouseCoordinates is null)
-                {
-                    throw new InvalidOperationException(
-                        "Current mouse coordinates have not been set.");
-                }
-
                 this.environmentInterface.PressWindowMouseButton(
                     this.windowHandle,
                     this.lastSetMouseCoordinates.Value.x,

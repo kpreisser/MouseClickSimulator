@@ -175,9 +175,9 @@ public class WindowsEnvironment
         this.DoMouseInput(x, y, true, null);
     }
 
-    public void PressMouseButton()
+    public void PressMouseButton(int x, int y)
     {
-        this.DoMouseInput(0, 0, false, true);
+        this.DoMouseInput(x, y, true, true);
     }
 
     public void ReleaseMouseButton()
