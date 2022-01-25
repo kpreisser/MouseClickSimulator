@@ -369,9 +369,19 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
 
     public void MoveMouse(Coordinates c)
     {
+        // Note: We need to use Floor instead of Round for the mouse coordinates.
+        // This is because they may result from scaling (where the actual
+        // coordinates are always smaller than the width/height), and otherwise
+        // we may get coordinates that equal the width/height, which means they
+        // are outside of the window client area.
+        // For example, consider x-coordinates for width 4 (0, 1, 2, 3) which are
+        // scaled for width 2. The resulting doubles would be (0, 0.5, 1, 1.5).
+        // If we round them, they would result in (0, 1, 1, 2), which is obviously
+        // wrong as 2 is already the full width. Instead, we use Floor which results
+        // in (0, 0, 1, 1).
         this.MoveMouse(
-            checked((int)MathF.Round(c.X)),
-            checked((int)MathF.Round(c.Y)));
+            checked((int)MathF.Floor(c.X)),
+            checked((int)MathF.Floor(c.Y)));
     }
 
     public void MoveMouse(int x, int y)

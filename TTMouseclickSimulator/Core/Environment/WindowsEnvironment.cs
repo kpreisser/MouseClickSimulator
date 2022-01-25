@@ -617,9 +617,14 @@ public class WindowsEnvironment
 
         public ScreenshotColor GetPixel(Coordinates coords)
         {
+            // Similar to rounding mouse coordinates, we need to use Floor instead of
+            // Round so that we don't get coordinates that are outside of the
+            // width/height. Also, this seems like the natural way for subpixels, as
+            // it means all of (0, 0.1, 0.99) are still located within pixel 0 (so
+            // coordinates (0.0, 0.0) refer to the upper left corner of a pixel).
             return this.GetPixel(
-                checked((int)MathF.Round(coords.X)),
-                checked((int)MathF.Round(coords.Y)));
+                checked((int)MathF.Floor(coords.X)),
+                checked((int)MathF.Floor(coords.Y)));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
