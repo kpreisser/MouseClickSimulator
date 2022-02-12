@@ -51,7 +51,7 @@ public class PlantFlowerAction : AbstractAction
         // Click on the jellybean fields.
         foreach (int jellybean in this.jellybeanCombination)
         {
-            var c = new Coordinates((int)Math.Round(560 + jellybean * 60.5), 514);
+            var c = new Coordinates(560 + jellybean * 60.5f, 514);
             MouseHelpers.DoSimpleMouseClick(
                 provider,
                 c,

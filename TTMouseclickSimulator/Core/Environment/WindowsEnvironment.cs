@@ -212,12 +212,15 @@ public class WindowsEnvironment
                 NativeMethods.MOUSEEVENTF.LEFTUP;
         }
 
-        Span<NativeMethods.INPUT> inputs = stackalloc NativeMethods.INPUT[1];
-        inputs[0] = new NativeMethods.INPUT
+        Span<NativeMethods.INPUT> inputs = stackalloc NativeMethods.INPUT[]
         {
-            type = NativeMethods.InputType.INPUT_MOUSE,
-            InputUnion = {
-                mi = mi
+            new NativeMethods.INPUT
+            {
+                type = NativeMethods.InputType.INPUT_MOUSE,
+                InputUnion =
+                {
+                    mi = mi
+                }
             }
         };
 
@@ -256,10 +259,10 @@ public class WindowsEnvironment
         return (resX, resY);
     }
 
-    public Coordinates GetCurrentMousePosition()
+    public (int x, int y) GetCurrentMousePosition()
     {
         var cursorPosition = Cursor.Position;
-        return new Coordinates(cursorPosition.X, cursorPosition.Y);
+        return (cursorPosition.X, cursorPosition.Y);
     }
 
     public void PressKey(VirtualKey keyCode)
@@ -282,13 +285,15 @@ public class WindowsEnvironment
         if (!down)
             ki.dwFlags = NativeMethods.KEYEVENTF.KEYUP;
 
-        Span<NativeMethods.INPUT> inputs = stackalloc NativeMethods.INPUT[1];
-        inputs[0] = new NativeMethods.INPUT
+        Span<NativeMethods.INPUT> inputs = stackalloc NativeMethods.INPUT[]
         {
-            type = NativeMethods.InputType.INPUT_KEYBOARD,
-            InputUnion =
+            new NativeMethods.INPUT
             {
-                ki = ki
+                type = NativeMethods.InputType.INPUT_KEYBOARD,
+                InputUnion =
+                {
+                    ki = ki
+                }
             }
         };
 

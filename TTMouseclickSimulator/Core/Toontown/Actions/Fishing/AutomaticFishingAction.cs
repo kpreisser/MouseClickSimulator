@@ -80,10 +80,10 @@ public class AutomaticFishingAction : AbstractFishingRodAction
                 }
             }
 
-            if (!newCoords.HasValue)
+            if (newCoords is null)
                 this.OnActionInformationUpdated(actionInformationScanning);
 
-            if (newCoords.HasValue && oldCoords.HasValue
+            if (newCoords is not null && oldCoords is not null
                 && MathF.Abs(oldCoords.Value.X - newCoords.Value.X) <= scanStep
                 && MathF.Abs(oldCoords.Value.Y - newCoords.Value.Y) <= scanStep)
             {
@@ -100,7 +100,7 @@ public class AutomaticFishingAction : AbstractFishingRodAction
 
 
             // Now position the mouse already so that we just need to release the button.
-            if (!newCoords.HasValue)
+            if (newCoords is null)
             {
                 // If we couldn't find the bubble we use default destination x,y values.
                 newCoords = new Coordinates(800, 1009);
@@ -114,7 +114,10 @@ public class AutomaticFishingAction : AbstractFishingRodAction
                     // For Corporate Clash, we need to adjust the Y coordinate a bit
                     // downwards, otherwise the resulting bait point would be a bit too
                     // high.
-                    newCoords = new Coordinates(newCoords.Value.X, newCoords.Value.Y + 20);
+                    newCoords = newCoords.Value with
+                    {
+                        Y = newCoords.Value.Y + 20
+                    };
                 }
 
                 newCoords = new Coordinates(
