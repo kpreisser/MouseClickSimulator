@@ -18,8 +18,8 @@ Before you click on Start, make sure that
            plus the straight fishing action.
       -->
       <Loop count="19">
-        <AutomaticFishing scan1="200, 80" scan2="1430, 792" bubbleColorRgb="17, 102, 75"
-                          toleranceRgb="5, 4, 5" />
+        <AutomaticFishing scan1="200, 80" scan2="1430, 792" scanResultYAdjustment="15"
+                          bubbleColorRgb="17, 102, 75" toleranceRgb="5, 4, 5" />
       </Loop>
       <!--
       The last cast must always be straight; otherwise the toon will rotate in

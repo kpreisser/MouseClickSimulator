@@ -10,17 +10,25 @@ public class AutomaticFishingAction : AbstractFishingRodAction
 {
     private readonly FishingSpotData spotData;
 
+    private readonly int scanResultYAdjustment;
+
     public AutomaticFishingAction(
         float[] scan1,
         float[] scan2,
         byte[] bubbleColorRgb,
-        byte[] toleranceRgb)
+        byte[] toleranceRgb,
+        int scanResultYAdjustment = 0)
     {
+        if (scanResultYAdjustment < -2000 || scanResultYAdjustment > 2000)
+            throw new ArgumentOutOfRangeException(nameof(scanResultYAdjustment));
+
         this.spotData = new FishingSpotData(
             new Coordinates(scan1[0], scan1[1]),
             new Coordinates(scan2[0], scan2[1]),
             new ScreenshotColor(bubbleColorRgb[0], bubbleColorRgb[1], bubbleColorRgb[2]),
             new Tolerance(toleranceRgb[0], toleranceRgb[1], toleranceRgb[2]));
+
+        this.scanResultYAdjustment = scanResultYAdjustment;
     }
 
     protected override int WaitingForFishResultDialogTime
@@ -30,8 +38,6 @@ public class AutomaticFishingAction : AbstractFishingRodAction
 
     protected override sealed void FinishCastFishingRod(IInteractionProvider provider)
     {
-        var ttProvider = (ToontownInteractionProvider)provider;
-
         // Try to find a bubble.
         const string actionInformationScanning = "Scanning for fish bubbles…";
         this.OnActionInformationUpdated(actionInformationScanning);
@@ -41,19 +47,15 @@ public class AutomaticFishingAction : AbstractFishingRodAction
         var sw = new Stopwatch();
         sw.Start();
 
-        Coordinates? oldCoords = null;
-        Coordinates? newCoords;
+        var oldCoords = default(Coordinates?);
         int coordsMatchCounter = 0;
 
         while (true)
         {
             var screenshot = provider.GetCurrentWindowScreenshot();
-            newCoords = null;
+            var newCoords = default(Coordinates?);
 
-            // TODO: The fish bubble detection should be changed so that it does not scan
-            // for a specific color, but instead checks that for a point if the color is
-            // darker than the neighbor pixels (in some distance).
-            for (float y = this.spotData.Scan1.Y; y <= this.spotData.Scan2.Y && !newCoords.HasValue; y += scanStep)
+            for (float y = this.spotData.Scan1.Y; y <= this.spotData.Scan2.Y && newCoords is null; y += scanStep)
             {
                 for (float x = this.spotData.Scan1.X; x <= this.spotData.Scan2.X; x += scanStep)
                 {
@@ -98,7 +100,6 @@ public class AutomaticFishingAction : AbstractFishingRodAction
                 coordsMatchCounter = 0;
             }
 
-
             // Now position the mouse already so that we just need to release the button.
             if (newCoords is null)
             {
@@ -107,19 +108,18 @@ public class AutomaticFishingAction : AbstractFishingRodAction
             }
             else
             {
-                // Calculate the destination coordinates.
-
-                if (ttProvider.ToontownFlavor is ToontownFlavor.CorporateClash)
+                if (this.scanResultYAdjustment is not 0)
                 {
                     // For Corporate Clash, we need to adjust the Y coordinate a bit
                     // downwards, otherwise the resulting bait point would be a bit too
                     // high.
                     newCoords = newCoords.Value with
                     {
-                        Y = newCoords.Value.Y + 20
+                        Y = newCoords.Value.Y + this.scanResultYAdjustment
                     };
                 }
 
+                // Calculate the destination coordinates.
                 newCoords = new Coordinates(
                     (float)(800d + 120d / 429d * (800d - newCoords.Value.X) *
                         (0.75 + (820d - newCoords.Value.Y) / 820 * 0.38)),
