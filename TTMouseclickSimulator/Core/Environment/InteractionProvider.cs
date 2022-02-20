@@ -23,6 +23,7 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
     private IntPtr windowHandle;
 
     private WindowsEnvironment.ScreenshotContent? currentScreenshot;
+    private bool pausedSinceLastScreenshot;
 
     private bool isMouseButtonPressed;
 
@@ -183,7 +184,7 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
                     {
                         // Verify that we actually can create a screenshot directly from the
                         // window instead of from the screen.
-                        this.GetCurrentWindowScreenshot(isInitialization: true);
+                        this.CaptureCurrentWindowScreenshot(isInitialization: true);
                     }
 
                     if (this.simulator.RequiredCapabilities.IsSet(SimulatorCapabilities.MouseInput))
@@ -305,8 +306,20 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
     public IScreenshotContent GetCurrentWindowScreenshot()
     {
         this.ThrowIfCapabilityNotSet(SimulatorCapabilities.CaptureScreenshot);
+        this.CancellationToken.ThrowIfCancellationRequested();
 
-        return this.GetCurrentWindowScreenshot(false);
+        // Only capture a new screenshot if we paused since getting the last once, so that we
+        // don't unnecessarily create new ones if nearly no time has passed since then.
+        // For example, the AutomaticFishingAction might want to get a screenshot after
+        // casting to check for an error dialog, but then immediately needs to get a screenshot
+        // again to check for fish bubbles.
+        if (this.currentScreenshot is null || this.pausedSinceLastScreenshot)
+        {
+            this.CaptureCurrentWindowScreenshot();
+            this.pausedSinceLastScreenshot = false;
+        }
+
+        return this.currentScreenshot!;
     }
 
     public void PressKey(WindowsEnvironment.VirtualKey key)
@@ -580,6 +593,7 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
     private void WaitCore(int milliseconds, bool checkWindow = true)
     {
         this.CancellationToken.ThrowIfCancellationRequested();
+        this.pausedSinceLastScreenshot = true;
 
         if (!checkWindow)
         {
@@ -634,7 +648,7 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
         return windowPosition;
     }
 
-    private IScreenshotContent GetCurrentWindowScreenshot(bool isInitialization)
+    private void CaptureCurrentWindowScreenshot(bool isInitialization = false)
     {
         this.CancellationToken.ThrowIfCancellationRequested();
 
@@ -674,8 +688,6 @@ public abstract class InteractionProvider : IInteractionProvider, IDisposable
                     "Please disable background mode and try again.");
             }
         }
-
-        return this.currentScreenshot;
     }
 
     private void CheckRetryForException(Exception ex, bool reinitialize)
