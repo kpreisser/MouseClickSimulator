@@ -48,7 +48,7 @@ public class ToontownInteractionProvider : InteractionProvider
                     "Could not find Toontown Rewritten. Please make sure " +
                     "TT Rewritten is running before starting the simulator.\n\n" +
                     "If you're running Toontown Rewritten as administrator, you may also " +
-                    "need to the simulator as administrator.");
+                    "need to run the simulator as administrator.");
             }
 
             return processes;
@@ -63,7 +63,7 @@ public class ToontownInteractionProvider : InteractionProvider
                     "Could not find Corporate Clash. Please make sure " +
                     "Corporate Clash is running before starting the simulator.\n\n" +
                     "If you're running Corporate Clash as administrator, you may also " +
-                    "need to the simulator as administrator.");
+                    "need to run the simulator as administrator.");
             }
 
             return processes;

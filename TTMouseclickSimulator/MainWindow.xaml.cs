@@ -262,6 +262,7 @@ public partial class MainWindow : Window, FormsIWin32Window
     {
         // Show a TaskDialog.
         bool result = false;
+
         this.Dispatcher.Invoke(() =>
         {
             // If we cancelled the simulator already in the meanwhile, it wouldn't make
@@ -303,10 +304,14 @@ public partial class MainWindow : Window, FormsIWin32Window
             var resultButton = FormsTaskDialog.ShowDialog(this, dialogPage);
 
             if (resultButton == buttonTryAgain)
-                Volatile.Write(ref result, true);
+            {
+                result = true;
+                Thread.MemoryBarrier();
+            }
         });
 
-        return Volatile.Read(ref result);
+        Thread.MemoryBarrier();
+        return result;
     }
 
     private static string? GetExceptionDetailsText(Exception ex)
