@@ -1,7 +1,7 @@
 ﻿# Mouse Click Simulator for Toontown Rewritten and Corporate Clash
 
 This is a new implementation of the older **"TT-Mausklick"** simulator, intended to work with Toontown Rewritten and Corporate Clash.
-It is implemented in C# (.NET 6) and runs on Windows.
+It is implemented in C# (.NET 8.0) and runs on Windows.
 
 The TT Mouse Click Simulator is able to automatically fish in specific locations like Punchline Place, TTC. To accomplish this, it scans the
 screen to detect fish bubbles, calculates how far the rod must be cast to catch the fish, and moves the Toon to the fisherman to sell the fish.
@@ -52,7 +52,7 @@ build and run the Mouse Click Simulator on your computer.
 
 **2022-01-10** (Commit [bcec185](https://github.com/kpreisser/MouseClickSimulator/commit/bcec1855a60b4a2919545046691c655c31b0cc8c))
 
-- Updated to **.NET 6**.
+- Updated to **.NET 6.0**.
   Due to this change, the prerequisites for building the simulator have slightly changed. Please see the topic 
   [Running the Simulator](https://github.com/kpreisser/MouseClickSimulator/wiki/Running-the-Simulator) for the new instructions.
 - Added **Background Mode** which directly sends mouse and keyboard inputs to the Toontown window (instead of simulating gobal inputs).
