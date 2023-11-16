@@ -32,6 +32,11 @@ build and run the Mouse Click Simulator on your computer.
 
 ## Release Notes
 
+**2023-11-16** (Commit [4ed3512](https://github.com/kpreisser/MouseClickSimulator/commit/4ed3512e139c233175371765f594d192a25f8c04))
+- Updated to **.NET 8.0**.
+  Due to this change, if you had already installed the .NET SDK 6.0 or 7.0, you will need to install the
+  [.NET SDK 8.0 or higher](https://dotnet.microsoft.com/download) in order to be able to build the application.
+
 **2022-01-24** (Commit [db8435c](https://github.com/kpreisser/MouseClickSimulator/commit/db8435c5d0c7309c3e09b214b0a587b3e12d32c2))
 
 - Added support for alphabetic keys in the `KeyPress` action, and added new `KeyDown` and `KeyUp` actions.
