@@ -84,7 +84,7 @@ Function. Furthermore, an action for planting a flower is supported.
 
 The GUI allows to load projects from an XML file. There are some predefined projects included in the **SampleProjects** folder but you can also
 create your own XML Simulator Project files. You can use the 
-[**Sample Actions.xml**](https://github.com/kpreisser/MouseClickSimulator/blob/master/TTMouseclickSimulator/SampleProjects/Sample%20Actions.xml) as a
+[**Sample Actions.xml**](https://github.com/kpreisser/MouseClickSimulator/blob/main/TTMouseclickSimulator/SampleProjects/ToontownRewritten/Sample%20Actions.xml) as a
 template for creating your own project.
 
 When opening a project, the GUI shows the actions which the project contains in a tree-like structure. When the Simulator is running, actions that are 
