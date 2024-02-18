@@ -15,7 +15,7 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
       <ConfirmFlowerPlantedDialog />
       <Pause duration="300" />
       <Water />
-      <Pause duration="5000" />
+      <Pause duration="4500" />
       <Water />
     </Compound>
   </QuickAction>
