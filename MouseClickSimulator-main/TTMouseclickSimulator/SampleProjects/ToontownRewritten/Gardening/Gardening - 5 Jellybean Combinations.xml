@@ -68,4 +68,12 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
     </Compound>
   </QuickAction>
 
+  <QuickAction title="Remove Plants">
+    <Compound loop="False">
+      <Water />
+      <Pause duration="3900" />
+      <PlantFlower jellybeanCombination="7, 0, 0, 0, 0" />   <!-- Remove plant button position as the same as plant -->
+    </Compound>
+  </QuickAction>
+
 </SimulatorProject>
