@@ -57,7 +57,7 @@ Note: Doodles may cause the simulator to fail.
 		<Pause duration="2200" />
 
       <!-- Now go to the fisherman and sell the fish. -->
-        <PressKey key="Left" duration="1300" />
+        <PressKey key="Left" duration="1350" />
         <PressKey key="Up" duration="1800" />
         <Pause duration="1500" />
 
