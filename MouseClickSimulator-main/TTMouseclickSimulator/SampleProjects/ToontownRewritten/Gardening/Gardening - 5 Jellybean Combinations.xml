@@ -15,7 +15,7 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
       <ConfirmFlowerPlantedDialog />
       <Pause duration="300" />
       <Water />
-      <Pause duration="4500" />
+      <Pause duration="3900" />
       <Water />
     </Compound>
   </QuickAction>
@@ -27,7 +27,7 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
       <ConfirmFlowerPlantedDialog />
       <Pause duration="300" />
       <Water />
-      <Pause duration="4500" />
+      <Pause duration="3900" />
       <Water />
     </Compound>
   </QuickAction>
@@ -39,7 +39,7 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
       <ConfirmFlowerPlantedDialog />
       <Pause duration="300" />
       <Water />
-      <Pause duration="4000" />
+      <Pause duration="3900" />
       <Water />
     </Compound>
   </QuickAction>
@@ -51,7 +51,7 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
       <ConfirmFlowerPlantedDialog />
       <Pause duration="300" />
       <Water />
-      <Pause duration="4500" />
+      <Pause duration="3900" />
       <Water />
     </Compound>
   </QuickAction>
@@ -63,7 +63,7 @@ Before you click on one of the buttons, the toon needs to stand in front of an e
       <ConfirmFlowerPlantedDialog />
       <Pause duration="300" />
       <Water />
-      <Pause duration="4500" />
+      <Pause duration="3900" />
       <Water />
     </Compound>
   </QuickAction>
