@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
+  <Title>Stay Awake</Title>
+  <Description>
+This project prevents your toon from falling asleep, by pressing the "End" key every 90 seconds.
+
+For best experience you should enable Background Mode, which allows you to minimize the Toontown window.
+  </Description>
+
+  <MainAction>
+    <Compound type="Sequential" minimumPause="90000" maximumPause="90000">
+      <!-- Press the "End" key for a short duration, which will prevent the toon from falling asleep. -->
+      <PressKey key="End" duration="100" />
+    </Compound>
+  
+  </MainAction>
+
+</SimulatorProject>

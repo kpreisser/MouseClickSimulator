@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
+  <Title>Gardening – 6 Jellybean Combinations</Title>
+  <Description>
+This project contains QuickActions for planting and watering flowers using combinations of 6 jellybeans.
+
+Before you click on one of the buttons, the toon needs to stand in front of an empty flower spot.
+  </Description>
+
+  
+  <QuickAction title="Tinted Rose  (Rose)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="0, 5, 2, 0, 2, 5" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Smarty Pansy  (Pansy)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="2, 5, 5, 2, 4, 5" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Twolip  (Tulip)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="3, 0, 0, 0, 3, 3" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Upsy Daisy  (Daisy)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="6, 4, 7, 3, 4, 4" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Silly Lily  (Lily)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="7, 0, 3, 3, 3, 3" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
+  </QuickAction>
+
+</SimulatorProject>

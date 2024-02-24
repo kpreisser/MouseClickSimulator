@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
+  <Title>Automatic Fishing in Tenor Terrace (Winter Theme)</Title>
+  <Description>
+The Toon will automatically fish in Tenor Terrace, Minnie's Melodyland (during the Winter Theme).
+Before you click on Start, make sure that
+• you are in a quiet district,
+• your fish bucket is empty,
+• you have enough JellyBeans for 20 casts,
+• your toon is standing on the rear right fishing board (viewed from entrance).
+  </Description>
+
+  <MainAction>
+      
+    <Compound type="Sequential">
+        
+      <!-- Use the automatic fishing action 19 times,
+           plus the straight fishing action.
+      -->
+      <Loop count="19">
+        <AutomaticFishing scan1="187, 151" scan2="1340, 728" bubbleColorRgb="28, 96, 149"
+                          toleranceRgb="5, 7, 11" />
+      </Loop>
+      <!--
+      The last cast must always be straight; otherwise the toon will rotate in
+      the cast direction and the Simulator would be unable to correctly move the Toon
+      to the fisherman. 
+      -->
+      <StraightFishing />
+          
+      <QuitFishing />
+
+      <Pause duration="1200" />
+        
+      <!-- Now go to the fisherman and sell the fish. -->
+      <Compound type="Sequential" minimumPause="50" maximumPause="300" loop="false">
+        <PressKey key="Down" duration="705" />
+        <PressKey key="Right" duration="960" />
+        <PressKey key="Up" duration="1605" />
+        <Pause duration="1300" />
+          
+        <SellFish />
+        <Pause duration="1000" />
+          
+        <PressKey key="Down" duration="2145" />
+        <PressKey key="Left" duration="890" />
+        <PressKey key="Up" duration="600" />
+        <Pause duration="3200" />
+      </Compound>
+        
+    </Compound>
+      
+  </MainAction>
+
+</SimulatorProject>

@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
+  <Title>Automatic Fishing in Walrus Way (Winter Theme)</Title>
+  <Description>
+The Toon will automatically fish in Walrus Way, The Brrrgh (during the Winter Theme).
+Before you click on Start, make sure that
+• you are in a quiet district,
+• your fish bucket is empty,
+• you have enough JellyBeans for 20 casts,
+• your toon is standing on the rear left fishing board (viewed from entrance).
+  </Description>
+
+  <MainAction>
+      
+    <Compound type="Sequential">
+        
+      <!-- Use the automatic fishing action 19 times,
+           plus the straight fishing action.
+      -->
+      <Loop count="19">
+        <AutomaticFishing scan1="153, 134" scan2="1450, 703" scanResultYAdjustment="10"
+                          bubbleColorRgb="19, 125, 142" toleranceRgb="6, 6, 8" />
+      </Loop>
+      <!--
+      The last cast must always be straight; otherwise the toon will rotate in
+      the cast direction and the Simulator would be unable to correctly move the Toon
+      to the fisherman. 
+      -->
+      <StraightFishing />
+          
+      <QuitFishing />
+
+      <Pause duration="1200" />
+        
+      <!-- Now go to the fisherman and sell the fish. -->
+      <Compound type="Sequential" minimumPause="50" maximumPause="300" loop="false">
+        <PressKey key="Up" duration="720" />
+        <PressKey key="Left" duration="1100" />
+        <PressKey key="Up" duration="1900" />
+        <Pause duration="1200" />
+          
+        <SellFish />
+
+        <Pause duration="1000" />
+        <PressKey key="Down" duration="2118" />
+        <PressKey key="Left" duration="790" />
+        <PressKey key="Up" duration="1800" />
+        <Pause duration="2700" />
+      </Compound>
+        
+    </Compound>
+      
+  </MainAction>
+
+</SimulatorProject>

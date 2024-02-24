@@ -1,0 +1,33 @@
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\TTMouseclickSimulator.exe
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\CorporateClash\Auto Fishing - Lighthouse Lane.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\CorporateClash\Auto Fishing - Lullaby Lane.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\CorporateClash\Auto Fishing - Petunia Place.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\CorporateClash\Auto Fishing - Punchline Place.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\CorporateClash\Auto Fishing - Tenor Terrace.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\CorporateClash\Auto Fishing - Walrus Way.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\CorporateClash\Stay Awake.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Elm Street (Winter Theme).xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Elm Street.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Lighthouse Lane (Winter Theme).xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Lighthouse Lane.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Lullaby Lane (Winter Theme).xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Lullaby Lane.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Punchline Place (Winter Theme).xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Punchline Place.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Tenor Terrace (Winter Theme).xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Tenor Terrace.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Walrus Way (Winter Theme).xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Auto Fishing - Walrus Way.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Gardening\Gardening - 1 Jellybean Combinations.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Gardening\Gardening - 2 Jellybean Combinations.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Gardening\Gardening - 3 Jellybean Combinations.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Gardening\Gardening - 4 Jellybean Combinations.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Gardening\Gardening - 5 Jellybean Combinations.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Gardening\Gardening - 6 Jellybean Combinations.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Gardening\Gardening - 7 Jellybean Combinations.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Gardening\Gardening - 8 Jellybean Combinations.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Sample Actions.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\SampleProjects\ToontownRewritten\Stay Awake.xml
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\TTMouseclickSimulator.dll
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\TTMouseclickSimulator.deps.json
+C:\Users\adamn\Downloads\MouseClickSimulator-main\MouseClickSimulator-main\TTMouseclickSimulator\bin\Release\net8.0-windows\publish\TTMouseclickSimulator.runtimeconfig.json

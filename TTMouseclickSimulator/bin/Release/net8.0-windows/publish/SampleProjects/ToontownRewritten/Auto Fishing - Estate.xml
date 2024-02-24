@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
+  <Title>Automatic Fishing in Toon Estate</Title>
+  <Description>
+The Toon will automatically fish in your estate.
+Before you click on Start, make sure that
+• your fish bucket is empty,
+• you have enough JellyBeans for 20 casts,
+• your toon is standing on the board nearest to the bucket
+Note: Doodles may cause the simulator to fail.
+  </Description>
+
+  <MainAction>
+
+    <Compound type="Sequential">
+
+      <!-- 
+	  		Use the automatic fishing action for estate 20 times,
+       		and ensure Toon remains fishing instead of going to bed.
+      -->
+      <Loop count="19"> 
+        <AutomaticFishing scan1="248, 239" scan2="1492, 660" bubbleColorRgb="49, 128, 120"
+                          toleranceRgb="5, 10, 8" />
+      </Loop>
+	
+	    <PressKey key="Down" duration="300" />
+		<PressKey key="Up" duration="300" />
+		<QuitFishing />
+        <Pause duration="2200" />
+      <!-- Allign Toon with board. -->
+      <Compound type="Sequential" minimumPause="50" maximumPause="300" loop="false">
+	    <PressKey key="Down" duration="300" />
+		<PressKey key="Up" duration="1000" />
+		<Pause duration="2200" />
+		<QuitFishing />
+		<Pause duration="2200" />
+
+      <!-- Now go to the fisherman and sell the fish. -->
+        <PressKey key="Left" duration="1350" />
+        <PressKey key="Up" duration="1800" />
+        <Pause duration="1500" />
+
+        <SellFish />
+
+        <!-- come back to board -->
+        <Pause duration="2000" />
+        <PressKey key="Down" duration="2500" />
+        <Pause duration="2000" />
+      </Compound>
+
+    </Compound>
+
+  </MainAction>
+
+</SimulatorProject>

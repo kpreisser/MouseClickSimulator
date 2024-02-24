@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator" toontownFlavor="CorporateClash">
+  <Title>Automatic Fishing in Punchline Place</Title>
+  <Description>
+The Toon will automatically fish in Punchline Place, Toontown Central.
+Before you click on Start, make sure that
+• you are in a quiet district,
+• your fish bucket is empty,
+• you have enough JellyBeans for 20 casts,
+• your toon is standing on the front fishing board.
+  </Description>
+
+  <MainAction>
+      
+    <Compound type="Sequential">
+        
+      <!-- Use the automatic fishing action for punchline place 19 times,
+           plus the straight fishing action.
+      -->
+      <Loop count="19">
+        <AutomaticFishing scan1="260, 196" scan2="1349, 626" scanResultYAdjustment="20" 
+                          bubbleColorRgb="27, 142, 118" toleranceRgb="15, 12, 14" />
+      </Loop>
+      <!--
+      The last cast must always be straight; otherwise the toon will rotate in
+      the cast direction and the Simulator would be unable to correctly move the Toon
+      to the fisherman. 
+      -->
+      <StraightFishing />
+          
+      <QuitFishing />
+
+      <Pause duration="1200" />
+        
+      <!-- Now go to the fisherman and sell the fish. -->
+      <Compound type="Sequential" minimumPause="50" maximumPause="300" loop="false">
+        <PressKey key="Left" duration="215" />
+        <PressKey key="Down" duration="3000" />
+        <Pause duration="1200" />
+
+        <SellFish />
+
+        <Pause duration="1000" />
+        <PressKey key="Up" duration="2200" />
+        <Pause duration="2500" />
+      </Compound>
+        
+    </Compound>
+      
+  </MainAction>
+
+</SimulatorProject>

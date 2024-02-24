@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
+  <Title>Gardening – 5 Jellybean Combinations</Title>
+  <Description>
+This project contains QuickActions for planting and watering flowers using combinations of 5 jellybeans.
+
+Before you click on one of the buttons, the toon needs to stand in front of an empty flower spot.
+  </Description>
+
+  
+  <QuickAction title="Time and a Half-O-Dil  (Daffodil)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="1, 5, 4, 5, 5" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+      <Pause duration="3900" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Onelip  (Tulip)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="3, 0, 4, 3, 3" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+      <Pause duration="3900" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Side Carnation  (Carnation)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="5, 0, 1, 4, 0" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+      <Pause duration="3900" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Whoopsie Daisy  (Daisy)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="6, 0, 2, 2, 2" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+      <Pause duration="3900" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Chili Lily  (Lily)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="7, 0, 0, 0, 0" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+      <Pause duration="3900" />
+      <Water />
+    </Compound>
+  </QuickAction>
+
+  <QuickAction title="Remove Plants">
+    <Compound loop="False">
+      <Water />
+      <Pause duration="3900" />
+      <PlantFlower jellybeanCombination="7, 0, 0, 0, 0" />   <!-- Remove plant button position as the same as plant -->
+    </Compound>
+  </QuickAction>
+
+</SimulatorProject>

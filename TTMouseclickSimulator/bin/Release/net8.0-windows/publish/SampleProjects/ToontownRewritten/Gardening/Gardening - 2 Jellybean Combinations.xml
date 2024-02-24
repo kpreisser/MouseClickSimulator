@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
+  <Title>Gardening – 2 Jellybean Combinations</Title>
+  <Description>
+This project contains QuickActions for planting and watering flowers using combinations of 2 jellybeans.
+
+Before you click on one of the buttons, the toon needs to stand in front of an empty flower spot.
+  </Description>
+
+  
+  <QuickAction title="Daffy Dill  (Daffodil)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="1, 7" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Chim Pansy  (Pansy)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="2, 7" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Instant Carnation  (Carnation)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="5, 6" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Lazy Daisy  (Daisy)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="6, 0" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
+  </QuickAction>
+  
+  <QuickAction title="Lily Pad  (Lily)">
+    <Compound loop="False">
+      <PlantFlower jellybeanCombination="7, 1" />
+      <Pause duration="6200" />
+      <ConfirmFlowerPlantedDialog />
+      <Pause duration="300" />
+      <Water />
+    </Compound>
+  </QuickAction>
+
+</SimulatorProject>

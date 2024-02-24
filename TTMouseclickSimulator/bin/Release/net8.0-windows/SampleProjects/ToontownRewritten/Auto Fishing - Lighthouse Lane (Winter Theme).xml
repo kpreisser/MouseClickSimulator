@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
+  <Title>Automatic Fishing in Lighthouse Lane (Winter Theme)</Title>
+  <Description>
+The Toon will automatically fish in Lighthouse Lane, Donald's Dock (during the Winter Theme).
+Before you click on Start, make sure that
+• you are in a quiet district,
+• your fish bucket is empty,
+• you have enough JellyBeans for 20 casts,
+• your toon is standing on the second fishing board on the right (viewed from entrance).
+  </Description>
+
+  <MainAction>
+      
+    <Compound type="Sequential">
+        
+      <!-- Use the automatic fishing action 19 times,
+           plus the straight fishing action.
+      -->
+      <Loop count="19">
+        <AutomaticFishing scan1="140, 151" scan2="1428, 728" bubbleColorRgb="29, 67, 131"
+                          toleranceRgb="4, 14, 4" />
+      </Loop>
+      <!--
+      The last cast must always be straight; otherwise the toon will rotate in
+      the cast direction and the Simulator would be unable to correctly move the Toon
+      to the fisherman. 
+      -->
+      <StraightFishing />
+          
+      <QuitFishing />
+
+      <Pause duration="1200" />
+        
+      <!-- Now go to the fisherman and sell the fish. -->
+      <Compound type="Sequential" minimumPause="50" maximumPause="300" loop="false">
+        <PressKey key="Right" duration="340" />
+        <PressKey key="Up" duration="3000" />
+        <Pause duration="1000" />
+          
+        <SellFish />
+
+        <Pause duration="1000" />
+        <PressKey key="Down" duration="5000" />
+        <Pause duration="2200" />
+      </Compound>
+        
+    </Compound>
+      
+  </MainAction>
+
+</SimulatorProject>

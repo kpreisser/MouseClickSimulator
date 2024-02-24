@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SimulatorProject xmlns="https://github.com/TTExtensions/MouseClickSimulator">
+  <Title>Sample Actions</Title>
+  <Description>This project contains some keyboard actions, a SpeedChat and a WriteText action.</Description>
+
+  <MainAction>
+    <!--
+    A compound action is an action that combines several other actions. 
+    You can specify if the the actions should be executed sequentially (type="Sequential"),
+    in random order (type="RandomOrder") or completely random (type="RandomIndex").
+    By default, all actions are run in an (infinite) loop which can be disabled by
+    specifying loop="false". If you disable the loop for the main compound action, the
+    Simulator will stop after executing all inner actions.
+    After executing each action the Simulator will pause for a random duration between
+    the minimumPause and maximumPause numbers in milliseconds.
+    -->
+    <Compound type="RandomOrder" minimumPause="300" maximumPause="800">
+      <!-- 
+      PressKey specifies that the Simulator should press a key for the defined duration.
+      Possible values for key: "Left", "Right", "Up", "Down", "Control", "Enter"
+      -->
+      <PressKey key="Left" duration="500" />
+      <PressKey key="Right" duration="700" />
+      <PressKey key="Control" duration="500" />
+
+      <Compound type="Sequential" loop="false">
+        <KeyDown key="Up" />
+        <KeyDown key="Right" />
+        <Pause duration="500" />
+        <KeyUp key="Right" />
+        <Pause duration="500" />
+        <KeyUp key="Up" />
+      </Compound>
+        
+      <!--
+      A loop specifies that the inner action should be executed a given number of times,
+      specified by count.
+      -->
+      <Loop count="3">
+        <Compound type="Sequential" minimumPause="50" maximumPause="50" loop="false">
+          <PressKey key="Up" duration="300" />
+          <PressKey key="Down" duration="300" />
+        </Compound>
+      </Loop>
+
+        
+      <Speedchat menuItems="3, 0, 2" />
+      <!--
+      WriteText writes the specified text. If pauseDuration is not specified, the text
+      is written in one go.
+      -->
+      <WriteText text="Chacun est l'artisan de sa fortune." pauseDuration="60" />
+
+    </Compound>
+  
+  </MainAction>
+
+  <!-- Quick Actions are additional actions which can be started by pressing a button
+  for this action. -->
+  <QuickAction title="Left &amp; Right">
+    
+    <Compound type="Sequential" loop="false">
+      <PressKey key="Left" duration="600" />
+      <PressKey key="Right" duration="600" />
+    </Compound>
+    
+  </QuickAction>
+
+</SimulatorProject>
