@@ -32,6 +32,10 @@ build and run the Mouse Click Simulator on your computer.
 
 ## Release Notes
 
+**2024-04-14** (Commit [f8f8996](https://github.com/kpreisser/MouseClickSimulator/commit/f8f899675c63abef53242ede639759a51868f274))
+- Added an **estate fishing** project for Toontown Rewritten (thanks to @The-Synthax) ([#56](https://github.com/kpreisser/MouseClickSimulator/pull/56)).
+
+
 **2023-11-16** (Commit [4ed3512](https://github.com/kpreisser/MouseClickSimulator/commit/4ed3512e139c233175371765f594d192a25f8c04))
 - Updated to **.NET 8.0**.
   Due to this change, if you had already installed the .NET SDK 6.0 or 7.0, you will need to install the
