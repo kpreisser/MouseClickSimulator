@@ -18,46 +18,28 @@ Note: Doodles may cause the simulator to fail.
 	  		Use the automatic fishing action for estate 20 times,
        		and ensure Toon remains fishing instead of going to bed.
       -->
-      <Loop count="5"> 
-        <AutomaticFishing scan1="248, 239" scan2="1492, 660" bubbleColorRgb="49, 128, 120"
-                          toleranceRgb="5, 10, 8" />
+      
+      <Loop count="19"> 
+        <AutomaticFishing scan1="200, 150" scan2="1492, 660" scanResultYAdjustment="35"
+                          bubbleColorRgb="56, 129, 122" toleranceRgb="7, 5, 5" />
       </Loop>
-	    <PressKey key="Down" duration="300" />
-		<PressKey key="Up" duration="300" />
-		<Pause duration="2200" />
-      <Loop count="5"> 
-        <AutomaticFishing scan1="248, 239" scan2="1492, 660" bubbleColorRgb="49, 128, 120"
-                          toleranceRgb="5, 10, 8" />
-      </Loop>
-	    <PressKey key="Down" duration="300" />
-		<PressKey key="Up" duration="300" />
-		<Pause duration="2200" />
-      <Loop count="5"> 
-        <AutomaticFishing scan1="248, 239" scan2="1492, 660" bubbleColorRgb="49, 128, 120"
-                          toleranceRgb="5, 10, 8" />
-      </Loop>
-	    <PressKey key="Down" duration="300" />
-		<PressKey key="Up" duration="300" />
-		<Pause duration="2200" />
-      <Loop count="5"> 
-        <AutomaticFishing scan1="248, 239" scan2="1492, 660" bubbleColorRgb="49, 128, 120"
-                          toleranceRgb="5, 10, 8" />
-      </Loop>
-	    <PressKey key="Down" duration="300" />
-		<PressKey key="Up" duration="300" />
-		<QuitFishing />
-        <Pause duration="2200" />
+      
+      
+      <!--
+      The last cast must always be straight; otherwise the toon will rotate in
+      the cast direction and the Simulator would be unable to correctly move the Toon
+      to the fisherman. 
+      -->      
+      <StraightFishing />
+        
+      <QuitFishing />
+      
+      <Pause duration="1500" />
 
-      <!-- Allign Toon with board. -->
       <Compound type="Sequential" minimumPause="50" maximumPause="300" loop="false">
-	    <PressKey key="Down" duration="300" />
-		<PressKey key="Up" duration="1000" />
-		<Pause duration="2200" />
-		<QuitFishing />
-		<Pause duration="2200" />
-
+	    
       <!-- Now go to the fisherman and sell the fish. -->
-        <PressKey key="Left" duration="1200" />
+        <PressKey key="Left" duration="1300" />
         <PressKey key="Up" duration="1800" />
         <Pause duration="1500" />
 
@@ -65,7 +47,7 @@ Note: Doodles may cause the simulator to fail.
 
         <Pause duration="2000" />
         <PressKey key="Down" duration="2500" />
-        <Pause duration="2000" />
+        <Pause duration="3500" />
       </Compound>
 
     </Compound>
